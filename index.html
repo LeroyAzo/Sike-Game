@@ -644,23 +644,24 @@ const TIER_POOLS = [
 const TIER_NAMES = ['WASD', 'ARROWS', 'NEAR', 'MID', 'WIDE', 'VERY WIDE', 'ALL'];
 const PLAYER_SPEED = 250;
 
-var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-var gemBuffer = null;
-
-fetch('assets/audio/gem.mp3').then(function(r) { return r.arrayBuffer(); }).then(function(d) { return audioCtx.decodeAudioData(d); }).then(function(b) { gemBuffer = b; }).catch(function() {});
+var gemSound = new Audio('assets/audio/gem.mp3');
+gemSound.preload = 'auto';
 
 function playGemSound() {
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-  if (!gemBuffer) return;
-  var source = audioCtx.createBufferSource();
-  var gain = audioCtx.createGain();
-  source.buffer = gemBuffer;
-  var fadeStart = gemBuffer.duration - 0.15;
-  gain.gain.setValueAtTime(1, audioCtx.currentTime + 0.01);
-  gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + gemBuffer.duration);
-  source.connect(gain);
-  gain.connect(audioCtx.destination);
-  source.start();
+  gemSound.currentTime = 0;
+  gemSound.volume = 1;
+  gemSound.play().catch(function() {});
+
+  var d = gemSound.duration;
+  if (d && d !== Infinity && d > 0.2) {
+    setTimeout(function() {
+      var steps = 10;
+      var iv = setInterval(function() {
+        gemSound.volume = Math.max(0, gemSound.volume - (1 / steps));
+        if (gemSound.volume <= 0) clearInterval(iv);
+      }, 15);
+    }, (d - 0.15) * 1000);
+  }
 }
 
 function getControlTier(score) {
