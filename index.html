@@ -779,6 +779,8 @@ var gemIntros = [1,2,3,4,5].map(function(i) { return new Audio('assets/audio/gem
 var lastIntro = -1;
 var gemMain = new Audio('assets/audio/gem.mp3');
 var volumes = { master: 1, intro: 1, sike: 1 };
+var hoverSound = new Audio('assets/audio/hover.wav');
+var clickSound = new Audio('assets/audio/click.wav');
 
 function playGemSound() {
   var idx;
@@ -1271,6 +1273,26 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('menuButtons').style.display = 'flex';
   document.getElementById('menuRecord').style.display = 'flex';
   document.getElementById('mainMenu').classList.add('visible');
+});
+
+var hoverTimer;
+document.querySelectorAll('button').forEach(function(btn) {
+  btn.addEventListener('mouseenter', function() {
+    clearTimeout(hoverTimer);
+    hoverTimer = setTimeout(function() {
+      hoverSound.currentTime = 0;
+      hoverSound.volume = volumes.master * 0.25;
+      hoverSound.play().catch(function() {});
+    }, 50);
+  });
+});
+
+document.addEventListener('click', function(e) {
+  if (e.target.tagName === 'BUTTON') {
+    clickSound.currentTime = 0;
+    clickSound.volume = volumes.master * 0.45;
+    clickSound.play().catch(function() {});
+  }
 });
 </script>
 </body>
