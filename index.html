@@ -781,6 +781,8 @@ var gemMain = new Audio('assets/audio/gem.mp3');
 var volumes = { master: 1, intro: 1, sike: 1 };
 var hoverSound = new Audio('assets/audio/hover.wav');
 var clickSound = new Audio('assets/audio/click.wav');
+var vibrateSound = new Audio('assets/audio/vibrate.wav');
+var desolveSound = new Audio('assets/audio/desolve.wav');
 
 function playGemSound() {
   var idx;
@@ -1218,13 +1220,21 @@ document.getElementById('resetScoreBtn').addEventListener('click', function() {
     // Start vibration
     setTimeout(function() {
       numEl.classList.add('vibrate');
+      vibrateSound.currentTime = 0;
+      vibrateSound.volume = volumes.master * 0.3;
+      vibrateSound.play().catch(function() {});
     }, 1900);
 
     // Stop vibration abruptly + fade out
     setTimeout(function() {
       numEl.classList.remove('vibrate');
+      vibrateSound.pause();
+      vibrateSound.currentTime = 0;
       numEl.classList.remove('big');
       numEl.classList.add('fade-out');
+      desolveSound.currentTime = 0;
+      desolveSound.volume = volumes.master * 0.4;
+      desolveSound.play().catch(function() {});
     }, 2400);
 
     // Cleanup + reset score
