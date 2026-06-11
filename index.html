@@ -644,18 +644,18 @@ const TIER_POOLS = [
 const TIER_NAMES = ['WASD', 'ARROWS', 'NEAR', 'MID', 'WIDE', 'VERY WIDE', 'ALL'];
 const PLAYER_SPEED = 250;
 
-var gemIntro = new Audio('assets/audio/gem_intro.wav');
+var gemIntros = [1,2,3,4,5].map(function(i) { return new Audio('assets/audio/gem' + i + '.wav'); });
 var gemMain = new Audio('assets/audio/gem.mp3');
 
 function playGemSound() {
-  gemIntro.currentTime = 0;
+  var intro = gemIntros[Math.floor(Math.random() * gemIntros.length)];
+  intro.currentTime = 0;
   gemMain.currentTime = 0;
   gemMain.volume = 1;
 
-  gemIntro.onended = null;
-  gemIntro.play().catch(function() {});
+  intro.play().catch(function() {});
 
-  gemIntro.onended = function() {
+  intro.onended = function() {
     gemMain.play().catch(function() {});
 
     var d = gemMain.duration;
