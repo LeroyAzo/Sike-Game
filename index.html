@@ -783,6 +783,7 @@ var hoverSound = new Audio('assets/audio/hover.wav');
 var clickSound = new Audio('assets/audio/click.wav');
 var vibrateSound = new Audio('assets/audio/vibrate.wav');
 var desolveSound = new Audio('assets/audio/desolve.wav');
+var deathSound = new Audio('assets/audio/death.wav');
 
 function playGemSound() {
   var idx;
@@ -836,6 +837,9 @@ const state = {
   lastTime: 0,
   controlTimeout: null,
   gemSpawnTimer: 0,
+  particles: [],
+  exploding: false,
+  explosionTimer: 0,
 };
 
 function shuffle(arr) {
@@ -970,7 +974,6 @@ function showDeathScreen() {
   state.controlTimeout = null;
   var cdEl = document.getElementById('controlsDisplay');
   cdEl.classList.remove('visible', 'panel', 'instant');
-  var screen = document.getElementById('deathScreen');
   var stats = document.getElementById('deathStats');
   var isRecord = state.score > state.record;
   if (isRecord) {
@@ -982,7 +985,13 @@ function showDeathScreen() {
     '<p><span class="stat-label">GEMS</span>  ' + state.score + '</p>' +
     '<p><span class="stat-label">RECORD</span>  ' + state.record + '</p>' +
     (isRecord ? '<p class="newRecord">NEW RECORD</p>' : '');
-  screen.classList.add('visible');
+
+  spawnExplosion(state.player.x, state.player.y);
+  state.exploding = true;
+  state.explosionTimer = 1.5;
+  deathSound.currentTime = 0;
+  deathSound.volume = volumes.master * 0.5;
+  deathSound.play().catch(function() {});
 }
 
 function resetGame() {
@@ -1000,7 +1009,11 @@ function resetGame() {
   state.keys = {};
   state.controlTimeout = null;
   state.gemSpawnTimer = 0;
+  state.particles = [];
+  state.exploding = false;
+  state.explosionTimer = 0;
   state.controlMapping = generateControls(0);
+  ctx.filter = 'none';
 
   applyDifficulty();
   for (var i = 0; i < 2; i++) spawnGem();
@@ -1013,6 +1026,26 @@ function resetGame() {
 }
 
 function update(dt) {
+  if (state.exploding) {
+    state.explosionTimer -= dt;
+    for (var i = state.particles.length - 1; i >= 0; i--) {
+      var p = state.particles[i];
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      p.vy += 200 * dt;
+      p.vx *= 0.97;
+      p.vy *= 0.97;
+      p.life -= p.decay * dt;
+      p.rot += p.rotSpeed * dt;
+      if (p.life <= 0) state.particles.splice(i, 1);
+    }
+    if (state.explosionTimer <= 0) {
+      state.exploding = false;
+      document.getElementById('deathScreen').classList.add('visible');
+    }
+    return;
+  }
+
   if (!state.running || state.dead) return;
 
   var cdEl = document.getElementById('controlsDisplay');
@@ -1146,12 +1179,55 @@ function drawEnemies(time) {
   }
 }
 
-function render(time) { ctx.clearRect(0, 0, W, H); drawGrid(); drawGems(time); drawEnemies(time); drawPlayer(); }
+function spawnExplosion(x, y) {
+  state.particles = [];
+  var colors = ['#ff0000', '#cc0000', '#880000', '#ff3333', '#000000', '#1a0000'];
+  for (var i = 0; i < 40; i++) {
+    var angle = Math.random() * Math.PI * 2;
+    var speed = 100 + Math.random() * 250;
+    state.particles.push({
+      x: x, y: y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      size: 4 + Math.random() * 8,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      life: 1,
+      decay: 0.5 + Math.random() * 0.5,
+      rot: Math.random() * Math.PI * 2,
+      rotSpeed: (Math.random() - 0.5) * 8,
+    });
+  }
+}
+
+function drawParticles() {
+  for (var i = 0; i < state.particles.length; i++) {
+    var p = state.particles[i];
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot);
+    ctx.globalAlpha = Math.max(0, p.life);
+    ctx.fillStyle = p.color;
+    var s = p.size;
+    ctx.fillRect(-s / 2, -s / 2, s, s);
+    ctx.restore();
+  }
+}
+
+function render(time) {
+  if (state.exploding) {
+    var progress = 1 - Math.max(0, state.explosionTimer / 1.5);
+    ctx.filter = 'grayscale(' + Math.round(progress * 85) + '%)';
+  }
+  ctx.clearRect(0, 0, W, H);
+  drawGrid(); drawGems(time); drawEnemies(time); drawPlayer();
+  ctx.filter = 'none';
+  if (state.exploding) drawParticles();
+}
 
 function gameLoop(timestamp) {
   var dt = Math.min((timestamp - state.lastTime) / 1000, 0.05);
   state.lastTime = timestamp; update(dt); render(timestamp / 1000);
-  if (state.running) requestAnimationFrame(gameLoop);
+  if (state.running || state.exploding) requestAnimationFrame(gameLoop);
 }
 
 document.addEventListener('keydown', function(e) {
