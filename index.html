@@ -645,10 +645,14 @@ const TIER_NAMES = ['WASD', 'ARROWS', 'NEAR', 'MID', 'WIDE', 'VERY WIDE', 'ALL']
 const PLAYER_SPEED = 250;
 
 var gemIntros = [1,2,3,4,5].map(function(i) { return new Audio('assets/audio/gem' + i + '.wav'); });
+var lastIntro = -1;
 var gemMain = new Audio('assets/audio/gem.mp3');
 
 function playGemSound() {
-  var intro = gemIntros[Math.floor(Math.random() * gemIntros.length)];
+  var idx;
+  do { idx = Math.floor(Math.random() * gemIntros.length); } while (idx === lastIntro);
+  lastIntro = idx;
+  var intro = gemIntros[idx];
   intro.currentTime = 0;
   gemMain.currentTime = 0;
   gemMain.volume = 1;
