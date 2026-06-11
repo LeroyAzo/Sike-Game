@@ -644,24 +644,31 @@ const TIER_POOLS = [
 const TIER_NAMES = ['WASD', 'ARROWS', 'NEAR', 'MID', 'WIDE', 'VERY WIDE', 'ALL'];
 const PLAYER_SPEED = 250;
 
-var gemSound = new Audio('assets/audio/gem.mp3');
-gemSound.preload = 'auto';
+var gemIntro = new Audio('assets/audio/gem_intro.wav');
+var gemMain = new Audio('assets/audio/gem.mp3');
 
 function playGemSound() {
-  gemSound.currentTime = 0;
-  gemSound.volume = 1;
-  gemSound.play().catch(function() {});
+  gemIntro.currentTime = 0;
+  gemMain.currentTime = 0;
+  gemMain.volume = 1;
 
-  var d = gemSound.duration;
-  if (d && d !== Infinity && d > 0.2) {
-    setTimeout(function() {
-      var steps = 10;
-      var iv = setInterval(function() {
-        gemSound.volume = Math.max(0, gemSound.volume - (1 / steps));
-        if (gemSound.volume <= 0) clearInterval(iv);
-      }, 15);
-    }, (d - 0.15) * 1000);
-  }
+  gemIntro.onended = null;
+  gemIntro.play().catch(function() {});
+
+  gemIntro.onended = function() {
+    gemMain.play().catch(function() {});
+
+    var d = gemMain.duration;
+    if (d && d !== Infinity && d > 0.2) {
+      setTimeout(function() {
+        var steps = 10;
+        var iv = setInterval(function() {
+          gemMain.volume = Math.max(0, gemMain.volume - (1 / steps));
+          if (gemMain.volume <= 0) clearInterval(iv);
+        }, 15);
+      }, (d - 0.15) * 1000);
+    }
+  };
 }
 
 function getControlTier(score) {
