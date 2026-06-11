@@ -574,6 +574,116 @@ body {
   transition: opacity 1.5s ease;
 }
 
+#soundPanel {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeInScale 0.2s ease;
+  width: 100%;
+  max-width: 340px;
+}
+
+#soundPanel h2 {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: clamp(14px, 2vmin, 18px);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.volume-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.vol-label {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: clamp(10px, 1.4vmin, 13px);
+  letter-spacing: 1px;
+  min-width: 70px;
+  text-align: right;
+}
+
+.vol-value {
+  color: #fff;
+  font-size: clamp(11px, 1.5vmin, 14px);
+  min-width: 28px;
+  text-align: right;
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #00ffff;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+}
+
+input[type=range]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #00ffff;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+}
+
+#soundPanel button {
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  padding: 10px 30px;
+  font-size: clamp(11px, 1.6vmin, 14px);
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+  min-width: 140px;
+  margin-top: 6px;
+}
+
+#soundPanel button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+#soundPanel button:active {
+  transform: scale(0.95);
+}
+
+#soundBackBtn {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+#soundBackBtn:hover {
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  box-shadow: none !important;
+}
+
 </style>
 </head>
 <body>
@@ -591,8 +701,29 @@ body {
 
   <div id="optionsPanel">
     <h2>OPTIONS</h2>
+    <button id="soundBtn">SOUND</button>
     <button id="resetScoreBtn">RESET SCORE</button>
     <button id="optionsBackBtn">BACK</button>
+  </div>
+
+  <div id="soundPanel">
+    <h2>SOUND</h2>
+    <div class="volume-row">
+      <span class="vol-label">MASTER</span>
+      <input type="range" id="volMaster" min="0" max="100" value="100">
+      <span class="vol-value" id="volMasterVal">100</span>
+    </div>
+    <div class="volume-row">
+      <span class="vol-label">GEM INTRO</span>
+      <input type="range" id="volIntro" min="0" max="100" value="100">
+      <span class="vol-value" id="volIntroVal">100</span>
+    </div>
+    <div class="volume-row">
+      <span class="vol-label">SIKE VOLUME</span>
+      <input type="range" id="volSike" min="0" max="100" value="100">
+      <span class="vol-value" id="volSikeVal">100</span>
+    </div>
+    <button id="soundBackBtn">BACK</button>
   </div>
 
   <div id="resetAnimOverlay">
@@ -647,6 +778,7 @@ const PLAYER_SPEED = 250;
 var gemIntros = [1,2,3,4,5].map(function(i) { return new Audio('assets/audio/gem' + i + '.wav'); });
 var lastIntro = -1;
 var gemMain = new Audio('assets/audio/gem.mp3');
+var volumes = { master: 1, intro: 1, sike: 1 };
 
 function playGemSound() {
   var idx;
@@ -654,8 +786,9 @@ function playGemSound() {
   lastIntro = idx;
   var intro = gemIntros[idx];
   intro.currentTime = 0;
+  intro.volume = volumes.master * volumes.intro;
   gemMain.currentTime = 0;
-  gemMain.volume = 1;
+  gemMain.volume = volumes.master * volumes.sike;
 
   intro.play().catch(function() {});
 
@@ -1031,6 +1164,7 @@ document.getElementById('restartBtn').addEventListener('click', resetGame);
 
 document.getElementById('playBtn').addEventListener('click', function() {
   document.getElementById('optionsPanel').style.display = 'none';
+  document.getElementById('soundPanel').style.display = 'none';
   document.getElementById('menuButtons').style.display = 'flex';
   document.getElementById('menuRecord').style.display = 'flex';
   document.getElementById('mainMenu').classList.remove('visible');
@@ -1047,6 +1181,16 @@ document.getElementById('optionsBackBtn').addEventListener('click', function() {
   document.getElementById('optionsPanel').style.display = 'none';
   document.getElementById('menuButtons').style.display = 'flex';
   document.getElementById('menuRecord').style.display = 'flex';
+});
+
+document.getElementById('soundBtn').addEventListener('click', function() {
+  document.getElementById('optionsPanel').style.display = 'none';
+  document.getElementById('soundPanel').style.display = 'flex';
+});
+
+document.getElementById('soundBackBtn').addEventListener('click', function() {
+  document.getElementById('soundPanel').style.display = 'none';
+  document.getElementById('optionsPanel').style.display = 'flex';
 });
 
 document.getElementById('resetScoreBtn').addEventListener('click', function() {
@@ -1094,9 +1238,24 @@ document.getElementById('resetScoreBtn').addEventListener('click', function() {
   }
 });
 
+function setupSlider(id, volKey) {
+  var input = document.getElementById(id);
+  var valSpan = document.getElementById(id + 'Val');
+  input.addEventListener('input', function() {
+    var v = parseInt(input.value) / 100;
+    volumes[volKey] = v;
+    valSpan.textContent = input.value;
+  });
+}
+
+setupSlider('volMaster', 'master');
+setupSlider('volIntro', 'intro');
+setupSlider('volSike', 'sike');
+
 document.getElementById('menuBtn').addEventListener('click', function() {
   document.getElementById('deathScreen').classList.remove('visible');
   document.getElementById('optionsPanel').style.display = 'none';
+  document.getElementById('soundPanel').style.display = 'none';
   document.getElementById('menuButtons').style.display = 'flex';
   document.getElementById('menuRecord').style.display = 'flex';
   document.getElementById('menuRecordValue').textContent = state.record;
@@ -1108,6 +1267,7 @@ document.addEventListener('DOMContentLoaded', function() {
   state.record = parseInt(localStorage.getItem('gemaRecord')) || 0;
   document.getElementById('menuRecordValue').textContent = state.record;
   document.getElementById('optionsPanel').style.display = 'none';
+  document.getElementById('soundPanel').style.display = 'none';
   document.getElementById('menuButtons').style.display = 'flex';
   document.getElementById('menuRecord').style.display = 'flex';
   document.getElementById('mainMenu').classList.add('visible');
