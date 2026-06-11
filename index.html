@@ -1145,7 +1145,7 @@ function drawGems(time) {
 }
 
 function drawPlayer() {
-  if (state.exploding) return;
+  if (state.exploding || state.dead) return;
   var p = state.player;
   ctx.save(); ctx.shadowColor = '#00ffff'; ctx.shadowBlur = 25; ctx.fillStyle = '#00ffff';
   ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size); ctx.restore();
