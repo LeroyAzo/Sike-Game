@@ -116,7 +116,7 @@ body {
 
 #controlsDisplay.visible h2 {
   color: #ff0000;
-  font-size: clamp(22px, 4vmin, 36px);
+  font-size: clamp(36px, 6vmin, 56px);
   margin-bottom: 16px;
   letter-spacing: 6px;
   text-shadow: 0 0 25px rgba(255, 0, 0, 0.6), 0 0 50px rgba(255, 0, 0, 0.3);
@@ -644,11 +644,23 @@ const TIER_POOLS = [
 const TIER_NAMES = ['WASD', 'ARROWS', 'NEAR', 'MID', 'WIDE', 'VERY WIDE', 'ALL'];
 const PLAYER_SPEED = 250;
 
-var gemSound = new Audio('assets/audio/gem.mp3');
+var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+var gemBuffer = null;
+
+fetch('assets/audio/gem.mp3').then(function(r) { return r.arrayBuffer(); }).then(function(d) { return audioCtx.decodeAudioData(d); }).then(function(b) { gemBuffer = b; }).catch(function() {});
 
 function playGemSound() {
-  gemSound.currentTime = 0;
-  gemSound.play().catch(function() {});
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  if (!gemBuffer) return;
+  var source = audioCtx.createBufferSource();
+  var gain = audioCtx.createGain();
+  source.buffer = gemBuffer;
+  var fadeStart = gemBuffer.duration - 0.15;
+  gain.gain.setValueAtTime(1, audioCtx.currentTime + 0.01);
+  gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + gemBuffer.duration);
+  source.connect(gain);
+  gain.connect(audioCtx.destination);
+  source.start();
 }
 
 function getControlTier(score) {
