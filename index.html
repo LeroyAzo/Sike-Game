@@ -644,6 +644,13 @@ const TIER_POOLS = [
 const TIER_NAMES = ['WASD', 'ARROWS', 'NEAR', 'MID', 'WIDE', 'VERY WIDE', 'ALL'];
 const PLAYER_SPEED = 250;
 
+var gemSound = new Audio('assets/audio/gem.wav');
+
+function playGemSound() {
+  gemSound.currentTime = 0;
+  gemSound.play().catch(function() {});
+}
+
 function getControlTier(score) {
   if (score === 0) return 0;
   if (score === 1) return 1;
@@ -896,6 +903,7 @@ function update(dt) {
     if (dist(p, g) < p.size + g.size) {
       state.gems.splice(i, 1);
       state.score++;
+      playGemSound();
       state.keys = {};
       var tier = getControlTier(state.score);
       state.controlMapping = generateControls(tier);
