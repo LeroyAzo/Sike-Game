@@ -723,6 +723,11 @@ input[type=range]::-moz-range-thumb {
       <input type="range" id="volSike" min="0" max="100" value="100">
       <span class="vol-value" id="volSikeVal">100</span>
     </div>
+    <div class="volume-row">
+      <span class="vol-label">MUSIC</span>
+      <input type="range" id="volMusic" min="0" max="100" value="100">
+      <span class="vol-value" id="volMusicVal">100</span>
+    </div>
     <button id="soundBackBtn">BACK</button>
   </div>
 
@@ -778,12 +783,27 @@ const PLAYER_SPEED = 250;
 var gemIntros = [1,2,3,4,5].map(function(i) { return new Audio('assets/audio/gem' + i + '.wav'); });
 var lastIntro = -1;
 var gemMain = new Audio('assets/audio/gem.mp3');
-var volumes = { master: 1, intro: 1, sike: 1 };
+var volumes = { master: 1, intro: 1, sike: 1, music: 1 };
 var hoverSound = new Audio('assets/audio/hover.wav');
 var clickSound = new Audio('assets/audio/click.wav');
 var vibrateSound = new Audio('assets/audio/vibrate.wav');
 var desolveSound = new Audio('assets/audio/desolve.wav');
 var deathSound = new Audio('assets/audio/death.wav');
+
+var song = new Audio('assets/audio/dumbstep_fondo_3.wav');
+song.loop = true;
+
+function startSong() {
+  song.volume = volumes.master * volumes.music;
+  song.pause();
+  song.currentTime = 0;
+  song.play().catch(function() {});
+}
+
+function stopSong() {
+  song.pause();
+  song.currentTime = 0;
+}
 
 function playGemSound() {
   var idx;
@@ -840,6 +860,10 @@ const state = {
   particles: [],
   exploding: false,
   explosionTimer: 0,
+  danger: 0,
+  shakeTimer: 0,
+  shakeDuration: 0,
+  shakeIntensity: 0,
 };
 
 function shuffle(arr) {
@@ -989,9 +1013,13 @@ function showDeathScreen() {
   spawnExplosion(state.player.x, state.player.y);
   state.exploding = true;
   state.explosionTimer = 1.5;
+  state.shakeTimer = 0.4;
+  state.shakeDuration = 0.4;
+  state.shakeIntensity = 35;
   deathSound.currentTime = 0;
   deathSound.volume = volumes.master * 0.5;
   deathSound.play().catch(function() {});
+  stopSong();
 }
 
 function resetGame() {
@@ -1010,6 +1038,9 @@ function resetGame() {
   state.controlTimeout = null;
   state.gemSpawnTimer = 0;
   state.particles = [];
+  state.shakeTimer = 0;
+  state.shakeDuration = 0;
+  state.shakeIntensity = 0;
   state.exploding = false;
   state.explosionTimer = 0;
   state.controlMapping = generateControls(0);
@@ -1042,6 +1073,10 @@ function update(dt) {
     if (state.explosionTimer <= 0) {
       state.exploding = false;
       document.getElementById('deathScreen').classList.add('visible');
+    }
+    if (state.shakeTimer > 0) {
+      state.shakeTimer -= dt;
+      if (state.shakeTimer <= 0) state.shakeIntensity = 0;
     }
     return;
   }
@@ -1110,6 +1145,26 @@ function update(dt) {
 
   state.gemSpawnTimer += dt;
   if (state.gems.length < 2 && state.gemSpawnTimer > 1.5) { spawnGem(); state.gemSpawnTimer = 0; }
+
+  var closestDist = Infinity;
+  for (var i = 0; i < state.enemies.length; i++) {
+    var d2 = Math.hypot(p.x - state.enemies[i].x, p.y - state.enemies[i].y);
+    if (d2 < closestDist) closestDist = d2;
+  }
+  state.danger = 1 - Math.min(1, Math.max(0, (closestDist - 30) / 170));
+
+  if (state.danger > 0.15 && state.shakeTimer <= 0) {
+    var beatPulse = Math.pow(Math.sin(state.time * Math.PI * 2 * 1.8), 16);
+    if (beatPulse > 0.9) {
+      state.shakeTimer = 0.1;
+      state.shakeDuration = 0.1;
+      state.shakeIntensity = 4;
+    }
+  }
+  if (state.shakeTimer > 0) {
+    state.shakeTimer -= dt;
+    if (state.shakeTimer <= 0) state.shakeIntensity = 0;
+  }
 
   for (var i = 0; i < state.enemies.length; i++) {
     if (dist(p, state.enemies[i]) < p.size + state.enemies[i].size) { showDeathScreen(); return; }
@@ -1216,14 +1271,35 @@ function drawParticles() {
   }
 }
 
+function drawDangerVignette(danger, time) {
+  var pulse = Math.pow(Math.sin(time * Math.PI * 2 * 1.8), 16);
+  var alpha = danger * 0.35 * (0.5 + 0.5 * pulse);
+  if (alpha <= 0) return;
+  var grad = ctx.createRadialGradient(W / 2, H / 2, H * 0.15, W / 2, H / 2, H * 0.7);
+  grad.addColorStop(0, 'rgba(255, 0, 0, 0)');
+  grad.addColorStop(1, 'rgba(200, 0, 0, ' + alpha + ')');
+  ctx.save();
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+  ctx.restore();
+}
+
 function render(time) {
   if (state.exploding) {
     var progress = 1 - Math.max(0, state.explosionTimer / 1.5);
     ctx.filter = 'grayscale(' + Math.round(progress * 100) + '%)';
   }
   ctx.clearRect(0, 0, W, H);
+  ctx.save();
+  if (state.shakeTimer > 0 && state.shakeIntensity > 0) {
+    var decay = state.shakeDuration > 0 ? state.shakeTimer / state.shakeDuration : 0;
+    var amp = state.shakeIntensity * decay * decay;
+    ctx.translate((Math.random() - 0.5) * 2 * amp, (Math.random() - 0.5) * 2 * amp);
+  }
   drawGrid(); drawGems(time); drawEnemies(time); drawPlayer();
   if (state.exploding) drawParticles();
+  ctx.restore();
+  if (state.danger > 0 && !state.dead && !state.exploding) drawDangerVignette(state.danger, time);
   ctx.filter = 'none';
 }
 
@@ -1243,7 +1319,7 @@ document.addEventListener('keyup', function(e) {
   if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].indexOf(e.key) >= 0) e.preventDefault();
 });
 
-document.getElementById('restartBtn').addEventListener('click', resetGame);
+document.getElementById('restartBtn').addEventListener('click', function() { startSong(); resetGame(); });
 
 document.getElementById('playBtn').addEventListener('click', function() {
   document.getElementById('optionsPanel').style.display = 'none';
@@ -1251,6 +1327,7 @@ document.getElementById('playBtn').addEventListener('click', function() {
   document.getElementById('menuButtons').style.display = 'flex';
   document.getElementById('menuRecord').style.display = 'flex';
   document.getElementById('mainMenu').classList.remove('visible');
+  startSong();
   resetGame();
 });
 
@@ -1336,12 +1413,14 @@ function setupSlider(id, volKey) {
     var v = parseInt(input.value) / 100;
     volumes[volKey] = v;
     valSpan.textContent = input.value;
+    if (volKey === 'master' || volKey === 'music') song.volume = volumes.master * volumes.music;
   });
 }
 
 setupSlider('volMaster', 'master');
 setupSlider('volIntro', 'intro');
 setupSlider('volSike', 'sike');
+setupSlider('volMusic', 'music');
 
 document.getElementById('menuBtn').addEventListener('click', function() {
   document.getElementById('deathScreen').classList.remove('visible');
@@ -1352,6 +1431,7 @@ document.getElementById('menuBtn').addEventListener('click', function() {
   document.getElementById('menuRecordValue').textContent = state.record;
   document.getElementById('mainMenu').classList.add('visible');
   state.running = false;
+  stopSong();
 });
 
 document.addEventListener('DOMContentLoaded', function() {

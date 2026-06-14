@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<button onclick="test()">PLAY TEST</button>
+<script>
+var audioCtx = null;
+var audioBuffer = null;
+
+function test() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'assets/audio/dumbstep_fondo_3.wav', true);
+    xhr.responseType = 'arraybuffer';
+    xhr.onload = function() {
+      audioCtx.decodeAudioData(xhr.response, function(buf) {
+        audioBuffer = buf;
+        play();
+      }, function() { alert('decode failed'); });
+    };
+    xhr.onerror = function() { alert('xhr failed'); };
+    xhr.send();
+  } else {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    play();
+  }
+}
+
+function play() {
+  if (!audioBuffer) { alert('buffer not loaded yet'); return; }
+  var source = audioCtx.createBufferSource();
+  source.buffer = audioBuffer;
+  source.loop = true;
+  var gain = audioCtx.createGain();
+  gain.gain.value = 1;
+  source.connect(gain);
+  gain.connect(audioCtx.destination);
+  source.start(0);
+}
+</script>
