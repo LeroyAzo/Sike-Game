@@ -29,7 +29,6 @@ body {
   border: 2px solid rgba(0, 255, 255, 0.25);
   box-shadow: 0 0 40px rgba(0, 255, 255, 0.08), inset 0 0 40px rgba(0, 255, 255, 0.03);
   border-radius: 4px;
-  overflow: hidden;
   background: #1a1a2e;
 }
 
@@ -38,6 +37,16 @@ body {
   width: 100%;
   height: 100%;
   background: #1a1a2e;
+}
+
+#vizCanvas {
+  position: absolute;
+  top: -100px;
+  left: -100px;
+  width: calc(100% + 200px);
+  height: calc(100% + 200px);
+  pointer-events: none;
+  z-index: 3;
 }
 
 #hud {
@@ -135,14 +144,24 @@ body {
 
 .kb-panel-title {
   display: none;
-  color: rgba(255, 215, 0, 0.6);
-  font-size: clamp(14px, 2vmin, 18px);
-  letter-spacing: 2px;
+  color: #ffd700;
+  font-size: clamp(22px, 3.2vmin, 30px);
+  letter-spacing: 8px;
   text-transform: uppercase;
-  margin-bottom: 6px;
+  margin-bottom: 10px;
   white-space: nowrap;
   text-align: center;
   width: 100%;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.3);
+  animation: titleGlitch 3s ease-in-out infinite;
+}
+
+@keyframes titleGlitch {
+  0%, 90%, 100% { transform: skew(0deg); opacity: 1; }
+  92% { transform: skew(-3deg); opacity: 0.9; text-shadow: 0 0 30px #0ff, 0 0 60px #ffd700; }
+  94% { transform: skew(3deg); opacity: 0.85; text-shadow: 0 0 30px #f00, 0 0 60px #ffd700; }
+  96% { transform: skew(-1deg); opacity: 0.95; }
+  98% { transform: skew(0deg); opacity: 1; }
 }
 
 @keyframes shake {
@@ -257,7 +276,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: rgba(0, 0, 0, 0.92);
+  background: #1c1c1c;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.5s ease;
@@ -270,17 +289,17 @@ body {
 }
 
 #mainMenu h1 {
-  color: #00ffff;
+  color: #ff2222;
   font-size: clamp(52px, 9vmin, 88px);
   letter-spacing: 10px;
-  text-shadow: 0 0 40px rgba(0, 255, 255, 0.5), 0 0 80px rgba(0, 255, 255, 0.3);
+  text-shadow: 0 0 40px rgba(255, 34, 34, 0.5), 0 0 80px rgba(255, 34, 34, 0.3);
   margin-bottom: 40px;
   animation: menuPulse 2s ease-in-out infinite;
 }
 
 @keyframes menuPulse {
-  0%, 100% { text-shadow: 0 0 40px rgba(0, 255, 255, 0.5), 0 0 80px rgba(0, 255, 255, 0.3); }
-  50% { text-shadow: 0 0 60px rgba(0, 255, 255, 0.8), 0 0 120px rgba(0, 255, 255, 0.5); }
+  0%, 100% { text-shadow: 0 0 40px rgba(255, 34, 34, 0.5), 0 0 80px rgba(255, 34, 34, 0.3); }
+  50% { text-shadow: 0 0 60px rgba(255, 34, 34, 0.8), 0 0 120px rgba(255, 34, 34, 0.5); }
 }
 
 #menuRecord {
@@ -291,7 +310,7 @@ body {
 }
 
 .menuRecord-label {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(200, 200, 200, 0.45);
   font-size: clamp(11px, 1.5vmin, 14px);
   letter-spacing: 2px;
   text-transform: uppercase;
@@ -313,9 +332,9 @@ body {
 }
 
 #menuButtons button {
-  background: transparent;
-  color: #fff;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: #A8A8A8;
+  color: #222;
+  border: 3px solid rgba(180, 180, 180, 0.4);
   padding: 12px 40px;
   font-size: clamp(14px, 2vmin, 20px);
   font-family: 'Courier New', monospace;
@@ -328,8 +347,10 @@ body {
 }
 
 #menuButtons button:hover {
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
+  background: rgba(255, 50, 50, 0.15);
+  color: #fff;
+  box-shadow: 0 0 25px rgba(255, 50, 50, 0.2);
+  border-color: rgba(255, 50, 50, 0.5);
   transform: scale(1.05);
 }
 
@@ -338,25 +359,27 @@ body {
 }
 
 #playBtn {
-  border-color: #00ffff !important;
-  color: #00ffff !important;
+  border-color: #cc2222 !important;
+  border-width: 3px !important;
+  color: #cc2222 !important;
 }
 
 #playBtn:hover {
-  background: rgba(0, 255, 255, 0.15) !important;
-  box-shadow: 0 0 25px rgba(0, 255, 255, 0.3) !important;
+  background: rgba(255, 34, 34, 0.15) !important;
+  color: #fff !important;
+  box-shadow: 0 0 30px rgba(255, 34, 34, 0.35) !important;
 }
 
 #resetScoreBtn {
-  border-color: rgba(255, 68, 68, 0.4) !important;
-  color: rgba(255, 68, 68, 0.7) !important;
+  border-color: rgba(200, 200, 200, 0.2) !important;
+  color: rgba(200, 200, 200, 0.5) !important;
 }
 
 #resetScoreBtn:hover {
-  background: rgba(255, 68, 68, 0.1) !important;
-  border-color: rgba(255, 68, 68, 0.7) !important;
+  background: rgba(255, 50, 50, 0.1) !important;
+  border-color: rgba(255, 50, 50, 0.6) !important;
   color: #ff4444 !important;
-  box-shadow: 0 0 20px rgba(255, 68, 68, 0.2) !important;
+  box-shadow: 0 0 20px rgba(255, 50, 50, 0.2) !important;
 }
 
 #optionsPanel {
@@ -367,7 +390,7 @@ body {
 }
 
 #optionsPanel h2 {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(200, 200, 200, 0.5);
   font-size: clamp(14px, 2vmin, 18px);
   letter-spacing: 4px;
   text-transform: uppercase;
@@ -376,8 +399,8 @@ body {
 
 #optionsPanel button {
   background: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  color: #fff;
+  border: 2px solid rgba(200, 200, 200, 0.25);
+  color: #ddd;
   padding: 12px 40px;
   font-size: clamp(14px, 2vmin, 20px);
   font-family: 'Courier New', monospace;
@@ -391,8 +414,9 @@ body {
 }
 
 #optionsPanel button:hover {
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
+  background: rgba(255, 50, 50, 0.08);
+  box-shadow: 0 0 25px rgba(255, 50, 50, 0.15);
+  border-color: rgba(255, 50, 50, 0.4);
   transform: scale(1.05);
 }
 
@@ -401,18 +425,18 @@ body {
 }
 
 #optionsBackBtn {
-  border-color: rgba(255, 255, 255, 0.2) !important;
-  color: rgba(255, 255, 255, 0.5) !important;
+  border-color: rgba(200, 200, 200, 0.15) !important;
+  color: rgba(200, 200, 200, 0.45) !important;
   font-size: clamp(11px, 1.6vmin, 14px) !important;
   padding: 8px 24px !important;
   min-width: 120px !important;
 }
 
 #optionsBackBtn:hover {
-  border-color: rgba(255, 255, 255, 0.4) !important;
-  color: #fff !important;
-  background: rgba(255, 255, 255, 0.05) !important;
-  box-shadow: none !important;
+  border-color: rgba(255, 50, 50, 0.4) !important;
+  color: #ff4444 !important;
+  background: rgba(255, 50, 50, 0.05) !important;
+  box-shadow: 0 0 15px rgba(255, 50, 50, 0.1) !important;
   transform: scale(1.03) !important;
 }
 
@@ -584,7 +608,7 @@ body {
 }
 
 #soundPanel h2 {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(200, 200, 200, 0.5);
   font-size: clamp(14px, 2vmin, 18px);
   letter-spacing: 4px;
   text-transform: uppercase;
@@ -631,25 +655,25 @@ input[type=range]::-webkit-slider-thumb {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: #00ffff;
+  background: #ff4444;
   cursor: pointer;
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+  box-shadow: 0 0 10px rgba(255, 68, 68, 0.4);
 }
 
 input[type=range]::-moz-range-thumb {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: #00ffff;
+  background: #ff4444;
   cursor: pointer;
   border: none;
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+  box-shadow: 0 0 10px rgba(255, 68, 68, 0.4);
 }
 
 #soundPanel button {
   background: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  color: #fff;
+  border: 2px solid rgba(200, 200, 200, 0.25);
+  color: #ddd;
   padding: 10px 30px;
   font-size: clamp(11px, 1.6vmin, 14px);
   font-family: 'Courier New', monospace;
@@ -663,8 +687,9 @@ input[type=range]::-moz-range-thumb {
 }
 
 #soundPanel button:hover {
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
+  background: rgba(255, 50, 50, 0.08);
+  box-shadow: 0 0 25px rgba(255, 50, 50, 0.15);
+  border-color: rgba(255, 50, 50, 0.4);
   transform: scale(1.05);
 }
 
@@ -673,15 +698,15 @@ input[type=range]::-moz-range-thumb {
 }
 
 #soundBackBtn {
-  border-color: rgba(255, 255, 255, 0.2) !important;
-  color: rgba(255, 255, 255, 0.5) !important;
+  border-color: rgba(200, 200, 200, 0.15) !important;
+  color: rgba(200, 200, 200, 0.45) !important;
 }
 
 #soundBackBtn:hover {
-  border-color: rgba(255, 255, 255, 0.4) !important;
-  color: #fff !important;
-  background: rgba(255, 255, 255, 0.05) !important;
-  box-shadow: none !important;
+  border-color: rgba(255, 50, 50, 0.4) !important;
+  color: #ff4444 !important;
+  background: rgba(255, 50, 50, 0.05) !important;
+  box-shadow: 0 0 15px rgba(255, 50, 50, 0.1) !important;
 }
 
 </style>
@@ -738,6 +763,7 @@ input[type=range]::-moz-range-thumb {
 
 <div id="gameContainer">
   <canvas id="gameCanvas"></canvas>
+  <canvas id="vizCanvas"></canvas>
 
   <div id="hud">
     <span><span class="hud-label">TIME</span><span class="hud-value" id="timer">00:00</span></span>
@@ -761,11 +787,15 @@ input[type=range]::-moz-range-thumb {
 <script>
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+const vizCanvas = document.getElementById('vizCanvas');
+const vctx = vizCanvas.getContext('2d');
 
 const W = 960;
 const H = 720;
 canvas.width = W;
 canvas.height = H;
+vizCanvas.width = W + 200;
+vizCanvas.height = H + 200;
 
 const KEY_POOL = 'QWERTYUIOPASDFGHJKLZXCVBNM';
 const TIER_POOLS = [
@@ -792,9 +822,60 @@ var deathSound = new Audio('assets/audio/death.wav');
 
 var song = new Audio('assets/audio/dumbstep_fondo_3.wav');
 song.loop = true;
+var audioCtx = null;
+var gainNode = null;
+var shaperNode = null;
+var analyserNode = null;
+var freqArray = null;
+var audioReady = false;
+
+function initAudioSystem() {
+  if (audioReady) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  analyserNode = audioCtx.createAnalyser();
+  analyserNode.fftSize = 256;
+  freqArray = new Uint8Array(analyserNode.frequencyBinCount);
+  shaperNode = audioCtx.createWaveShaper();
+  shaperNode.oversample = '2x';
+  gainNode = audioCtx.createGain();
+  gainNode.gain.value = volumes.master * volumes.music;
+  analyserNode.connect(shaperNode);
+  shaperNode.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+  try {
+    var src = audioCtx.createMediaElementSource(song);
+    src.connect(analyserNode);
+  } catch(e) {}
+  audioReady = true;
+}
+
+function updateSongVolume() {
+  if (gainNode) gainNode.gain.value = volumes.master * volumes.music;
+}
+
+function updateSongSaturation() {
+  if (!audioReady || !state || !state.player) return;
+  var p = state.player;
+  var minDist = 99999;
+  for (var i = 0; i < state.enemies.length; i++) {
+    var d = dist(p, state.enemies[i]);
+    if (d < minDist) minDist = d;
+  }
+  var t = Math.max(0, Math.min(1, 1 - (minDist - 30) / 120));
+  var amount = t * 50;
+  var curve = new Float32Array(256);
+  for (var i = 0; i < 256; i++) {
+    var x = (i / 256) * 2 - 1;
+    curve[i] = ((1 + amount) * x) / (1 + amount * Math.abs(x));
+  }
+  if (shaperNode) shaperNode.curve = curve;
+}
 
 function startSong() {
-  song.volume = volumes.master * volumes.music;
+  if (!audioReady) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  if (shaperNode) shaperNode.curve = null;
+  updateSongVolume();
   song.pause();
   song.currentTime = 0;
   song.play().catch(function() {});
@@ -858,6 +939,7 @@ const state = {
   controlTimeout: null,
   gemSpawnTimer: 0,
   particles: [],
+  gooPuddles: [],
   exploding: false,
   explosionTimer: 0,
   danger: 0,
@@ -928,7 +1010,7 @@ function applyDifficulty() {
       case 2: x = p + Math.random() * (W - 2 * p); y = H - p; break;
       case 3: x = p; y = p + Math.random() * (H - 2 * p); break;
     }
-    state.enemies.push({ x: x, y: y, size: 22, speed: cfg.speed });
+    state.enemies.push({ x: x, y: y, lastX: x, lastY: y, size: 22, speed: cfg.speed });
   }
   state.enemies.forEach(function(e) { e.speed = cfg.speed; });
 }
@@ -950,7 +1032,7 @@ function keyboardHTML(mapping, tierName) {
   var down = displayKey(mapping.down);
   var left = displayKey(mapping.left);
   var right = displayKey(mapping.right);
-  return '<div class="kb-tier">' + tierName + '</div><div class="kb-panel-title">controls (For now)</div><div class="keyboard-layout">' +
+  return '<div class="kb-tier">' + tierName + '</div><div class="kb-panel-title">controls</div><div class="keyboard-layout">' +
     '<div class="keyboard-key" data-dir="up" style="grid-row:1;grid-column:2"><span class="kb-arrow">↑</span><span class="kb-letter">' + up + '</span></div>' +
     '<div class="keyboard-key" data-dir="left" style="grid-row:2;grid-column:1"><span class="kb-arrow">←</span><span class="kb-letter">' + left + '</span></div>' +
     '<div class="kb-center" style="grid-row:2;grid-column:2">🎲</div>' +
@@ -1010,6 +1092,7 @@ function showDeathScreen() {
     '<p><span class="stat-label">RECORD</span>  ' + state.record + '</p>' +
     (isRecord ? '<p class="newRecord">NEW RECORD</p>' : '');
 
+  state.gooPuddles = [];
   spawnExplosion(state.player.x, state.player.y);
   state.exploding = true;
   state.explosionTimer = 1.5;
@@ -1038,6 +1121,7 @@ function resetGame() {
   state.controlTimeout = null;
   state.gemSpawnTimer = 0;
   state.particles = [];
+  state.gooPuddles = [];
   state.shakeTimer = 0;
   state.shakeDuration = 0;
   state.shakeIntensity = 0;
@@ -1109,8 +1193,20 @@ function update(dt) {
   if (dx !== 0 && dy !== 0) { var len = Math.SQRT2; dx /= len; dy /= len; }
 
   var p = state.player;
-  p.x += dx * PLAYER_SPEED * dt;
-  p.y += dy * PLAYER_SPEED * dt;
+  var onGoo = false;
+  for (var gi = 0; gi < state.gooPuddles.length; gi++) {
+    var gg = state.gooPuddles[gi];
+    var gdx = gg.x2 - gg.x1, gdy = gg.y2 - gg.y1;
+    var len2 = gdx * gdx + gdy * gdy;
+    if (len2 > 0) {
+      var t = Math.max(0, Math.min(1, ((p.x - gg.x1) * gdx + (p.y - gg.y1) * gdy) / len2));
+      var cx = gg.x1 + t * gdx, cy = gg.y1 + t * gdy;
+      if (Math.hypot(p.x - cx, p.y - cy) < p.size + gg.size * gg.life) { onGoo = true; break; }
+    }
+  }
+  var moveSpeed = PLAYER_SPEED * (onGoo ? 0.35 : 1);
+  p.x += dx * moveSpeed * dt;
+  p.y += dy * moveSpeed * dt;
   p.x = Math.max(p.size, Math.min(W - p.size, p.x));
   p.y = Math.max(p.size, Math.min(H - p.size, p.y));
 
@@ -1125,6 +1221,24 @@ function update(dt) {
     }
     e.x = Math.max(e.size, Math.min(W - e.size, e.x));
     e.y = Math.max(e.size, Math.min(H - e.size, e.y));
+    var trailDist = Math.hypot(e.x - e.lastX, e.y - e.lastY);
+    if (trailDist > 6) {
+      state.gooPuddles.push({
+        x1: e.lastX, y1: e.lastY,
+        x2: e.x, y2: e.y,
+        size: e.size,
+        life: 1,
+        decay: 0.4 + Math.random() * 0.2,
+      });
+      e.lastX = e.x;
+      e.lastY = e.y;
+    }
+  }
+
+  for (var i = state.gooPuddles.length - 1; i >= 0; i--) {
+    var goo = state.gooPuddles[i];
+    goo.life -= goo.decay * dt;
+    if (goo.life <= 0) state.gooPuddles.splice(i, 1);
   }
 
   for (var i = state.gems.length - 1; i >= 0; i--) {
@@ -1152,6 +1266,7 @@ function update(dt) {
     if (d2 < closestDist) closestDist = d2;
   }
   state.danger = 1 - Math.min(1, Math.max(0, (closestDist - 30) / 170));
+  updateSongSaturation();
 
   if (state.danger > 0.15 && state.shakeTimer <= 0) {
     var beatPulse = Math.pow(Math.sin(state.time * Math.PI * 2 * 1.8), 16);
@@ -1171,6 +1286,27 @@ function update(dt) {
   }
 
   updateHUD();
+}
+
+function drawGoo() {
+  for (var i = 0; i < state.gooPuddles.length; i++) {
+    var goo = state.gooPuddles[i];
+    var alpha = goo.life * 0.5;
+    var w = goo.size * goo.life;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.shadowColor = '#ff0000';
+    ctx.shadowBlur = 8 * goo.life;
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = w;
+    ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(goo.x1, goo.y1); ctx.lineTo(goo.x2, goo.y2); ctx.stroke();
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = 'rgba(200, 0, 0, ' + (0.3 * goo.life) + ')';
+    ctx.lineWidth = w * 0.3;
+    ctx.beginPath(); ctx.moveTo(goo.x1, goo.y1); ctx.lineTo(goo.x2, goo.y2); ctx.stroke();
+    ctx.restore();
+  }
 }
 
 function drawGrid() {
@@ -1271,6 +1407,70 @@ function drawParticles() {
   }
 }
 
+function drawVisualizer() {
+  if (!analyserNode) return;
+  analyserNode.getByteFrequencyData(freqArray);
+  vctx.clearRect(0, 0, W + 200, H + 200);
+
+  var ox = 100, oy = 100;
+  var gap = 2;
+  var maxH = 100;
+  var counts = { top: 40, right: 24, bottom: 40, left: 24 };
+  var totalBins = freqArray.length;
+
+  function barColor(val, idx, total) {
+    var t = idx / total;
+    var r = Math.round(0 + t * 50);
+    var g = Math.round(200 + t * 55);
+    var b = Math.round(255);
+    var bright = 0.4 + 0.6 * (val / 255);
+    return 'rgb(' + Math.round(r * bright) + ',' + Math.round(g * bright) + ',' + Math.round(b * bright) + ')';
+  }
+
+  function freqIdx(barIdx, barCount) {
+    return Math.floor(barIdx * totalBins / barCount);
+  }
+
+  var bw = (W - gap * (counts.top + 1)) / counts.top;
+  for (var j = 0; j < counts.top; j++) {
+    var fi = freqIdx(j, counts.top);
+    var val = Math.min(freqArray[fi] * 0.6, 255);
+    var h = val / 255 * maxH;
+    if (h < 1) h = 0;
+    vctx.fillStyle = barColor(val, j, counts.top);
+    vctx.fillRect(ox + gap + j * (bw + gap), oy - h, bw, h);
+  }
+  var bh = (H - gap * (counts.right + 1)) / counts.right;
+  for (var j = 0; j < counts.right; j++) {
+    var fi = freqIdx(j, counts.right);
+    var val = Math.min(freqArray[fi] * 0.6, 255);
+    var w = val / 255 * maxH;
+    if (w < 1) w = 0;
+    var y = oy + gap + j * (bh + gap);
+    vctx.fillStyle = barColor(val, j, counts.right);
+    vctx.fillRect(ox + W, y, w, bh);
+  }
+  var bw2 = (W - gap * (counts.bottom + 1)) / counts.bottom;
+  for (var j = 0; j < counts.bottom; j++) {
+    var fi = freqIdx(j, counts.bottom);
+    var val = Math.min(freqArray[fi] * 0.6, 255);
+    var h = val / 255 * maxH;
+    if (h < 1) h = 0;
+    vctx.fillStyle = barColor(val, j, counts.bottom);
+    vctx.fillRect(ox + gap + j * (bw2 + gap), oy + H, bw2, h);
+  }
+  var bh2 = (H - gap * (counts.left + 1)) / counts.left;
+  for (var j = 0; j < counts.left; j++) {
+    var fi = freqIdx(j, counts.left);
+    var val = Math.min(freqArray[fi] * 0.6, 255);
+    var w = val / 255 * maxH;
+    if (w < 1) w = 0;
+    var y = oy + gap + j * (bh2 + gap);
+    vctx.fillStyle = barColor(val, j, counts.left);
+    vctx.fillRect(ox - w, y, w, bh2);
+  }
+}
+
 function drawDangerVignette(danger, time) {
   var pulse = Math.pow(Math.sin(time * Math.PI * 2 * 1.8), 16);
   var alpha = danger * 0.35 * (0.5 + 0.5 * pulse);
@@ -1296,7 +1496,7 @@ function render(time) {
     var amp = state.shakeIntensity * decay * decay;
     ctx.translate((Math.random() - 0.5) * 2 * amp, (Math.random() - 0.5) * 2 * amp);
   }
-  drawGrid(); drawGems(time); drawEnemies(time); drawPlayer();
+  drawGoo(); drawGrid(); drawGems(time); drawEnemies(time); drawPlayer();
   if (state.exploding) drawParticles();
   ctx.restore();
   if (state.danger > 0 && !state.dead && !state.exploding) drawDangerVignette(state.danger, time);
@@ -1305,7 +1505,7 @@ function render(time) {
 
 function gameLoop(timestamp) {
   var dt = Math.min((timestamp - state.lastTime) / 1000, 0.05);
-  state.lastTime = timestamp; update(dt); render(timestamp / 1000);
+  state.lastTime = timestamp; update(dt); render(timestamp / 1000); drawVisualizer();
   if (state.running || state.exploding) requestAnimationFrame(gameLoop);
 }
 
@@ -1319,7 +1519,7 @@ document.addEventListener('keyup', function(e) {
   if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].indexOf(e.key) >= 0) e.preventDefault();
 });
 
-document.getElementById('restartBtn').addEventListener('click', function() { startSong(); resetGame(); });
+document.getElementById('restartBtn').addEventListener('click', function() { initAudioSystem(); startSong(); resetGame(); });
 
 document.getElementById('playBtn').addEventListener('click', function() {
   document.getElementById('optionsPanel').style.display = 'none';
@@ -1327,6 +1527,7 @@ document.getElementById('playBtn').addEventListener('click', function() {
   document.getElementById('menuButtons').style.display = 'flex';
   document.getElementById('menuRecord').style.display = 'flex';
   document.getElementById('mainMenu').classList.remove('visible');
+  initAudioSystem();
   startSong();
   resetGame();
 });
@@ -1343,7 +1544,21 @@ document.getElementById('optionsBackBtn').addEventListener('click', function() {
   document.getElementById('menuRecord').style.display = 'flex';
 });
 
-document.getElementById('soundBtn').addEventListener('click', function() {
+function loadVolumes() {
+  var keys = { master: 'volMaster', intro: 'volIntro', sike: 'volSike', music: 'volMusic' };
+  for (var k in keys) {
+    var saved = localStorage.getItem(keys[k]);
+    if (saved !== null) {
+      volumes[k] = parseInt(saved) / 100;
+      var input = document.getElementById(keys[k]);
+      input.value = saved;
+      document.getElementById(keys[k] + 'Val').textContent = saved;
+    }
+  }
+  updateSongVolume();
+}
+
+  document.getElementById('soundBtn').addEventListener('click', function() {
   document.getElementById('optionsPanel').style.display = 'none';
   document.getElementById('soundPanel').style.display = 'flex';
 });
@@ -1413,7 +1628,7 @@ function setupSlider(id, volKey) {
     var v = parseInt(input.value) / 100;
     volumes[volKey] = v;
     valSpan.textContent = input.value;
-    if (volKey === 'master' || volKey === 'music') song.volume = volumes.master * volumes.music;
+    if (volKey === 'master' || volKey === 'music') updateSongVolume();
   });
 }
 
@@ -1436,6 +1651,7 @@ document.getElementById('menuBtn').addEventListener('click', function() {
 
 document.addEventListener('DOMContentLoaded', function() {
   state.record = parseInt(localStorage.getItem('gemaRecord')) || 0;
+  loadVolumes();
   document.getElementById('menuRecordValue').textContent = state.record;
   document.getElementById('optionsPanel').style.display = 'none';
   document.getElementById('soundPanel').style.display = 'none';
