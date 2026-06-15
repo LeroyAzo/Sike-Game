@@ -1212,6 +1212,8 @@ var deathSound = new Audio('assets/audio/death.wav');
 
 var song = new Audio('assets/audio/dumbstep_fondo_3.wav');
 song.loop = true;
+var menuSong = new Audio('assets/audio/fondo_menu1.wav');
+menuSong.loop = true;
 var audioCtx = null;
 var gainNode = null;
 var shaperNode = null;
@@ -1241,6 +1243,7 @@ function initAudioSystem() {
 
 function updateSongVolume() {
   if (gainNode) gainNode.gain.value = volumes.master * volumes.music;
+  menuSong.volume = volumes.master * volumes.music;
 }
 
 function updateSongSaturation() {
@@ -1274,6 +1277,17 @@ function startSong() {
 function stopSong() {
   song.pause();
   song.currentTime = 0;
+}
+
+function startMenuSong() {
+  menuSong.volume = volumes.master * volumes.music;
+  menuSong.currentTime = 0;
+  menuSong.play().catch(function() {});
+}
+
+function stopMenuSong() {
+  menuSong.pause();
+  menuSong.currentTime = 0;
 }
 
 function playGemSound() {
@@ -2118,6 +2132,7 @@ document.getElementById('restartBtn').addEventListener('click', function() {
 
 document.getElementById('playBtn').addEventListener('click', function() {
   stopMenuParticles();
+  stopMenuSong();
   document.getElementById('optionsPanel').style.display = 'none';
   document.getElementById('soundPanel').style.display = 'none';
   document.getElementById('menuButtons').style.display = 'flex';
@@ -2283,7 +2298,7 @@ document.getElementById('menuBtn').addEventListener('click', function() {
   state.running = false;
   state.dead = false;
   stopSong();
-  setTimeout(function() { document.getElementById('playBtn').focus(); startMenuParticles(); }, 100);
+  setTimeout(function() { document.getElementById('playBtn').focus(); startMenuParticles(); startMenuSong(); }, 100);
 });
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -2296,7 +2311,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('menuRecord').style.display = 'flex';
   document.getElementById('gameContainer').classList.add('visible');
   document.getElementById('mainMenu').classList.add('visible');
-  setTimeout(function() { document.getElementById('playBtn').focus(); startMenuParticles(); }, 100);
+  setTimeout(function() { document.getElementById('playBtn').focus(); startMenuParticles(); startMenuSong(); }, 100);
 });
 
 var hoverTimer;
