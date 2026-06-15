@@ -1282,7 +1282,11 @@ function stopSong() {
 function startMenuSong() {
   menuSong.volume = volumes.master * volumes.music;
   menuSong.currentTime = 0;
-  menuSong.play().catch(function() {});
+  var p = menuSong.play();
+  if (p) p.catch(function() {
+    var once = function() { menuSong.play().catch(function() {}); document.removeEventListener('click', once); document.removeEventListener('keydown', once); };
+    document.addEventListener('click', once); document.addEventListener('keydown', once);
+  });
 }
 
 function stopMenuSong() {
