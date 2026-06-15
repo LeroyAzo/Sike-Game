@@ -30,6 +30,12 @@ body {
   box-shadow: 0 0 40px rgba(0, 255, 255, 0.08), inset 0 0 40px rgba(0, 255, 255, 0.03);
   border-radius: 4px;
   background: #1a1a2e;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+#gameContainer.visible {
+  opacity: 1;
 }
 
 #gameCanvas {
@@ -1670,7 +1676,15 @@ document.addEventListener('keyup', function(e) {
   if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].indexOf(e.key) >= 0) e.preventDefault();
 });
 
-document.getElementById('restartBtn').addEventListener('click', function() { initAudioSystem(); startSong(); resetGame(); });
+document.getElementById('restartBtn').addEventListener('click', function() {
+  document.getElementById('deathScreen').classList.remove('visible');
+  setTimeout(function() {
+    document.getElementById('gameContainer').classList.add('visible');
+    initAudioSystem();
+    startSong();
+    resetGame();
+  }, 500);
+});
 
 document.getElementById('continueBtn').addEventListener('click', function() {
   state.paused = false;
@@ -1688,6 +1702,7 @@ document.getElementById('quitPauseBtn').addEventListener('click', function() {
   document.getElementById('menuButtons').style.display = 'flex';
   document.getElementById('menuRecord').style.display = 'flex';
   document.getElementById('menuRecordValue').textContent = state.record;
+  document.getElementById('gameContainer').classList.remove('visible');
   document.getElementById('mainMenu').classList.add('visible');
   stopSong();
 });
@@ -1698,9 +1713,12 @@ document.getElementById('playBtn').addEventListener('click', function() {
   document.getElementById('menuButtons').style.display = 'flex';
   document.getElementById('menuRecord').style.display = 'flex';
   document.getElementById('mainMenu').classList.remove('visible');
-  initAudioSystem();
-  startSong();
-  resetGame();
+  setTimeout(function() {
+    document.getElementById('gameContainer').classList.add('visible');
+    initAudioSystem();
+    startSong();
+    resetGame();
+  }, 500);
 });
 
 document.getElementById('optionsBtn').addEventListener('click', function() {
@@ -1815,6 +1833,7 @@ document.getElementById('menuBtn').addEventListener('click', function() {
   document.getElementById('menuButtons').style.display = 'flex';
   document.getElementById('menuRecord').style.display = 'flex';
   document.getElementById('menuRecordValue').textContent = state.record;
+  document.getElementById('gameContainer').classList.remove('visible');
   document.getElementById('mainMenu').classList.add('visible');
   state.running = false;
   state.dead = false;
@@ -1829,6 +1848,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('soundPanel').style.display = 'none';
   document.getElementById('menuButtons').style.display = 'flex';
   document.getElementById('menuRecord').style.display = 'flex';
+  document.getElementById('gameContainer').classList.add('visible');
   document.getElementById('mainMenu').classList.add('visible');
 });
 
