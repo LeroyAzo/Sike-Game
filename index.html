@@ -1674,6 +1674,10 @@ document.addEventListener('keydown', function(e) {
       }
     }
   }
+  if (e.key === 'Tab' && !state.running) {
+    var mainMenu = document.getElementById('mainMenu');
+    if (mainMenu.classList.contains('visible')) { e.preventDefault(); return; }
+  }
   if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && !state.running) {
     var mainMenu = document.getElementById('mainMenu');
     if (mainMenu.classList.contains('visible')) {
