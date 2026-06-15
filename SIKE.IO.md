@@ -8,7 +8,7 @@ Juego de supervivencia 2D estilo arena. Controlas un cuadrado cian que recolecta
 
 ## Stack
 
-- Un solo archivo: `index.html` (HTML + CSS + JS vanilla, ~1700 líneas)
+- Un solo archivo: `index.html` (HTML + CSS + JS vanilla, ~2500 líneas)
 - Canvas 2D (960×720, escalado responsive vía `95vmin`)
 - Web Audio API + etiquetas `<audio>` para sonidos
 - `localStorage` para persistencia del récord y volumen
@@ -30,7 +30,8 @@ juegoweb/
 │       ├── vibrate.wav     # Vibración reset score
 │       ├── desolve.wav     # Desvanecimiento reset score
 │       ├── death.wav       # Sonido de muerte
-│       ├── dumbstep_fondo_3.wav  # Música de fondo (loop)
+│       ├── dumbstep_fondo_3.wav  # Música de fondo del juego (loop)
+│       ├── musica_fondo2.wav     # Música del menú (loop seamless)
 │       └── (otros archivos de música experimental)
 └── .gitignore
 ```
@@ -59,17 +60,33 @@ Al recoger una gema:
 
 ## Flujo del juego
 
+### Splash screen arcade
+- Pantalla "PRESS START" al cargar la página (con partículas flotando)
+- Fondo oscuro pulsátil + viñeta + glow rojo en el título
+- Al hacer clic o pulsar tecla:
+  1. Suena efecto **coin insert** (dos tonos metálicos descendentes vía Web Audio API)
+  2. El texto "PRESS START" parpadea rápido (flicker)
+  3. La splash se desvanece (opacity → 0 en 0.5s)
+  4. Aparece el menú principal (con música y partículas)
+
 ### Menú principal (estilo gris/rojo/negro)
-- Fondo `#1c1c1c` sólido — no se ve el juego atrás
+- Fondo `#1c1c1c` pulsatil (oscila entre `#1c1c1c` ↔ `#1f1919`) con viñeta
+- Partículas flotando en canvas overlay (se detienen al jugar, se reanudan al volver)
+- Música de fondo `musica_fondo2.wav` con **loop seamless** vía BufferSourceNode de Web Audio API
 - Título "Sike.io" en rojo `#ff2222` con glow pulsante
-- **PLAY** (rojo, inicia partida)
-- **OPTIONS** → SOUND (sliders MASTER / GEM INTRO / SIKE VOLUME / MUSIC) + RESET SCORE (animación)
+- **PLAY** (rojo, inicia partida con fade-out de 500ms)
+- **OPTIONS** → **SOUND** (sliders) + **RESET SCORE** (animación)
+- **HOW TO PLAY** → 6 flash cards con ilustraciones, navegación por flechas
+- Navegación por teclado: **ArrowUp/ArrowDown** para botones, **Enter** para PLAY, **Escape** para volver
+- Tab deshabilitado en el menú
+- Modal personalizado (dark red/black) para confirmaciones (reemplaza `alert`/`confirm`)
 - Botones con relleno `#A8A8A8`, borde 3px, hover rojizo
 - BEST SCORE en dorado `#ffd700`
-- Los sliders tienen thumb rojo
+- Sliders con thumb rojo
 
 ### HUD
 TIME | GEMS | RECORD — esquina superior del game container.
+Record se muestra aparte (no se mezcla con score actual).
 
 ### Sistema de peligro
 - Cuando un enemigo se acerca, aparece un **vignette rojo** que pulsa al ritmo del beat
@@ -77,7 +94,7 @@ TIME | GEMS | RECORD — esquina superior del game container.
 - La música se distorsiona (WaveShaper) cuanto más cerca están los enemigos
 
 ### Rastro de enemigos (goo)
-- Los enemigos dejan un rasto **negro con brillo rojo** al moverse
+- Los enemigos dejan un rastro **negro con brillo rojo** al moverse
 - El rastro se desvanece gradualmente
 - Si el jugador pisa el rastro, se ralentiza al 35%
 
@@ -94,18 +111,27 @@ TIME | GEMS | RECORD — esquina superior del game container.
 
 ## Audio
 
-### Sistema de música de fondo
-- Usa `<audio>` + `createMediaElementSource` + Web Audio API
+### Música del menú
+- `musica_fondo2.wav` reproducida con **Web Audio API** (XHR + `decodeAudioData` + `BufferSourceNode` con `loop=true`)
+- Loop seamless (sin corte ni click al repetirse)
+- Volumen controlado por MASTER × MUSIC (vía `menuGain`)
+- Inicializada en la primera interacción del usuario (bypass de autoplay policy del navegador)
+- Se pausa al cambiar de pestaña (`visibilitychange` → `AudioContext.suspend/resume`)
+
+### Música del juego
+- `dumbstep_fondo_3.wav` reproducida con `<audio>` + `createMediaElementSource`
 - Flujo: `song (Audio)` → `MediaElementSource` → `AnalyserNode` → `WaveShaperNode` → `GainNode` → `destination`
 - El `AnalyserNode` (FFT 256) alimenta el visualizer
 - El `WaveShaperNode` distorsiona la música según la cercanía de enemigos
 - El `GainNode` controla el volumen (master × music)
+- Se pausa al cambiar de pestaña cuando el juego está activo
 - Requiere servidor HTTP (Live Server, etc.) — no funciona con `file://` en Chrome/Brave por CORS
 
 ### Sonidos (archivos)
 | Archivo | Propósito |
 |---|---|
-| `dumbstep_fondo_3.wav` | Música de fondo en loop |
+| `musica_fondo2.wav` | Música del menú (loop seamless) |
+| `dumbstep_fondo_3.wav` | Música de fondo del juego |
 | `gem1-5.wav` | 5 variantes de intro al recoger gema |
 | `gem.mp3` | Segundo sonido que suena tras el intro |
 | `hover.wav` | Hover sobre botones |
@@ -147,10 +173,17 @@ TIME | GEMS | RECORD — esquina superior del game container.
 6. Cleanup, score = 0
 
 ### Muerte
-1. Partículas desde el área del jugador (física: gravedad 200px/s², fricción 0.97, rotación)
+1. Partículas desde el área del jugador (física: gravedad 200px/s², fricción 0.97 × dt, rotación)
 2. Filtro CSS `grayscale()` progresa 0→100% durante 1.5s
 3. Screen shake (0.4s, amplitud 35px)
 4. Jugador no se dibuja durante ni después de la explosión
+
+### Splash → menú
+1. Usuario interactúa con splash
+2. Coin sound (osciladores Web Audio)
+3. "PRESS START" parpadea rápido (16 flickers en 640ms)
+4. Splash se desvanece (opacity 0 en 500ms)
+5. Menú aparece con música y partículas
 
 ---
 
@@ -220,16 +253,24 @@ const state = {
 ## Variables del audio
 
 ```js
+// Juego
 var audioCtx, gainNode, shaperNode, analyserNode;
 var freqArray, songBuffer, songSourceNode;
 var audioReady = false, songPending = false;
+
+// Menú
+var menuCtx, menuGain, menuBuffer, menuSource;
 ```
 
-- `initAudioSystem()`: crea AudioContext, analizador, waveshaper, gain. Carga canción con XHR + decodeAudioData
+- `initAudioSystem()`: crea AudioContext del juego, analizador, waveshaper, gain. Carga canción con XHR + decodeAudioData
 - `startSong()`: reanuda context si suspendido, crea BufferSource, conecta, reproduce
 - `stopSong()`: detiene y desconecta BufferSource
 - `updateSongVolume()`: ajusta gainNode = master × music
 - `updateSongSaturation()`: calcula distorsión WaveShaper según peligro
+- `initMenuAudio()`: crea AudioContext del menú, carga `musica_fondo2.wav` con XHR + decodeAudioData
+- `startMenuSong()`: reproduce menú con BufferSourceNode loop=true
+- `stopMenuSong()`: detiene la música del menú
+- `playCoinSound()`: genera sonido arcade coin insert con osciladores Web Audio
 
 ---
 
@@ -258,30 +299,13 @@ Firefox permite `createMediaElementSource` y XHR con `file://`. Abrir `index.htm
 ## Git — historial
 
 ```
-6d62643 gameplay_checkpoint
-5f51a04 Add background music, danger vignette, screen shake, death shake
-4d47202 Increase grayscale to 100%, apply to particles too
-d78bf57 Fix player reappearing on death screen
-e4fc22f Shatter player into cyan/teal particles on death
-dff52d7 Add death explosion: red/black particles, grayscale fade, death sound
-4a08236 Make vibrate sound drier (rapid short pulses)
-3cdf2de Add vibrate and desolve sounds for reset score animation
-b9749ba Make click sound drier (sine 450Hz, exponential decay)
-07e589c Add hover and click UI sounds
-db410e0 Add sound menu with master/intro/sike volume sliders
-f642ee6 Prevent same gem intro from playing twice in a row
-0c2bc86 Make gem variants more distinct
-3a46469 Add 5 random gem intro variants (dark tones)
-69fc5e5 Play synth intro WAV then main MP3 with fade
-41a8d25 Fix audio playback: restore Audio element with volume fade-out
-04c2334 Add audio fade-out and enlarge SIKE text
-4ecad5b Swap audio file
-6009c8a Update audio reference to gem.mp3
-375374c Replace gem sound with user's audio file
-8d165a5 Make gem sound lower and darker
-616c33a Replace gem sound with harsher square-wave tone
-7518dfb Add CC0 gem pickup sound
-eb22e85 Initial commit - Sike.io
+68bcb7a Pause menu/game music when tab is hidden, resume when visible
+c2de4e8 Fix splash: flicker only PRESS START text, hide gameContainer during splash/transition
+5b51e78 Add arcade splash screen with PRESS START, coin sound effect, flicker flash, then transition to main menu
+5de9c26 Fix menu song loop: use Web Audio API BufferSource with seamless looping; init on first user interaction
+6618cab Fix menu song autoplay: play on first user interaction if browser blocks autoplay
+9be5dab Fix volume settings persistence: save to localStorage
+... (previous history continues)
 ```
 
 ---
@@ -292,3 +316,5 @@ eb22e85 Initial commit - Sike.io
 - [ ] **Saturación del WaveShaper** puede generar distorsión excesiva con enemies muy cercanos (falta clamping)
 - [ ] **El goo puddle** usa `gg.size` como radio lineal — podría refinarse la detección de colisión
 - [ ] **Dificultad** escala lineal pero no hay tope máximo de enemigos — puede volverse injugable
+- [ ] **Mostrar tier actual en HUD** — el jugador no sabe en qué tier está sin esperar el popup
+- [ ] **Feedback del goo** — el área de efecto podría indicarse visualmente en el piso
