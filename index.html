@@ -721,6 +721,216 @@ body {
   outline-offset: 2px;
 }
 
+#howToPlayPanel {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeInScale 0.2s ease;
+  width: 100%;
+  max-width: 500px;
+}
+
+#howToPlayPanel h2 {
+  color: rgba(200, 200, 200, 0.5);
+  font-size: clamp(14px, 2vmin, 18px);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+#htpCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 300px;
+}
+
+#htpGraphic {
+  width: 100%;
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+#htpContent {
+  text-align: center;
+  width: 100%;
+}
+
+#htpTitle {
+  color: #ffd700;
+  font-size: clamp(18px, 2.8vmin, 26px);
+  letter-spacing: 4px;
+  margin-bottom: 12px;
+  text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+#htpText {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: clamp(13px, 1.8vmin, 16px);
+  line-height: 1.7;
+  padding: 0 10px;
+}
+
+#htpDots {
+  display: flex;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.htp-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  padding: 0;
+}
+
+.htp-dot.active {
+  background: #ffd700;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+  width: 24px;
+  border-radius: 4px;
+}
+
+#htpNav {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+#htpNav button {
+  background: transparent;
+  border: 2px solid rgba(200, 200, 200, 0.25);
+  color: #ddd;
+  padding: 10px 24px;
+  font-size: clamp(11px, 1.6vmin, 14px);
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+#htpNav button:hover {
+  background: rgba(255, 50, 50, 0.08);
+  border-color: rgba(255, 50, 50, 0.4);
+  color: #ff4444;
+  transform: scale(1.05);
+}
+
+#htpNav button:focus-visible {
+  outline: 2px solid rgba(255, 50, 50, 0.6);
+  outline-offset: 2px;
+}
+
+#htpBack {
+  background: transparent;
+  border: 2px solid rgba(200, 200, 200, 0.15);
+  color: rgba(200, 200, 200, 0.45);
+  padding: 8px 24px;
+  font-size: clamp(11px, 1.6vmin, 14px);
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+  min-width: 120px;
+  margin-top: 4px;
+}
+
+#htpBack:hover {
+  border-color: rgba(255, 50, 50, 0.4);
+  color: #ff4444;
+  background: rgba(255, 50, 50, 0.05);
+  transform: scale(1.03);
+}
+
+.htp-gfx-box {
+  width: 50px;
+  height: 50px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 10px;
+  font-weight: bold;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 1px;
+}
+
+.htp-gfx-diamond {
+  width: 40px;
+  height: 40px;
+  transform: rotate(45deg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.htp-label {
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.htp-gfx-relative {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.htp-gfx-key {
+  width: 36px;
+  height: 36px;
+  border: 2px solid rgba(255,215,0,0.3);
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  color: #ffd700;
+  font-weight: bold;
+  background: rgba(255,215,0,0.06);
+}
+
+.htp-gfx-trail {
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #000, rgba(200,0,0,0.6));
+}
+
+#howToPlayBtn {
+  border-color: rgba(200, 200, 200, 0.15) !important;
+  color: rgba(200, 200, 200, 0.45) !important;
+  font-size: clamp(11px, 1.6vmin, 14px) !important;
+  padding: 8px 24px !important;
+  min-width: 120px !important;
+}
+
+#howToPlayBtn:hover {
+  border-color: rgba(255, 50, 50, 0.4) !important;
+  color: #ff4444 !important;
+  background: rgba(255, 50, 50, 0.05) !important;
+  transform: scale(1.03) !important;
+}
+
 #soundPanel {
   display: none;
   flex-direction: column;
@@ -844,6 +1054,7 @@ input[type=range]::-moz-range-thumb {
   </div>
   <div id="menuButtons">
     <button id="playBtn">PLAY</button>
+    <button id="howToPlayBtn">HOW TO PLAY</button>
     <button id="optionsBtn">OPTIONS</button>
   </div>
 
@@ -891,6 +1102,23 @@ input[type=range]::-moz-range-thumb {
         <button id="modalConfirmBtn">CONFIRM</button>
       </div>
     </div>
+  </div>
+
+  <div id="howToPlayPanel">
+    <h2>HOW TO PLAY</h2>
+    <div id="htpCard">
+      <div id="htpGraphic"></div>
+      <div id="htpContent">
+        <h3 id="htpTitle"></h3>
+        <p id="htpText"></p>
+      </div>
+    </div>
+    <div id="htpDots"></div>
+    <div id="htpNav">
+      <button id="htpPrev">← PREV</button>
+      <button id="htpNext">NEXT →</button>
+    </div>
+    <button id="htpBack">BACK</button>
   </div>
 </div>
 
@@ -1173,6 +1401,79 @@ function keyboardHTML(mapping, tierName) {
     '<div class="keyboard-key" data-dir="right" style="grid-row:2;grid-column:3"><span class="kb-arrow">→</span><span class="kb-letter">' + right + '</span></div>' +
     '<div class="keyboard-key" data-dir="down" style="grid-row:3;grid-column:2"><span class="kb-arrow">↓</span><span class="kb-letter">' + down + '</span></div>' +
     '</div>';
+}
+
+var htpCards = [
+  { title: 'OBJECTIVE', text: 'Collect golden gems while escaping from red enemies. Each gem randomly reassigns your movement keys — adapt or be caught!', graphic: 'objective' },
+  { title: 'MOVEMENT', text: 'Use the keys shown on screen to move the cyan square. After each gem, a new set of keys appears. Press them to move Up, Down, Left, and Right.', graphic: 'movement' },
+  { title: 'GEMS', text: 'Each gem increases your score and triggers a "SIKE" popup showing your new keys. The game slows to 25% while you read them — use that time to find the keys!', graphic: 'gems' },
+  { title: 'ENEMY GOO', text: 'Enemies leave a sticky black trail with a red glow. Walking on the trail slows you to 35% speed. Avoid the goo to stay fast!', graphic: 'goo' },
+  { title: 'DANGER', text: 'The closer an enemy gets, the more the screen pulses red and shakes to the beat. The music distorts as danger rises — a warning to move!', graphic: 'danger' },
+  { title: 'KEY TIERS', text: 'Start with WASD, then arrows, then gradually larger key pools: 6 keys, 9, 13, 15, and finally all 26 letters. The chaos escalates with your score!', graphic: 'tiers' },
+];
+var htpIndex = 0;
+
+function htpGraphic(type) {
+  var html = '';
+  switch (type) {
+    case 'objective':
+      html = '<div style="position:relative"><div class="htp-gfx-box" style="background:#00ffff;box-shadow:0 0 12px rgba(0,255,255,0.4)"></div><span class="htp-label">YOU</span></div>' +
+        '<div style="position:relative"><div class="htp-gfx-diamond" style="background:#ffd700;box-shadow:0 0 12px rgba(255,215,0,0.4)"></div><span class="htp-label">GEM</span></div>' +
+        '<div style="position:relative"><div class="htp-gfx-box" style="background:#0a0a0a;border:2px solid rgba(255,0,0,0.5);box-shadow:0 0 10px rgba(255,0,0,0.3)"></div><span class="htp-label">ENEMY</span></div>';
+      break;
+    case 'movement':
+      html = '<div style="display:grid;grid-template-columns:repeat(3,36px);gap:4px">' +
+        '<div></div><div class="htp-gfx-key">↑</div><div></div>' +
+        '<div class="htp-gfx-key">←</div><div class="htp-gfx-key" style="background:rgba(255,215,0,0.15)">?</div><div class="htp-gfx-key">→</div>' +
+        '<div></div><div class="htp-gfx-key">↓</div><div></div></div>';
+      break;
+    case 'gems':
+      html = '<div style="position:relative"><div class="htp-gfx-diamond" style="background:#ffd700;width:50px;height:50px;box-shadow:0 0 20px rgba(255,215,0,0.5)"></div><span class="htp-label" style="bottom:-20px">GOLD</span></div>' +
+        '<div style="font-size:28px;color:#ff0000;text-shadow:0 0 20px rgba(255,0,0,0.4);font-weight:bold;letter-spacing:4px">SIKE</div>' +
+        '<div style="position:relative"><div class="htp-gfx-diamond" style="background:#ffd700;width:30px;height:30px;box-shadow:0 0 12px rgba(255,215,0,0.4)"></div><span class="htp-label" style="bottom:-20px">AGAIN</span></div>';
+      break;
+    case 'goo':
+      html = '<div style="position:relative"><div class="htp-gfx-box" style="background:#0a0a0a;border:2px solid rgba(255,0,0,0.5)"></div><span class="htp-label">ENEMY</span></div>' +
+        '<div style="width:60px;height:6px;border-radius:3px;background:linear-gradient(90deg,#000 30%,rgba(200,0,0,0.6) 100%);box-shadow:0 0 8px rgba(255,0,0,0.3)"></div>' +
+        '<div style="position:relative"><div class="htp-gfx-box" style="background:#00ffff;opacity:0.6;box-shadow:0 0 8px rgba(0,255,255,0.2)"></div><span class="htp-label">SLOW</span></div>';
+      break;
+    case 'danger':
+      html = '<div style="width:100px;height:80px;position:relative;overflow:hidden;border-radius:4px;background:#111">' +
+        '<div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%, transparent 30%, rgba(200,0,0,0.5) 100%)"></div>' +
+        '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:20px;height:20px;background:#00ffff;border-radius:2px;box-shadow:0 0 8px rgba(0,255,255,0.4)"></div>' +
+        '<div style="position:absolute;top:45%;left:30%;width:12px;height:12px;background:red;border-radius:2px"></div>' +
+        '</div>';
+      break;
+    case 'tiers':
+      html = '<div style="display:flex;flex-direction:column;gap:4px;align-items:center">' +
+        '<div style="display:flex;gap:3px;align-items:center"><span style="font-size:10px;color:rgba(255,255,255,0.3);width:20px">0</span><div style="height:8px;width:40px;background:#ffd700;border-radius:2px"></div><span style="font-size:10px;color:rgba(255,255,255,0.4)">WASD</span></div>' +
+        '<div style="display:flex;gap:3px;align-items:center"><span style="font-size:10px;color:rgba(255,255,255,0.3);width:20px">1</span><div style="height:8px;width:40px;background:#ffd700;border-radius:2px"></div><span style="font-size:10px;color:rgba(255,255,255,0.4)">ARROWS</span></div>' +
+        '<div style="display:flex;gap:3px;align-items:center"><span style="font-size:10px;color:rgba(255,255,255,0.3);width:20px">3</span><div style="height:8px;width:60px;background:rgba(255,215,0,0.6);border-radius:2px"></div><span style="font-size:10px;color:rgba(255,255,255,0.4)">6 KEYS</span></div>' +
+        '<div style="display:flex;gap:3px;align-items:center"><span style="font-size:10px;color:rgba(255,255,255,0.3);width:20px">6</span><div style="height:8px;width:80px;background:rgba(255,215,0,0.6);border-radius:2px"></div><span style="font-size:10px;color:rgba(255,255,255,0.4)">9 KEYS</span></div>' +
+        '<div style="display:flex;gap:3px;align-items:center"><span style="font-size:10px;color:rgba(255,255,255,0.3);width:20px">9</span><div style="height:8px;width:100px;background:rgba(255,215,0,0.6);border-radius:2px"></div><span style="font-size:10px;color:rgba(255,255,255,0.4)">13 KEYS</span></div>' +
+        '<div style="display:flex;gap:3px;align-items:center"><span style="font-size:10px;color:rgba(255,255,255,0.3);width:20px">12</span><div style="height:8px;width:120px;background:rgba(255,215,0,0.6);border-radius:2px"></div><span style="font-size:10px;color:rgba(255,255,255,0.4)">ALL LETTERS</span></div>' +
+        '</div>';
+      break;
+  }
+  return html;
+}
+
+function renderHTP() {
+  var card = htpCards[htpIndex];
+  document.getElementById('htpTitle').textContent = card.title;
+  document.getElementById('htpText').textContent = card.text;
+  document.getElementById('htpGraphic').innerHTML = htpGraphic(card.graphic);
+  var dots = document.getElementById('htpDots');
+  dots.innerHTML = '';
+  for (var i = 0; i < htpCards.length; i++) {
+    var dot = document.createElement('button');
+    dot.className = 'htp-dot' + (i === htpIndex ? ' active' : '');
+    dot.setAttribute('data-index', i);
+    dot.addEventListener('click', function() { htpIndex = parseInt(this.getAttribute('data-index')); renderHTP(); });
+    dots.appendChild(dot);
+  }
+  document.getElementById('htpPrev').style.visibility = htpIndex === 0 ? 'hidden' : 'visible';
+  document.getElementById('htpNext').style.visibility = htpIndex === htpCards.length - 1 ? 'hidden' : 'visible';
 }
 
 function showPopup(mapping, tier, duration) {
@@ -1649,6 +1950,12 @@ document.addEventListener('keydown', function(e) {
       e.preventDefault();
       return;
     }
+    var htpPanel = document.getElementById('howToPlayPanel');
+    if (htpPanel.style.display === 'flex') {
+      document.getElementById('htpBack').click();
+      e.preventDefault();
+      return;
+    }
     var mainMenu = document.getElementById('mainMenu');
     if (mainMenu.classList.contains('visible')) {
       var soundPanel = document.getElementById('soundPanel');
@@ -1666,7 +1973,8 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'Enter') {
     var mainMenu = document.getElementById('mainMenu');
     if (mainMenu.classList.contains('visible') && !state.running) {
-      if (document.getElementById('optionsPanel').style.display !== 'flex' &&
+      if (document.getElementById('howToPlayPanel').style.display !== 'flex' &&
+          document.getElementById('optionsPanel').style.display !== 'flex' &&
           document.getElementById('soundPanel').style.display !== 'flex') {
         document.getElementById('playBtn').click();
         e.preventDefault();
@@ -1678,12 +1986,22 @@ document.addEventListener('keydown', function(e) {
     var mainMenu = document.getElementById('mainMenu');
     if (mainMenu.classList.contains('visible')) { e.preventDefault(); return; }
   }
+  if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && !state.running) {
+    var htpPanel = document.getElementById('howToPlayPanel');
+    if (htpPanel.style.display === 'flex') {
+      e.preventDefault();
+      if (e.key === 'ArrowRight') document.getElementById('htpNext').click();
+      else document.getElementById('htpPrev').click();
+      return;
+    }
+  }
   if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && !state.running) {
     var mainMenu = document.getElementById('mainMenu');
     if (mainMenu.classList.contains('visible')) {
       e.preventDefault();
       var container;
-      if (document.getElementById('soundPanel').style.display === 'flex') container = document.querySelectorAll('#soundPanel button');
+      if (document.getElementById('howToPlayPanel').style.display === 'flex') container = document.querySelectorAll('#htpNav button, #htpBack');
+      else if (document.getElementById('soundPanel').style.display === 'flex') container = document.querySelectorAll('#soundPanel button');
       else if (document.getElementById('optionsPanel').style.display === 'flex') container = document.querySelectorAll('#optionsPanel button');
       else container = document.querySelectorAll('#menuButtons button');
       var visible = Array.prototype.filter.call(container, function(b) { return b.offsetParent !== null; });
@@ -1727,6 +2045,30 @@ document.getElementById('playBtn').addEventListener('click', function() {
     startSong();
     resetGame();
   }, 500);
+});
+
+document.getElementById('howToPlayBtn').addEventListener('click', function() {
+  document.getElementById('menuButtons').style.display = 'none';
+  document.getElementById('menuRecord').style.display = 'none';
+  document.getElementById('howToPlayPanel').style.display = 'flex';
+  htpIndex = 0;
+  renderHTP();
+  setTimeout(function() { document.getElementById('htpNext').focus(); }, 50);
+});
+
+document.getElementById('htpBack').addEventListener('click', function() {
+  document.getElementById('howToPlayPanel').style.display = 'none';
+  document.getElementById('menuButtons').style.display = 'flex';
+  document.getElementById('menuRecord').style.display = 'flex';
+  setTimeout(function() { document.getElementById('howToPlayBtn').focus(); }, 50);
+});
+
+document.getElementById('htpNext').addEventListener('click', function() {
+  if (htpIndex < htpCards.length - 1) { htpIndex++; renderHTP(); }
+});
+
+document.getElementById('htpPrev').addEventListener('click', function() {
+  if (htpIndex > 0) { htpIndex--; renderHTP(); }
 });
 
 document.getElementById('optionsBtn').addEventListener('click', function() {
