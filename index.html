@@ -572,83 +572,6 @@ body {
   outline-offset: 2px;
 }
 
-#pauseScreen {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 16px;
-  background: rgba(0, 0, 0, 0.88);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-  z-index: 19;
-}
-
-#pauseScreen.visible {
-  opacity: 1;
-  pointer-events: all;
-}
-
-#pauseScreen h1 {
-  color: #ffd700;
-  font-size: clamp(40px, 7vmin, 64px);
-  letter-spacing: 12px;
-  text-shadow: 0 0 40px rgba(255, 215, 0, 0.5), 0 0 80px rgba(255, 215, 0, 0.2);
-  margin-bottom: 24px;
-}
-
-#continueBtn {
-  background: transparent;
-  color: #00ffff;
-  border: 2px solid #00ffff;
-  padding: 12px 40px;
-  font-size: clamp(14px, 2vmin, 20px);
-  font-family: 'Courier New', monospace;
-  font-weight: bold;
-  letter-spacing: 3px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border-radius: 4px;
-}
-
-#continueBtn:hover {
-  background: rgba(0, 255, 255, 0.15);
-  box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
-  transform: scale(1.05);
-}
-
-#continueBtn:focus-visible {
-  outline: 2px solid #00ffff;
-  outline-offset: 2px;
-}
-
-#continueBtn:active {
-  transform: scale(0.95);
-}
-
-#quitPauseBtn {
-  background: transparent;
-  color: rgba(255, 255, 255, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 10px 30px;
-  font-size: clamp(12px, 1.8vmin, 16px);
-  font-family: 'Courier New', monospace;
-  font-weight: bold;
-  letter-spacing: 2px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border-radius: 4px;
-}
-
-#quitPauseBtn:hover {
-  background: rgba(255, 50, 50, 0.08);
-  border-color: rgba(255, 50, 50, 0.4);
-  color: #ff4444;
-}
-
 #resetAnimOverlay {
   position: fixed;
   inset: 0;
@@ -987,12 +910,6 @@ input[type=range]::-moz-range-thumb {
     <button id="restartBtn">PLAY AGAIN</button>
     <button id="menuBtn">BACK TO MENU</button>
   </div>
-
-  <div id="pauseScreen">
-    <h1>PAUSED</h1>
-    <button id="continueBtn">CONTINUE</button>
-    <button id="quitPauseBtn">QUIT TO MENU</button>
-  </div>
 </div>
 
 <div id="controlsDisplay">
@@ -1162,7 +1079,6 @@ const state = {
   shakeTimer: 0,
   shakeDuration: 0,
   shakeIntensity: 0,
-  paused: false,
 };
 
 function shuffle(arr) {
@@ -1343,7 +1259,6 @@ function resetGame() {
   state.shakeIntensity = 0;
   state.exploding = false;
   state.explosionTimer = 0;
-  state.paused = false;
   state.controlMapping = generateControls(0);
   ctx.filter = 'none';
 
@@ -1384,7 +1299,6 @@ function update(dt) {
   }
 
   if (!state.running || state.dead) return;
-  if (state.paused) return;
 
   var cdEl = document.getElementById('controlsDisplay');
   var isVisible = cdEl.classList.contains('visible');
@@ -1735,12 +1649,6 @@ document.addEventListener('keydown', function(e) {
       e.preventDefault();
       return;
     }
-    if (state.running && !state.dead && !state.exploding) {
-      state.paused = !state.paused;
-      document.getElementById('pauseScreen').classList.toggle('visible', state.paused);
-      e.preventDefault();
-      return;
-    }
     var mainMenu = document.getElementById('mainMenu');
     if (mainMenu.classList.contains('visible')) {
       var soundPanel = document.getElementById('soundPanel');
@@ -1752,10 +1660,6 @@ document.addEventListener('keydown', function(e) {
         document.getElementById('optionsBackBtn').click();
         e.preventDefault();
       }
-    }
-    if (document.getElementById('pauseScreen').classList.contains('visible')) {
-      document.getElementById('continueBtn').click();
-      e.preventDefault();
     }
     return;
   }
@@ -1787,27 +1691,6 @@ document.getElementById('restartBtn').addEventListener('click', function() {
     startSong();
     resetGame();
   }, 500);
-});
-
-document.getElementById('continueBtn').addEventListener('click', function() {
-  state.paused = false;
-  document.getElementById('pauseScreen').classList.remove('visible');
-});
-
-document.getElementById('quitPauseBtn').addEventListener('click', function() {
-  state.paused = false;
-  state.running = false;
-  state.dead = false;
-  document.getElementById('pauseScreen').classList.remove('visible');
-  document.getElementById('deathScreen').classList.remove('visible');
-  document.getElementById('optionsPanel').style.display = 'none';
-  document.getElementById('soundPanel').style.display = 'none';
-  document.getElementById('menuButtons').style.display = 'flex';
-  document.getElementById('menuRecord').style.display = 'flex';
-  document.getElementById('menuRecordValue').textContent = state.record;
-  document.getElementById('gameContainer').classList.remove('visible');
-  document.getElementById('mainMenu').classList.add('visible');
-  stopSong();
 });
 
 document.getElementById('playBtn').addEventListener('click', function() {
