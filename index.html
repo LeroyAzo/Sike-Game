@@ -1386,6 +1386,16 @@ function stopMenuSong() {
   if (menuSource) { menuSource.stop(); menuSource.disconnect(); menuSource = null; }
 }
 
+document.addEventListener('visibilitychange', function() {
+  if (document.hidden) {
+    if (menuCtx && menuCtx.state === 'running') menuCtx.suspend();
+    if (state.running && !song.paused) song.pause();
+  } else {
+    if (menuCtx && menuCtx.state === 'suspended') menuCtx.resume();
+    if (state.running && song.paused) song.play().catch(function() {});
+  }
+});
+
 function playGemSound() {
   var idx;
   do { idx = Math.floor(Math.random() * gemIntros.length); } while (idx === lastIntro);
