@@ -354,6 +354,13 @@ body {
   transform: scale(1.05);
 }
 
+#menuButtons button:focus-visible {
+  outline: 2px solid rgba(255, 50, 50, 0.7);
+  outline-offset: 2px;
+  background: rgba(255, 50, 50, 0.15);
+  color: #fff;
+}
+
 #menuButtons button:active {
   transform: scale(0.95);
 }
@@ -368,6 +375,11 @@ body {
   background: rgba(255, 34, 34, 0.15) !important;
   color: #fff !important;
   box-shadow: 0 0 30px rgba(255, 34, 34, 0.35) !important;
+}
+
+#playBtn:focus-visible {
+  outline: 2px solid #ff2222 !important;
+  outline-offset: 2px !important;
 }
 
 #resetScoreBtn {
@@ -418,6 +430,14 @@ body {
   box-shadow: 0 0 25px rgba(255, 50, 50, 0.15);
   border-color: rgba(255, 50, 50, 0.4);
   transform: scale(1.05);
+}
+
+#optionsPanel button:focus-visible {
+  outline: 2px solid rgba(255, 50, 50, 0.6);
+  outline-offset: 2px;
+  background: rgba(255, 50, 50, 0.08);
+  border-color: rgba(255, 50, 50, 0.4);
+  color: #ff4444;
 }
 
 #optionsPanel button:active {
@@ -512,6 +532,11 @@ body {
   transform: scale(1.05);
 }
 
+#restartBtn:focus-visible {
+  outline: 2px solid #00ffff;
+  outline-offset: 2px;
+}
+
 #restartBtn:active {
   transform: scale(0.95);
 }
@@ -534,6 +559,11 @@ body {
   background: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.4);
   color: #fff;
+}
+
+#menuBtn:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.4);
+  outline-offset: 2px;
 }
 
 #pauseScreen {
@@ -582,6 +612,11 @@ body {
   background: rgba(0, 255, 255, 0.15);
   box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
   transform: scale(1.05);
+}
+
+#continueBtn:focus-visible {
+  outline: 2px solid #00ffff;
+  outline-offset: 2px;
 }
 
 #continueBtn:active {
@@ -1590,11 +1625,41 @@ function gameLoop(timestamp) {
 }
 
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape' && state.running && !state.dead && !state.exploding) {
-    state.paused = !state.paused;
-    document.getElementById('pauseScreen').classList.toggle('visible', state.paused);
-    e.preventDefault();
+  if (e.key === 'Escape') {
+    if (state.running && !state.dead && !state.exploding) {
+      state.paused = !state.paused;
+      document.getElementById('pauseScreen').classList.toggle('visible', state.paused);
+      e.preventDefault();
+      return;
+    }
+    var mainMenu = document.getElementById('mainMenu');
+    if (mainMenu.classList.contains('visible')) {
+      var soundPanel = document.getElementById('soundPanel');
+      var optionsPanel = document.getElementById('optionsPanel');
+      if (soundPanel.style.display === 'flex') {
+        document.getElementById('soundBackBtn').click();
+        e.preventDefault();
+      } else if (optionsPanel.style.display === 'flex') {
+        document.getElementById('optionsBackBtn').click();
+        e.preventDefault();
+      }
+    }
+    if (document.getElementById('pauseScreen').classList.contains('visible')) {
+      document.getElementById('continueBtn').click();
+      e.preventDefault();
+    }
     return;
+  }
+  if (e.key === 'Enter') {
+    var mainMenu = document.getElementById('mainMenu');
+    if (mainMenu.classList.contains('visible') && !state.running) {
+      if (document.getElementById('optionsPanel').style.display !== 'flex' &&
+          document.getElementById('soundPanel').style.display !== 'flex') {
+        document.getElementById('playBtn').click();
+        e.preventDefault();
+        return;
+      }
+    }
   }
   state.keys[e.key.toUpperCase()] = true;
   if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].indexOf(e.key) >= 0) e.preventDefault();
