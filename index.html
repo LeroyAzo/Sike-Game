@@ -930,7 +930,7 @@ const state = {
   gems: [],
   score: 0,
   time: 0,
-  record: parseInt(localStorage.getItem('gemaRecord')) || 0,
+  record: 0,
   keys: {},
   controlMapping: null,
   dead: false,
@@ -1076,7 +1076,6 @@ function showDeathScreen() {
   state.dead = true;
   state.running = false;
   clearTimeout(state.controlTimeout);
-  if (state.controlTimeout) clearTimeout(state.controlTimeout);
   state.controlTimeout = null;
   var cdEl = document.getElementById('controlsDisplay');
   cdEl.classList.remove('visible', 'panel', 'instant');
@@ -1374,7 +1373,6 @@ function drawEnemies(time) {
 function spawnExplosion(x, y) {
   state.particles = [];
   var colors = ['#00ffff', '#00ccdd', '#33eeff', '#ffffff', '#006688', '#004466'];
-  var half = state.player.size / 2;
   for (var i = 0; i < 50; i++) {
     var angle = Math.random() * Math.PI * 2;
     var speed = 80 + Math.random() * 220;
@@ -1646,6 +1644,7 @@ document.getElementById('menuBtn').addEventListener('click', function() {
   document.getElementById('menuRecordValue').textContent = state.record;
   document.getElementById('mainMenu').classList.add('visible');
   state.running = false;
+  state.dead = false;
   stopSong();
 });
 
