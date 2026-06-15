@@ -2261,6 +2261,7 @@ function setupSlider(id, volKey) {
     var v = parseInt(input.value) / 100;
     volumes[volKey] = v;
     valSpan.textContent = input.value;
+    localStorage.setItem(id, input.value);
     if (volKey === 'master' || volKey === 'music') updateSongVolume();
   });
 }
