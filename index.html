@@ -711,6 +711,93 @@ body {
   transition: opacity 1.5s ease;
 }
 
+#customModal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.75);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 300;
+}
+
+#customModal.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+#customModalBox {
+  background: #1c1c1c;
+  border: 2px solid rgba(200, 50, 50, 0.3);
+  border-radius: 8px;
+  padding: 32px 40px;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 0 40px rgba(200, 50, 50, 0.15);
+}
+
+#customModalMsg {
+  color: #ddd;
+  font-size: clamp(14px, 2vmin, 18px);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+#customModalBtns {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+#customModalBtns button {
+  padding: 10px 28px;
+  font-size: clamp(12px, 1.6vmin, 16px);
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+#modalConfirmBtn {
+  background: transparent;
+  color: #ff4444;
+  border: 2px solid #ff4444;
+}
+
+#modalConfirmBtn:hover {
+  background: rgba(255, 68, 68, 0.15);
+  box-shadow: 0 0 20px rgba(255, 68, 68, 0.25);
+  transform: scale(1.05);
+}
+
+#modalConfirmBtn:focus-visible {
+  outline: 2px solid #ff4444;
+  outline-offset: 2px;
+}
+
+#modalCancelBtn {
+  background: transparent;
+  color: rgba(200, 200, 200, 0.6);
+  border: 2px solid rgba(200, 200, 200, 0.2);
+}
+
+#modalCancelBtn:hover {
+  background: rgba(200, 200, 200, 0.05);
+  border-color: rgba(200, 200, 200, 0.4);
+  color: #fff;
+  transform: scale(1.05);
+}
+
+#modalCancelBtn:focus-visible {
+  outline: 2px solid rgba(200, 200, 200, 0.4);
+  outline-offset: 2px;
+}
+
 #soundPanel {
   display: none;
   flex-direction: column;
@@ -871,6 +958,16 @@ input[type=range]::-moz-range-thumb {
 
   <div id="resetAnimOverlay">
     <div id="resetAnimNumber"></div>
+  </div>
+
+  <div id="customModal">
+    <div id="customModalBox">
+      <p id="customModalMsg"></p>
+      <div id="customModalBtns">
+        <button id="modalCancelBtn">CANCEL</button>
+        <button id="modalConfirmBtn">CONFIRM</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1632,6 +1729,12 @@ function gameLoop(timestamp) {
 
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
+    var modal = document.getElementById('customModal');
+    if (modal.classList.contains('visible')) {
+      document.getElementById('modalCancelBtn').click();
+      e.preventDefault();
+      return;
+    }
     if (state.running && !state.dead && !state.exploding) {
       state.paused = !state.paused;
       document.getElementById('pauseScreen').classList.toggle('visible', state.paused);
@@ -1757,12 +1860,24 @@ document.getElementById('soundBackBtn').addEventListener('click', function() {
   document.getElementById('optionsPanel').style.display = 'flex';
 });
 
+function showModal(msg, onConfirm) {
+  var modal = document.getElementById('customModal');
+  var msgEl = document.getElementById('customModalMsg');
+  var confirmBtn = document.getElementById('modalConfirmBtn');
+  var cancelBtn = document.getElementById('modalCancelBtn');
+  msgEl.textContent = msg;
+  modal.classList.add('visible');
+  function close() { modal.classList.remove('visible'); confirmBtn.onclick = null; cancelBtn.onclick = null; }
+  confirmBtn.onclick = function() { close(); if (onConfirm) onConfirm(); };
+  cancelBtn.onclick = close;
+}
+
 document.getElementById('resetScoreBtn').addEventListener('click', function() {
   if (state.record === 0) {
-    alert('Your best score is already 0.');
+    showModal('Your best score is already 0.');
     return;
   }
-  if (confirm('Reset your best score to 0?')) {
+  showModal('Reset your best score to ' + state.record + '?', function() {
     var overlay = document.getElementById('resetAnimOverlay');
     var numEl = document.getElementById('resetAnimNumber');
     var score = state.record;
@@ -1772,12 +1887,8 @@ document.getElementById('resetScoreBtn').addEventListener('click', function() {
     void numEl.offsetWidth;
     numEl.classList.add('slide-in');
 
-    // Scale up
-    setTimeout(function() {
-      numEl.classList.add('big');
-    }, 1700);
+    setTimeout(function() { numEl.classList.add('big'); }, 1700);
 
-    // Start vibration
     setTimeout(function() {
       numEl.classList.add('vibrate');
       vibrateSound.currentTime = 0;
@@ -1785,7 +1896,6 @@ document.getElementById('resetScoreBtn').addEventListener('click', function() {
       vibrateSound.play().catch(function() {});
     }, 1900);
 
-    // Stop vibration abruptly + fade out
     setTimeout(function() {
       numEl.classList.remove('vibrate');
       vibrateSound.pause();
@@ -1797,7 +1907,6 @@ document.getElementById('resetScoreBtn').addEventListener('click', function() {
       desolveSound.play().catch(function() {});
     }, 2400);
 
-    // Cleanup + reset score
     setTimeout(function() {
       state.record = 0;
       localStorage.setItem('gemaRecord', '0');
@@ -1807,7 +1916,7 @@ document.getElementById('resetScoreBtn').addEventListener('click', function() {
       numEl.classList.remove('slide-in', 'big', 'vibrate', 'fade-out');
       numEl.innerHTML = '';
     }, 3900);
-  }
+  });
 });
 
 function setupSlider(id, volKey) {
