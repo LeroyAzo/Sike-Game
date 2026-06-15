@@ -1786,7 +1786,7 @@ document.getElementById('resetScoreBtn').addEventListener('click', function() {
     showModal('Your best score is already 0.');
     return;
   }
-  showModal('Reset your best score to ' + state.record + '?', function() {
+  showModal('Are you sure you want to reset?', function() {
     var overlay = document.getElementById('resetAnimOverlay');
     var numEl = document.getElementById('resetAnimNumber');
     var score = state.record;
