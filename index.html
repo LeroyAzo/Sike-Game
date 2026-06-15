@@ -316,13 +316,80 @@ body {
 }
 
 #menuCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 25;
+  opacity: 0.5;
+}
+
+#splashScreen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #1c1c1c;
+  opacity: 1;
+  pointer-events: all;
+  transition: opacity 0.5s ease;
+  z-index: 40;
+  overflow: hidden;
+  animation: menuBgPulse 6s ease-in-out infinite;
+}
+
+#splashScreen::before {
+  content: '';
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  background: radial-gradient(ellipse at 50% 50%, transparent 50%, rgba(0,0,0,0.5) 100%);
   pointer-events: none;
-  z-index: 0;
-  opacity: 0.5;
+  z-index: 1;
+}
+
+#splashScreen > * {
+  position: relative;
+  z-index: 2;
+}
+
+#splashScreen.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#splashTitle {
+  color: #ff2222;
+  font-size: clamp(52px, 9vmin, 88px);
+  letter-spacing: 10px;
+  text-shadow: 0 0 40px rgba(255, 34, 34, 0.5), 0 0 80px rgba(255, 34, 34, 0.3);
+  margin-bottom: 60px;
+  animation: menuPulse 2s ease-in-out infinite;
+}
+
+#splashStart {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: clamp(18px, 3vmin, 28px);
+  letter-spacing: 8px;
+  animation: splashBlink 1.2s ease-in-out infinite;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+@keyframes splashBlink {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+#splashFlash {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.03s;
 }
 
 #mainMenu h1 {
@@ -1074,8 +1141,16 @@ input[type=range]::-moz-range-thumb {
 </head>
 <body>
 
+<canvas id="menuCanvas"></canvas>
+
+<div id="splashScreen">
+  <h1 id="splashTitle">SIKE.IO</h1>
+  <p id="splashStart">PRESS START</p>
+</div>
+
+<div id="splashFlash"></div>
+
 <div id="mainMenu">
-  <canvas id="menuCanvas"></canvas>
   <h1>Sike.io</h1>
   <div id="menuRecord">
     <span class="menuRecord-label">BEST SCORE</span>
@@ -2015,9 +2090,8 @@ var menuAnimId = null;
 
 function initMenuParticles() {
   var c = document.getElementById('menuCanvas');
-  var rect = c.parentElement.getBoundingClientRect();
-  c.width = rect.width;
-  c.height = rect.height;
+  c.width = window.innerWidth;
+  c.height = window.innerHeight;
   var ctx = c.getContext('2d');
   menuParticles = [];
   for (var i = 0; i < 60; i++) {
@@ -2053,8 +2127,9 @@ function drawMenuParticles(ts) {
 }
 
 function startMenuParticles() {
-  var c = document.getElementById('menuCanvas');
-  if (!c || !c.parentElement.offsetParent) return;
+  var splash = document.getElementById('splashScreen');
+  var menu = document.getElementById('mainMenu');
+  if (splash.classList.contains('hidden') && !menu.classList.contains('visible')) return;
   stopMenuParticles();
   initMenuParticles();
   drawMenuParticles(performance.now());
@@ -2341,9 +2416,49 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('menuButtons').style.display = 'flex';
   document.getElementById('menuRecord').style.display = 'flex';
   document.getElementById('gameContainer').classList.add('visible');
-  document.getElementById('mainMenu').classList.add('visible');
-  setTimeout(function() { document.getElementById('playBtn').focus(); startMenuParticles(); startMenuSong(); }, 100);
+  setTimeout(function() { startMenuParticles(); }, 100);
 });
+
+document.getElementById('splashScreen').addEventListener('click', splashStart);
+document.addEventListener('keydown', function(e) { if (!document.getElementById('splashScreen').classList.contains('hidden')) splashStart(); });
+
+function playCoinSound() {
+  if (!menuCtx) { initMenuAudio(); }
+  if (!menuCtx) return;
+  var now = menuCtx.currentTime;
+  if (menuCtx.state === 'suspended') menuCtx.resume();
+  [ [1200, 0.4, 0.15], [900, 0.3, 0.1] ].forEach(function(s, i) {
+    var osc = menuCtx.createOscillator();
+    var g = menuCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(s[0], now + i * 0.12);
+    osc.frequency.exponentialRampToValueAtTime(s[0] - 400, now + i * 0.12 + s[2]);
+    g.gain.setValueAtTime(s[1], now + i * 0.12);
+    g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + s[2] + 0.05);
+    osc.connect(g); g.connect(menuCtx.destination);
+    osc.start(now + i * 0.12); osc.stop(now + i * 0.12 + s[2] + 0.05);
+  });
+}
+
+function splashStart() {
+  var splash = document.getElementById('splashScreen');
+  if (splash.classList.contains('hidden')) return;
+  playCoinSound();
+  splash.style.pointerEvents = 'none';
+  var flash = document.getElementById('splashFlash');
+  var flashes = [0.5, 0, 0.35, 0, 0.3, 0, 0, 0, 0, 0, 0, 0];
+  flashes.forEach(function(op, i) {
+    setTimeout(function() { flash.style.opacity = op; }, i * 35);
+  });
+  var startTxt = document.getElementById('splashStart');
+  setTimeout(function() { splash.classList.add('hidden'); }, 420);
+  setTimeout(function() {
+    document.getElementById('mainMenu').classList.add('visible');
+    document.getElementById('playBtn').focus();
+    startMenuParticles();
+    startMenuSong();
+  }, 920);
+}
 
 var hoverTimer;
 document.querySelectorAll('button').forEach(function(btn) {
