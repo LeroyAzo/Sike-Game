@@ -382,15 +382,7 @@ body {
   50% { opacity: 1; }
 }
 
-#splashFlash {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  background: #fff;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.03s;
-}
+
 
 #mainMenu h1 {
   color: #ff2222;
@@ -1147,8 +1139,6 @@ input[type=range]::-moz-range-thumb {
   <h1 id="splashTitle">SIKE.IO</h1>
   <p id="splashStart">PRESS START</p>
 </div>
-
-<div id="splashFlash"></div>
 
 <div id="mainMenu">
   <h1>Sike.io</h1>
@@ -2415,7 +2405,6 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('soundPanel').style.display = 'none';
   document.getElementById('menuButtons').style.display = 'flex';
   document.getElementById('menuRecord').style.display = 'flex';
-  document.getElementById('gameContainer').classList.add('visible');
   setTimeout(function() { startMenuParticles(); }, 100);
 });
 
@@ -2443,21 +2432,22 @@ function playCoinSound() {
 function splashStart() {
   var splash = document.getElementById('splashScreen');
   if (splash.classList.contains('hidden')) return;
-  playCoinSound();
   splash.style.pointerEvents = 'none';
-  var flash = document.getElementById('splashFlash');
-  var flashes = [0.5, 0, 0.35, 0, 0.3, 0, 0, 0, 0, 0, 0, 0];
-  flashes.forEach(function(op, i) {
-    setTimeout(function() { flash.style.opacity = op; }, i * 35);
+  playCoinSound();
+  var txt = document.getElementById('splashStart');
+  txt.style.animation = 'none';
+  var pattern = [1,0,1,0,0.5,0,0.8,0,0.3,0,0,0,0,0,0,0];
+  pattern.forEach(function(op, i) {
+    setTimeout(function() { txt.style.opacity = op; }, i * 40);
   });
-  var startTxt = document.getElementById('splashStart');
-  setTimeout(function() { splash.classList.add('hidden'); }, 420);
+  setTimeout(function() { splash.classList.add('hidden'); }, 640);
   setTimeout(function() {
+    document.getElementById('gameContainer').classList.add('visible');
     document.getElementById('mainMenu').classList.add('visible');
     document.getElementById('playBtn').focus();
     startMenuParticles();
     startMenuSong();
-  }, 920);
+  }, 1140);
 }
 
 var hoverTimer;
