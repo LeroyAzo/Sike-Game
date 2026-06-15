@@ -1213,7 +1213,10 @@ var deathSound = new Audio('assets/audio/death.wav');
 var song = new Audio('assets/audio/dumbstep_fondo_3.wav');
 song.loop = true;
 var menuSong = new Audio('assets/audio/musica_fondo2.wav');
-menuSong.loop = true;
+var menuCtx = null;
+var menuGain = null;
+var menuBuffer = null;
+var menuSource = null;
 var audioCtx = null;
 var gainNode = null;
 var shaperNode = null;
@@ -1243,7 +1246,7 @@ function initAudioSystem() {
 
 function updateSongVolume() {
   if (gainNode) gainNode.gain.value = volumes.master * volumes.music;
-  menuSong.volume = volumes.master * volumes.music;
+  if (menuGain) menuGain.gain.value = volumes.master * volumes.music;
 }
 
 function updateSongSaturation() {
@@ -1279,19 +1282,43 @@ function stopSong() {
   song.currentTime = 0;
 }
 
+function initMenuAudio() {
+  if (menuCtx) return;
+  menuCtx = new (window.AudioContext || window.webkitAudioContext)();
+  menuGain = menuCtx.createGain();
+  menuGain.gain.value = volumes.master * volumes.music;
+  menuGain.connect(menuCtx.destination);
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', 'assets/audio/musica_fondo2.wav', true);
+  xhr.responseType = 'arraybuffer';
+  xhr.onload = function() {
+    menuCtx.decodeAudioData(xhr.response, function(buf) {
+      menuBuffer = buf;
+      var mainMenu = document.getElementById('mainMenu');
+      if (mainMenu.classList.contains('visible')) startMenuSong();
+    }, function() {});
+  };
+  xhr.send();
+}
+
+var menuInitOnce = function() { initMenuAudio(); document.removeEventListener('click', menuInitOnce); document.removeEventListener('keydown', menuInitOnce); };
+document.addEventListener('click', menuInitOnce);
+document.addEventListener('keydown', menuInitOnce);
+
 function startMenuSong() {
-  menuSong.volume = volumes.master * volumes.music;
-  menuSong.currentTime = 0;
-  var p = menuSong.play();
-  if (p) p.catch(function() {
-    var once = function() { menuSong.play().catch(function() {}); document.removeEventListener('click', once); document.removeEventListener('keydown', once); };
-    document.addEventListener('click', once); document.addEventListener('keydown', once);
-  });
+  if (!menuCtx || !menuBuffer) return;
+  if (menuCtx.state === 'suspended') menuCtx.resume();
+  if (menuSource) { menuSource.stop(); menuSource.disconnect(); menuSource = null; }
+  menuGain.gain.value = volumes.master * volumes.music;
+  menuSource = menuCtx.createBufferSource();
+  menuSource.buffer = menuBuffer;
+  menuSource.loop = true;
+  menuSource.connect(menuGain);
+  menuSource.start();
 }
 
 function stopMenuSong() {
-  menuSong.pause();
-  menuSong.currentTime = 0;
+  if (menuSource) { menuSource.stop(); menuSource.disconnect(); menuSource = null; }
 }
 
 function playGemSound() {
