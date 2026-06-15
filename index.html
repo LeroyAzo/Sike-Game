@@ -917,18 +917,15 @@ body {
 }
 
 #howToPlayBtn {
-  border-color: rgba(200, 200, 200, 0.15) !important;
-  color: rgba(200, 200, 200, 0.45) !important;
-  font-size: clamp(11px, 1.6vmin, 14px) !important;
-  padding: 8px 24px !important;
-  min-width: 120px !important;
+  border-color: rgba(200, 200, 200, 0.4) !important;
+  color: #444 !important;
 }
 
 #howToPlayBtn:hover {
-  border-color: rgba(255, 50, 50, 0.4) !important;
-  color: #ff4444 !important;
-  background: rgba(255, 50, 50, 0.05) !important;
-  transform: scale(1.03) !important;
+  background: rgba(255, 50, 50, 0.15) !important;
+  color: #fff !important;
+  box-shadow: 0 0 25px rgba(255, 50, 50, 0.2) !important;
+  transform: scale(1.05) !important;
 }
 
 #soundPanel {
@@ -1054,8 +1051,8 @@ input[type=range]::-moz-range-thumb {
   </div>
   <div id="menuButtons">
     <button id="playBtn">PLAY</button>
-    <button id="howToPlayBtn">HOW TO PLAY</button>
     <button id="optionsBtn">OPTIONS</button>
+    <button id="howToPlayBtn">HOW TO PLAY</button>
   </div>
 
   <div id="optionsPanel">
@@ -1406,8 +1403,8 @@ function keyboardHTML(mapping, tierName) {
 var htpCards = [
   { title: 'OBJECTIVE', text: 'Collect golden gems while escaping from red enemies. Each gem randomly reassigns your movement keys — adapt or be caught!', graphic: 'objective' },
   { title: 'MOVEMENT', text: 'Use the keys shown on screen to move the cyan square. After each gem, a new set of keys appears. Press them to move Up, Down, Left, and Right.', graphic: 'movement' },
-  { title: 'GEMS', text: 'Each gem increases your score and triggers a "SIKE" popup showing your new keys. The game slows to 25% while you read them — use that time to find the keys!', graphic: 'gems' },
-  { title: 'ENEMY GOO', text: 'Enemies leave a sticky black trail with a red glow. Walking on the trail slows you to 35% speed. Avoid the goo to stay fast!', graphic: 'goo' },
+  { title: 'GEMS', text: 'Each gem increases your score and triggers a "SIKE" popup showing your new keys. Time slows down while you read them — use that moment to find the keys!', graphic: 'gems' },
+  { title: 'ENEMY GOO', text: 'Enemies leave a sticky black trail with a red glow. Walking on the trail slows you down significantly. Avoid the goo to stay fast!', graphic: 'goo' },
   { title: 'DANGER', text: 'The closer an enemy gets, the more the screen pulses red and shakes to the beat. The music distorts as danger rises — a warning to move!', graphic: 'danger' },
   { title: 'KEY TIERS', text: 'Start with WASD, then arrows, then gradually larger key pools: 6 keys, 9, 13, 15, and finally all 26 letters. The chaos escalates with your score!', graphic: 'tiers' },
 ];
