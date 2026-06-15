@@ -1674,6 +1674,24 @@ document.addEventListener('keydown', function(e) {
       }
     }
   }
+  if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && !state.running) {
+    var mainMenu = document.getElementById('mainMenu');
+    if (mainMenu.classList.contains('visible')) {
+      e.preventDefault();
+      var container;
+      if (document.getElementById('soundPanel').style.display === 'flex') container = document.querySelectorAll('#soundPanel button');
+      else if (document.getElementById('optionsPanel').style.display === 'flex') container = document.querySelectorAll('#optionsPanel button');
+      else container = document.querySelectorAll('#menuButtons button');
+      var visible = Array.prototype.filter.call(container, function(b) { return b.offsetParent !== null; });
+      if (visible.length === 0) return;
+      var focused = document.activeElement;
+      var idx = visible.indexOf(focused);
+      if (e.key === 'ArrowDown') idx = (idx + 1) % visible.length;
+      else idx = (idx - 1 + visible.length) % visible.length;
+      visible[idx].focus();
+      return;
+    }
+  }
   state.keys[e.key.toUpperCase()] = true;
   if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].indexOf(e.key) >= 0) e.preventDefault();
 });
@@ -1711,12 +1729,14 @@ document.getElementById('optionsBtn').addEventListener('click', function() {
   document.getElementById('menuButtons').style.display = 'none';
   document.getElementById('optionsPanel').style.display = 'flex';
   document.getElementById('menuRecord').style.display = 'none';
+  setTimeout(function() { document.getElementById('soundBtn').focus(); }, 50);
 });
 
 document.getElementById('optionsBackBtn').addEventListener('click', function() {
   document.getElementById('optionsPanel').style.display = 'none';
   document.getElementById('menuButtons').style.display = 'flex';
   document.getElementById('menuRecord').style.display = 'flex';
+  setTimeout(function() { document.getElementById('optionsBtn').focus(); }, 50);
 });
 
 function loadVolumes() {
@@ -1736,11 +1756,13 @@ function loadVolumes() {
   document.getElementById('soundBtn').addEventListener('click', function() {
   document.getElementById('optionsPanel').style.display = 'none';
   document.getElementById('soundPanel').style.display = 'flex';
+  setTimeout(function() { document.getElementById('soundBackBtn').focus(); }, 50);
 });
 
 document.getElementById('soundBackBtn').addEventListener('click', function() {
   document.getElementById('soundPanel').style.display = 'none';
   document.getElementById('optionsPanel').style.display = 'flex';
+  setTimeout(function() { document.getElementById('soundBtn').focus(); }, 50);
 });
 
 function showModal(msg, onConfirm) {
@@ -1830,6 +1852,7 @@ document.getElementById('menuBtn').addEventListener('click', function() {
   state.running = false;
   state.dead = false;
   stopSong();
+  setTimeout(function() { document.getElementById('playBtn').focus(); }, 100);
 });
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -1842,6 +1865,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('menuRecord').style.display = 'flex';
   document.getElementById('gameContainer').classList.add('visible');
   document.getElementById('mainMenu').classList.add('visible');
+  setTimeout(function() { document.getElementById('playBtn').focus(); }, 100);
 });
 
 var hoverTimer;
