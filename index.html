@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gema Escape</title>
 <style>
+@font-face {
+  font-family: 'Press Start 2P';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('assets/fonts/pressstart2p.woff2') format('woff2');
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -17,7 +25,7 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  font-family: 'Courier New', monospace;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   overflow: hidden;
 }
 
@@ -64,6 +72,7 @@ body {
   justify-content: space-between;
   padding: 12px 20px;
   color: #fff;
+  font-family: 'Courier New', monospace;
   font-size: clamp(12px, 2vmin, 18px);
   text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
   pointer-events: none;
@@ -130,10 +139,11 @@ body {
 }
 
 #controlsDisplay.visible h2 {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   color: #ff0000;
   font-size: clamp(36px, 6vmin, 56px);
   margin-bottom: 16px;
-  letter-spacing: 6px;
+  letter-spacing: 4px;
   text-shadow: 0 0 25px rgba(255, 0, 0, 0.6), 0 0 50px rgba(255, 0, 0, 0.3);
   animation: shake 0.25s linear infinite;
 }
@@ -150,9 +160,10 @@ body {
 
 .kb-panel-title {
   display: none;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   color: #ffd700;
   font-size: clamp(22px, 3.2vmin, 30px);
-  letter-spacing: 8px;
+  letter-spacing: 4px;
   text-transform: uppercase;
   margin-bottom: 10px;
   white-space: nowrap;
@@ -226,20 +237,27 @@ body {
 }
 
 .kb-arrow {
-  font-size: clamp(14px, 2.2vmin, 22px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: rgba(255, 255, 255, 0.5);
-  line-height: 1;
+  height: 24px;
 }
 
 .kb-letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   font-size: clamp(22px, 3.8vmin, 34px);
   color: #ffd700;
-  font-weight: bold;
+  font-weight: 400;
   text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
   line-height: 1;
 }
 
 .kb-center {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   font-size: clamp(34px, 5.5vmin, 52px);
   line-height: 1;
   text-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
@@ -253,6 +271,7 @@ body {
 }
 
 .kb-tier {
+  font-family: 'Courier New', monospace;
   color: rgba(255, 215, 0, 0.5);
   font-size: clamp(11px, 1.6vmin, 14px);
   letter-spacing: 3px;
@@ -272,7 +291,7 @@ body {
 
 .keyboard-key.active .kb-letter {
   color: #fff;
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
 }
 
 #mainMenu {
@@ -321,7 +340,7 @@ body {
   width: 100vw;
   height: 100vh;
   pointer-events: none;
-  z-index: 25;
+  z-index: 35;
   opacity: 0.5;
 }
 
@@ -332,22 +351,44 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: #1c1c1c;
+  background: #080808;
   opacity: 1;
   pointer-events: all;
   transition: opacity 0.5s ease;
   z-index: 40;
   overflow: hidden;
-  animation: menuBgPulse 6s ease-in-out infinite;
 }
 
+/* Dark room floor shadow */
+#splashScreen::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 35%;
+  background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Room vignette + bottom warm glow */
 #splashScreen::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 50% 50%, transparent 50%, rgba(0,0,0,0.5) 100%);
+  background:
+    radial-gradient(ellipse at 50% 80%, rgba(20,5,5,0.25) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(0,0,0,0.4) 100%);
   pointer-events: none;
   z-index: 1;
+  transition: all 1s ease;
+}
+
+#splashScreen.lighting-up::before {
+  background:
+    radial-gradient(ellipse at 50% 80%, rgba(255,60,20,0.2) 0%, rgba(255,30,10,0.06) 35%, rgba(10,0,20,0.08) 60%, transparent 80%),
+    radial-gradient(ellipse at 50% 50%, transparent 20%, rgba(0,0,0,0.3) 100%);
 }
 
 #splashScreen > * {
@@ -355,39 +396,210 @@ body {
   z-index: 2;
 }
 
+#splashDustCanvas {
+  position: absolute !important;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.3;
+}
+
 #splashScreen.hidden {
   opacity: 0;
   pointer-events: none;
 }
 
+/* Arcade peripheral RGB lights */
+.arcade-light {
+  position: absolute;
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+
+.arcade-light.top {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(to right,
+    transparent 3%, rgba(255,0,60,0.5) 8%, rgba(255,200,0,0.3) 15%, rgba(0,200,255,0.4) 22%, rgba(255,0,60,0.5) 30%,
+    rgba(0,200,255,0.4) 40%, rgba(255,0,60,0.5) 48%, rgba(255,200,0,0.3) 55%, rgba(0,200,255,0.4) 62%, rgba(255,0,60,0.5) 70%,
+    rgba(0,200,255,0.4) 78%, rgba(255,0,60,0.5) 85%, transparent 97%);
+  box-shadow: 0 0 15px rgba(255,0,60,0.2), 0 0 40px rgba(255,0,60,0.05);
+}
+
+.arcade-light.bottom {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(to right,
+    transparent 3%, rgba(0,200,255,0.4) 10%, rgba(255,0,60,0.5) 18%, rgba(255,200,0,0.3) 25%, rgba(0,200,255,0.4) 33%,
+    rgba(255,0,60,0.5) 42%, rgba(0,200,255,0.4) 50%, rgba(255,0,60,0.5) 58%, rgba(255,200,0,0.3) 65%, rgba(0,200,255,0.4) 73%,
+    rgba(255,0,60,0.5) 80%, transparent 97%);
+  box-shadow: 0 -2px 15px rgba(0,200,255,0.15), 0 -4px 40px rgba(0,200,255,0.03);
+}
+
+.arcade-light.left {
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom,
+    transparent 5%, rgba(255,0,60,0.3) 15%, rgba(0,200,255,0.2) 30%, rgba(255,0,60,0.3) 50%,
+    rgba(0,200,255,0.2) 65%, rgba(255,0,60,0.3) 80%, transparent 95%);
+}
+
+.arcade-light.right {
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom,
+    transparent 5%, rgba(0,200,255,0.2) 15%, rgba(255,0,60,0.3) 30%, rgba(0,200,255,0.2) 50%,
+    rgba(255,0,60,0.3) 65%, rgba(0,200,255,0.2) 80%, transparent 95%);
+}
+
+#splashScreen.lighting-up .arcade-light {
+  opacity: 1;
+}
+
+/* Broken neon sign — OFF state (switch down) */
 #splashTitle {
-  color: #ff2222;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  color: transparent;
   font-size: clamp(52px, 9vmin, 88px);
-  letter-spacing: 10px;
-  text-shadow: 0 0 40px rgba(255, 34, 34, 0.5), 0 0 80px rgba(255, 34, 34, 0.3);
-  margin-bottom: 60px;
-  animation: menuPulse 2s ease-in-out infinite;
+  letter-spacing: 4px;
+  margin-bottom: 40px;
+  position: relative;
 }
 
+/* Faint ambient glow on the wall behind the sign (OFF state) */
+#splashTitle::after {
+  content: 'SIKE.IO';
+  position: absolute;
+  inset: 0;
+  color: transparent;
+  pointer-events: none;
+}
+
+/* Light switch — big & centered initially */
 #splashStart {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: clamp(18px, 3vmin, 28px);
-  letter-spacing: 8px;
-  animation: splashBlink 1.2s ease-in-out infinite;
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  z-index: 2;
+  padding: 10px;
+  border-radius: 12px;
+  transform: scale(1.7);
+  margin-top: -4vmin;
+  transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1), margin-top 1s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes splashBlink {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 1; }
+.switch-plate {
+  width: 56px;
+  height: 96px;
+  background: linear-gradient(135deg, #1e1e1e, #141414);
+  border: 2px solid #2a2a2a;
+  border-radius: 10px;
+  position: relative;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    inset 0 -1px 0 rgba(0,0,0,0.6),
+    0 3px 12px rgba(0,0,0,0.7);
+}
+
+.switch-toggle {
+  position: absolute;
+  left: 7px;
+  right: 7px;
+  height: 34px;
+  background: linear-gradient(135deg, #2c2c2c, #1a1a1a);
+  border-radius: 5px;
+  top: 6px;
+  transition: top 0.12s ease;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    inset 0 -2px 0 rgba(0,0,0,0.5),
+    0 1px 4px rgba(0,0,0,0.6);
+}
+
+#splashStart.flipped .switch-toggle {
+  top: 54px;
+}
+
+.switch-label {
+  color: rgba(255,255,255,0.35);
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: clamp(13px, 1.8vmin, 18px);
+  font-weight: 400;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow:
+    0 0 4px rgba(255,255,255,0.08),
+    0 0 8px rgba(255,200,100,0.04);
+}
+
+#splashScreen.lighting-up #splashStart {
+  transform: scale(1);
+  margin-top: 0;
+}
+
+#splashScreen.lighting-up .switch-label {
+  color: rgba(255,220,180,0.85);
+  text-shadow:
+    0 0 8px rgba(255,220,180,0.3),
+    0 0 16px rgba(255,200,100,0.15),
+    0 0 30px rgba(255,50,50,0.1);
+}
+
+/* Power-on sequence — switch flipped ON */
+#splashScreen.lighting-up #splashTitle {
+  color: #ff2222;
+  animation: neonLightUp 0.9s ease-out forwards;
+}
+
+#splashScreen.lighting-up #splashTitle::after {
+  animation: none;
+  opacity: 0;
+}
+
+@keyframes neonLightUp {
+  0% { color: #180202; opacity: 0.03; text-shadow: none; transform: translate(0,0) scale(1); }
+  /* Switch clicks — brief glitch */
+  4% { color: #661111; opacity: 0.5; text-shadow: 0 0 5px #aa2222; transform: translate(-0.5px,0.3px) scale(1.005); }
+  5% { color: #180202; opacity: 0.02; text-shadow: none; transform: translate(0,0) scale(1); }
+  /* Tube attempts to light — flickering */
+  8% { color: #882222; opacity: 0.7; text-shadow: 0 0 8px #dd3333, 0 0 20px #aa2222; transform: translate(0.4px,-0.3px) scale(1.01); }
+  9% { color: #180202; opacity: 0.03; text-shadow: none; transform: translate(-0.2px,0.1px) scale(1); }
+  10% { color: #aa3333; opacity: 0.85; text-shadow: 0 0 10px #ee4444, 0 0 25px #cc3333; transform: translate(-0.6px,0.4px) scale(1.015); }
+  11% { color: #180202; opacity: 0.03; text-shadow: none; transform: translate(0,0) scale(1); }
+  /* Tube strikes — unstable glow */
+  13% { color: #cc4444; opacity: 0.9; text-shadow: 0 0 10px #ff5555, 0 0 30px #ee4444, 0 0 60px #aa2222; transform: translate(0.3px,0) scale(1.01); }
+  14% { color: #cc4444; opacity: 0.9; text-shadow: 0 0 10px #ff5555, 0 0 30px #ee4444; transform: translate(0,0) scale(1.01); }
+  /* Stabilizing */
+  18% { color: #e05555; opacity: 1; text-shadow: 0 0 10px #ff5555, 0 0 35px #ee4444, 0 0 70px #aa2222; transform: translate(-0.2px,0) scale(1); }
+  22% { color: #ff4444; opacity: 1; text-shadow: 0 0 10px #ff4444, 0 0 35px #ff2222, 0 0 70px #aa2222; transform: translate(0,0) scale(1); }
+  /* Full warm glow matching menu title */
+  30% { color: #ff2222; opacity: 1; text-shadow: 0 0 40px rgba(255,34,34,0.5), 0 0 80px rgba(255,34,34,0.3); transform: translate(0,0) scale(1); }
+  45%, 100% { color: #ff2222; opacity: 1; text-shadow: 0 0 40px rgba(255,34,34,0.5), 0 0 80px rgba(255,34,34,0.3); transform: translate(0,0) scale(1); }
 }
 
 
 
 #mainMenu h1 {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   color: #ff2222;
   font-size: clamp(52px, 9vmin, 88px);
-  letter-spacing: 10px;
+  letter-spacing: 4px;
   text-shadow: 0 0 40px rgba(255, 34, 34, 0.5), 0 0 80px rgba(255, 34, 34, 0.3);
   margin-bottom: 40px;
   animation: menuPulse 2s ease-in-out infinite;
@@ -406,6 +618,7 @@ body {
 }
 
 .menuRecord-label {
+  font-family: 'Courier New', monospace;
   color: rgba(200, 200, 200, 0.45);
   font-size: clamp(11px, 1.5vmin, 14px);
   letter-spacing: 2px;
@@ -413,9 +626,10 @@ body {
 }
 
 .menuRecord-value {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   color: #ffd700;
   font-size: clamp(32px, 5vmin, 48px);
-  font-weight: bold;
+  font-weight: 400;
   text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
   margin-top: 4px;
 }
@@ -433,7 +647,7 @@ body {
   border: 3px solid rgba(180, 180, 180, 0.4);
   padding: 12px 40px;
   font-size: clamp(14px, 2vmin, 20px);
-  font-family: 'Courier New', monospace;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   font-weight: bold;
   letter-spacing: 3px;
   cursor: pointer;
@@ -498,9 +712,10 @@ body {
 }
 
 #optionsPanel h2 {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   color: rgba(200, 200, 200, 0.5);
   font-size: clamp(14px, 2vmin, 18px);
-  letter-spacing: 4px;
+  letter-spacing: 2px;
   text-transform: uppercase;
   margin-bottom: 20px;
 }
@@ -511,7 +726,7 @@ body {
   color: #ddd;
   padding: 12px 40px;
   font-size: clamp(14px, 2vmin, 20px);
-  font-family: 'Courier New', monospace;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   font-weight: bold;
   letter-spacing: 3px;
   cursor: pointer;
@@ -577,9 +792,10 @@ body {
 }
 
 #deathScreen h1 {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   color: #ff4444;
   font-size: clamp(36px, 6vmin, 56px);
-  letter-spacing: 6px;
+  letter-spacing: 4px;
   text-shadow: 0 0 30px rgba(255, 68, 68, 0.5);
   margin-bottom: 24px;
 }
@@ -590,21 +806,24 @@ body {
 }
 
 #deathStats p {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   color: #fff;
-  font-size: clamp(16px, 2.5vmin, 24px);
-  line-height: 1.8;
+  font-size: clamp(14px, 2.2vmin, 22px);
+  line-height: 2;
 }
 
 #deathStats .newRecord {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   color: #ffd700;
-  font-size: clamp(18px, 3vmin, 28px);
-  font-weight: bold;
+  font-size: clamp(16px, 2.6vmin, 24px);
+  font-weight: 400;
   text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
   margin-top: 8px;
   animation: shake 0.3s linear infinite;
 }
 
 .stat-label {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   color: rgba(255, 255, 255, 0.5);
 }
 
@@ -614,7 +833,7 @@ body {
   border: 2px solid #00ffff;
   padding: 12px 40px;
   font-size: clamp(14px, 2vmin, 20px);
-  font-family: 'Courier New', monospace;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   font-weight: bold;
   letter-spacing: 3px;
   cursor: pointer;
@@ -643,7 +862,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 10px 30px;
   font-size: clamp(12px, 1.8vmin, 16px);
-  font-family: 'Courier New', monospace;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   font-weight: bold;
   letter-spacing: 2px;
   cursor: pointer;
@@ -684,7 +903,8 @@ body {
 }
 
 #resetAnimNumber {
-  font-weight: bold;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-weight: 400;
   color: #ffd700;
   text-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
   display: flex;
@@ -753,10 +973,11 @@ body {
 }
 
 #customModalMsg {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   color: #ddd;
-  font-size: clamp(14px, 2vmin, 18px);
+  font-size: clamp(13px, 1.8vmin, 16px);
   margin-bottom: 24px;
-  line-height: 1.6;
+  line-height: 2;
 }
 
 #customModalBtns {
@@ -768,7 +989,7 @@ body {
 #customModalBtns button {
   padding: 10px 28px;
   font-size: clamp(12px, 1.6vmin, 16px);
-  font-family: 'Courier New', monospace;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   font-weight: bold;
   letter-spacing: 2px;
   cursor: pointer;
@@ -821,9 +1042,10 @@ body {
 }
 
 #howToPlayPanel h2 {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   color: rgba(200, 200, 200, 0.5);
   font-size: clamp(14px, 2vmin, 18px);
-  letter-spacing: 4px;
+  letter-spacing: 2px;
   text-transform: uppercase;
   margin-bottom: 16px;
 }
@@ -853,14 +1075,16 @@ body {
 }
 
 #htpTitle {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   color: #ffd700;
   font-size: clamp(18px, 2.8vmin, 26px);
-  letter-spacing: 4px;
+  letter-spacing: 2px;
   margin-bottom: 12px;
   text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
 }
 
 #htpText {
+  font-family: 'Courier New', monospace;
   color: rgba(255, 255, 255, 0.8);
   font-size: clamp(13px, 1.8vmin, 16px);
   line-height: 1.7;
@@ -903,7 +1127,7 @@ body {
   color: #ddd;
   padding: 10px 24px;
   font-size: clamp(11px, 1.6vmin, 14px);
-  font-family: 'Courier New', monospace;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   font-weight: bold;
   letter-spacing: 2px;
   cursor: pointer;
@@ -929,7 +1153,7 @@ body {
   color: rgba(200, 200, 200, 0.45);
   padding: 8px 24px;
   font-size: clamp(11px, 1.6vmin, 14px);
-  font-family: 'Courier New', monospace;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   font-weight: bold;
   letter-spacing: 2px;
   cursor: pointer;
@@ -953,6 +1177,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  font-family: 'Courier New', monospace;
   font-size: 10px;
   font-weight: bold;
   color: rgba(255,255,255,0.7);
@@ -973,6 +1198,7 @@ body {
   bottom: -18px;
   left: 50%;
   transform: translateX(-50%);
+  font-family: 'Courier New', monospace;
   font-size: 9px;
   color: rgba(255,255,255,0.4);
   letter-spacing: 1px;
@@ -994,7 +1220,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 14px;
+  font-family: 'Courier New', monospace;
+  font-size: 18px;
   color: #ffd700;
   font-weight: bold;
   background: rgba(255,215,0,0.06);
@@ -1005,6 +1232,8 @@ body {
   border-radius: 3px;
   background: linear-gradient(90deg, #000, rgba(200,0,0,0.6));
 }
+
+
 
 #howToPlayBtn {
   border-color: rgba(200, 200, 200, 0.4) !important;
@@ -1028,9 +1257,10 @@ body {
 }
 
 #soundPanel h2 {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   color: rgba(200, 200, 200, 0.5);
   font-size: clamp(14px, 2vmin, 18px);
-  letter-spacing: 4px;
+  letter-spacing: 2px;
   text-transform: uppercase;
   margin-bottom: 20px;
 }
@@ -1044,6 +1274,7 @@ body {
 }
 
 .vol-label {
+  font-family: 'Courier New', monospace;
   color: rgba(255, 255, 255, 0.5);
   font-size: clamp(10px, 1.4vmin, 13px);
   letter-spacing: 1px;
@@ -1052,6 +1283,7 @@ body {
 }
 
 .vol-value {
+  font-family: 'Courier New', monospace;
   color: #fff;
   font-size: clamp(11px, 1.5vmin, 14px);
   min-width: 28px;
@@ -1096,7 +1328,7 @@ input[type=range]::-moz-range-thumb {
   color: #ddd;
   padding: 10px 30px;
   font-size: clamp(11px, 1.6vmin, 14px);
-  font-family: 'Courier New', monospace;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   font-weight: bold;
   letter-spacing: 2px;
   cursor: pointer;
@@ -1129,15 +1361,55 @@ input[type=range]::-moz-range-thumb {
   box-shadow: 0 0 15px rgba(255, 50, 50, 0.1) !important;
 }
 
+#introVideoOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+#introVideoOverlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#introVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 </style>
 </head>
 <body>
 
 <canvas id="menuCanvas"></canvas>
 
-<div id="splashScreen">
+<div id="introVideoOverlay">
+  <video id="introVideo" preload="auto" playsinline>
+    <source src="assets/visuals/0615.mp4" type="video/mp4">
+  </video>
+</div>
+
+<div id="splashScreen" class="hidden">
+  <canvas id="splashDustCanvas"></canvas>
+  <div class="arcade-light top"></div>
+  <div class="arcade-light bottom"></div>
+  <div class="arcade-light left"></div>
+  <div class="arcade-light right"></div>
   <h1 id="splashTitle">SIKE.IO</h1>
-  <p id="splashStart">PRESS START</p>
+  <div id="splashStart">
+    <div class="switch-plate">
+      <div class="switch-toggle"></div>
+    </div>
+    <span class="switch-label">PRESS START</span>
+  </div>
 </div>
 
 <div id="mainMenu">
@@ -1274,6 +1546,7 @@ var clickSound = new Audio('assets/audio/click.wav');
 var vibrateSound = new Audio('assets/audio/vibrate.wav');
 var desolveSound = new Audio('assets/audio/desolve.wav');
 var deathSound = new Audio('assets/audio/death.wav');
+var gameStartSound = new Audio('assets/audio/gamestart.mp3');
 
 var song = new Audio('assets/audio/dumbstep_fondo_3.wav');
 song.loop = true;
@@ -1390,9 +1663,11 @@ document.addEventListener('visibilitychange', function() {
   if (document.hidden) {
     if (menuCtx && menuCtx.state === 'running') menuCtx.suspend();
     if (state.running && !song.paused) song.pause();
+    if (introOverlay && !introOverlay.classList.contains('hidden') && !introVideo.paused) introVideo.pause();
   } else {
     if (menuCtx && menuCtx.state === 'suspended') menuCtx.resume();
     if (state.running && song.paused) song.play().catch(function() {});
+    if (introOverlay && !introOverlay.classList.contains('hidden') && introVideo.paused) introVideo.play().catch(function() {});
   }
 });
 
@@ -1403,34 +1678,32 @@ function playGemSound() {
   var intro = gemIntros[idx];
   intro.currentTime = 0;
   intro.volume = volumes.master * volumes.intro;
+  intro.play().catch(function() {});
+}
+
+function playSikeSound() {
   gemMain.currentTime = 0;
   gemMain.volume = volumes.master * volumes.sike;
-
-  intro.play().catch(function() {});
-
-  intro.onended = function() {
-    gemMain.play().catch(function() {});
-
-    var d = gemMain.duration;
-    if (d && d !== Infinity && d > 0.2) {
-      setTimeout(function() {
-        var steps = 10;
-        var iv = setInterval(function() {
-          gemMain.volume = Math.max(0, gemMain.volume - (1 / steps));
-          if (gemMain.volume <= 0) clearInterval(iv);
-        }, 15);
-      }, (d - 0.15) * 1000);
-    }
-  };
+  gemMain.play().catch(function() {});
+  var d = gemMain.duration;
+  if (d && d !== Infinity && d > 0.2) {
+    setTimeout(function() {
+      var steps = 10;
+      var iv = setInterval(function() {
+        gemMain.volume = Math.max(0, gemMain.volume - (1 / steps));
+        if (gemMain.volume <= 0) clearInterval(iv);
+      }, 15);
+    }, (d - 0.15) * 1000);
+  }
 }
 
 function getControlTier(score) {
   if (score === 0) return 0;
   if (score === 1) return 1;
-  if (score <= 3) return 2;
-  if (score <= 5) return 3;
-  if (score <= 8) return 4;
-  if (score <= 12) return 5;
+  if (score <= 5) return 2;
+  if (score <= 10) return 3;
+  if (score <= 16) return 4;
+  if (score <= 24) return 5;
   return 6;
 }
 
@@ -1448,6 +1721,26 @@ const state = {
   lastTime: 0,
   controlTimeout: null,
   gemSpawnTimer: 0,
+  gemMinigame: {
+    active: false,
+    ringRadius: 120,
+    targetRadius: 30,
+    maxRadius: 120,
+    minRadius: 10,
+    tolerance: 12,
+    holding: false,
+    atTarget: false,
+    snapTimer: 0,
+    snapWindow: 0.4,
+    shrinkRate: 250,
+    successTimer: 0,
+    failTimer: 0,
+    failFeedback: '',
+    centerX: 0,
+    centerY: 0,
+    timer: 0,
+    maxTimer: 5,
+  },
   particles: [],
   gooPuddles: [],
   exploding: false,
@@ -1456,6 +1749,10 @@ const state = {
   shakeTimer: 0,
   shakeDuration: 0,
   shakeIntensity: 0,
+  playerHistory: [],
+  historyTimer: 0,
+  evasionHistory: [],
+  lastBlackSpawn: 0,
 };
 
 function shuffle(arr) {
@@ -1475,10 +1772,10 @@ function generateControls(tier) {
 }
 
 function displayKey(key) {
-  if (key === 'ARROWUP') return '↑';
-  if (key === 'ARROWDOWN') return '↓';
-  if (key === 'ARROWLEFT') return '←';
-  if (key === 'ARROWRIGHT') return '→';
+  if (key === 'ARROWUP') return '<span style="display:inline-block;width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:13px solid currentColor;vertical-align:middle"></span>';
+  if (key === 'ARROWDOWN') return '<span style="display:inline-block;width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-top:13px solid currentColor;vertical-align:middle"></span>';
+  if (key === 'ARROWLEFT') return '<span style="display:inline-block;width:0;height:0;border-top:9px solid transparent;border-bottom:9px solid transparent;border-right:13px solid currentColor;vertical-align:middle"></span>';
+  if (key === 'ARROWRIGHT') return '<span style="display:inline-block;width:0;height:0;border-top:9px solid transparent;border-bottom:9px solid transparent;border-left:13px solid currentColor;vertical-align:middle"></span>';
   return key;
 }
 
@@ -1501,10 +1798,13 @@ function randPos(pad) {
 
 function getDifficultyConfig(score) {
   var speed = 100, count = 1;
-  if (score >= 3) speed = 130;
-  if (score >= 5) { count = 2; speed = 130; }
-  if (score >= 8) { count = 2; speed = 165; }
-  if (score >= 10) { count = 3; speed = 165; }
+  if (score >= 5) speed = 115;
+  if (score >= 10) speed = 130;
+  if (score >= 16) { count = 2; speed = 130; }
+  if (score >= 22) speed = 145;
+  if (score >= 28) { count = 3; speed = 145; }
+  if (score >= 35) speed = 160;
+  if (score >= 42) { count = 4; speed = 160; }
   return { speed: speed, count: count };
 }
 
@@ -1522,7 +1822,22 @@ function applyDifficulty() {
     }
     state.enemies.push({ x: x, y: y, lastX: x, lastY: y, size: 22, speed: cfg.speed });
   }
-  state.enemies.forEach(function(e) { e.speed = cfg.speed; });
+  state.enemies.forEach(function(e) { if (!e.black) e.speed = cfg.speed; });
+}
+
+function spawnBlackEnemy() {
+  var side = Math.floor(Math.random() * 4);
+  var x, y, p = 40;
+  switch (side) {
+    case 0: x = p + Math.random() * (W - 2 * p); y = p; break;
+    case 1: x = W - p; y = p + Math.random() * (H - 2 * p); break;
+    case 2: x = p + Math.random() * (W - 2 * p); y = H - p; break;
+    case 3: x = p; y = p + Math.random() * (H - 2 * p); break;
+  }
+  var cfg = getDifficultyConfig(state.score);
+  var be = { x: x, y: y, lastX: x, lastY: y, size: 22, speed: cfg.speed, black: true,
+    chargeTimer: 0, boosted: false, boostDuration: 0, chargeParticles: [] };
+  state.enemies.push(be);
 }
 
 function spawnGem() {
@@ -1544,21 +1859,22 @@ function keyboardHTML(mapping, tierName) {
   var left = displayKey(mapping.left);
   var right = displayKey(mapping.right);
   return '<div class="kb-tier">' + tierName + '</div><div class="kb-panel-title">controls</div><div class="keyboard-layout">' +
-    '<div class="keyboard-key" data-dir="up" style="grid-row:1;grid-column:2"><span class="kb-arrow">↑</span><span class="kb-letter">' + up + '</span></div>' +
-    '<div class="keyboard-key" data-dir="left" style="grid-row:2;grid-column:1"><span class="kb-arrow">←</span><span class="kb-letter">' + left + '</span></div>' +
+    '<div class="keyboard-key" data-dir="up" style="grid-row:1;grid-column:2"><span class="kb-arrow"><span style="display:inline-block;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:10px solid currentColor"></span></span><span class="kb-letter">' + up + '</span></div>' +
+    '<div class="keyboard-key" data-dir="left" style="grid-row:2;grid-column:1"><span class="kb-arrow"><span style="display:inline-block;width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-right:10px solid currentColor"></span></span><span class="kb-letter">' + left + '</span></div>' +
     '<div class="kb-center" style="grid-row:2;grid-column:2">🎲</div>' +
-    '<div class="keyboard-key" data-dir="right" style="grid-row:2;grid-column:3"><span class="kb-arrow">→</span><span class="kb-letter">' + right + '</span></div>' +
-    '<div class="keyboard-key" data-dir="down" style="grid-row:3;grid-column:2"><span class="kb-arrow">↓</span><span class="kb-letter">' + down + '</span></div>' +
+    '<div class="keyboard-key" data-dir="right" style="grid-row:2;grid-column:3"><span class="kb-arrow"><span style="display:inline-block;width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:10px solid currentColor"></span></span><span class="kb-letter">' + right + '</span></div>' +
+    '<div class="keyboard-key" data-dir="down" style="grid-row:3;grid-column:2"><span class="kb-arrow"><span style="display:inline-block;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:10px solid currentColor"></span></span><span class="kb-letter">' + down + '</span></div>' +
     '</div>';
 }
 
 var htpCards = [
-  { title: 'OBJECTIVE', text: 'Collect golden gems while escaping from red enemies. Each gem randomly reassigns your movement keys — adapt or be caught!', graphic: 'objective' },
-  { title: 'MOVEMENT', text: 'Use the keys shown on screen to move the cyan square. After each gem, a new set of keys appears. Press them to move Up, Down, Left, and Right.', graphic: 'movement' },
-  { title: 'GEMS', text: 'Each gem increases your score and triggers a "SIKE" popup showing your new keys. Time slows down while you read them — use that moment to find the keys!', graphic: 'gems' },
-  { title: 'ENEMY GOO', text: 'Enemies leave a sticky black trail with a red glow. Walking on the trail slows you down significantly. Avoid the goo to stay fast!', graphic: 'goo' },
-  { title: 'DANGER', text: 'The closer an enemy gets, the more the screen pulses red and shakes to the beat. The music distorts as danger rises — a warning to move!', graphic: 'danger' },
-  { title: 'KEY TIERS', text: 'Start with WASD, then arrows, then gradually larger key pools: 6 keys, 9, 13, 15, and finally all 26 letters. The chaos escalates with your score!', graphic: 'tiers' },
+  { title: 'OBJECTIVE', text: 'Collect golden gems while running from red enemies. Every time you grab a gem, your movement keys get mixed up — you have to figure them out again before the enemies catch you!', graphic: 'objective' },
+  { title: 'MOVEMENT', text: 'Look at the keys that appear on screen to move the cyan square. After each gem you get a new set of keys. Press them to go Up, Down, Left, and Right.', graphic: 'movement' },
+  { title: 'GEMS', text: 'Touch a gem to start a challenge: hold SPACE to make a ring shrink toward the gem. Let go when the ring is the same size as the gem to win the gem and trigger the SIKE. If you miss, you lose the gem for nothing!', graphic: 'gems' },
+  { title: 'ENEMY GOO', text: 'Enemies leave a sticky black trail with a red glow behind them. Walking on it will slow you down a lot. Stay off the goo to keep moving fast!', graphic: 'goo' },
+  { title: 'DANGER', text: 'The closer an enemy gets to you, the more the screen turns red and shakes. The music gets weird too — a warning that you need to get away!', graphic: 'danger' },
+  { title: 'KEY TIERS', text: 'You start with WASD, then arrows, then more and more keys: 6, 9, 13, 15, and finally all 26 letters. The higher your score, the more chaos!', graphic: 'tiers' },
+  { title: 'LEARNER', text: 'A dark enemy that watches how you move and learns your habits. Watch its border — when it fills up with white energy it gets faster and fiercer. You have to keep changing your moves so it cannot catch you!', graphic: 'learner' },
 ];
 var htpIndex = 0;
 
@@ -1572,14 +1888,12 @@ function htpGraphic(type) {
       break;
     case 'movement':
       html = '<div style="display:grid;grid-template-columns:repeat(3,36px);gap:4px">' +
-        '<div></div><div class="htp-gfx-key">↑</div><div></div>' +
-        '<div class="htp-gfx-key">←</div><div class="htp-gfx-key" style="background:rgba(255,215,0,0.15)">?</div><div class="htp-gfx-key">→</div>' +
-        '<div></div><div class="htp-gfx-key">↓</div><div></div></div>';
+        '<div></div><div class="htp-gfx-key"><span style="display:inline-block;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:10px solid #ffd700"></span></div><div></div>' +
+        '<div class="htp-gfx-key"><span style="display:inline-block;width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-right:10px solid #ffd700"></span></div><div class="htp-gfx-key" style="background:rgba(255,215,0,0.15)">?</div><div class="htp-gfx-key"><span style="display:inline-block;width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:10px solid #ffd700"></span></div>' +
+        '<div></div><div class="htp-gfx-key"><span style="display:inline-block;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:10px solid #ffd700"></span></div><div></div></div>';
       break;
     case 'gems':
-      html = '<div style="position:relative"><div class="htp-gfx-diamond" style="background:#ffd700;width:50px;height:50px;box-shadow:0 0 20px rgba(255,215,0,0.5)"></div><span class="htp-label" style="bottom:-20px">GOLD</span></div>' +
-        '<div style="font-size:28px;color:#ff0000;text-shadow:0 0 20px rgba(255,0,0,0.4);font-weight:bold;letter-spacing:4px">SIKE</div>' +
-        '<div style="position:relative"><div class="htp-gfx-diamond" style="background:#ffd700;width:30px;height:30px;box-shadow:0 0 12px rgba(255,215,0,0.4)"></div><span class="htp-label" style="bottom:-20px">AGAIN</span></div>';
+      html = '<canvas id="htpGemCanvas" width="260" height="115"></canvas>';
       break;
     case 'goo':
       html = '<div style="position:relative"><div class="htp-gfx-box" style="background:#0a0a0a;border:2px solid rgba(255,0,0,0.5)"></div><span class="htp-label">ENEMY</span></div>' +
@@ -1603,8 +1917,197 @@ function htpGraphic(type) {
         '<div style="display:flex;gap:3px;align-items:center"><span style="font-size:10px;color:rgba(255,255,255,0.3);width:20px">12</span><div style="height:8px;width:120px;background:rgba(255,215,0,0.6);border-radius:2px"></div><span style="font-size:10px;color:rgba(255,255,255,0.4)">ALL LETTERS</span></div>' +
         '</div>';
       break;
+    case 'learner':
+      html = '<div style="position:relative"><div class="htp-gfx-box" style="background:#000;border:1px solid rgba(255,255,255,0.15);box-shadow:0 0 20px rgba(0,0,0,0.8)"></div>' +
+        '<div style="position:absolute;top:8px;left:8px;width:5px;height:5px;border-radius:50%;background:#fff;box-shadow:0 0 4px rgba(255,255,255,0.5)"></div>' +
+        '<div style="position:absolute;top:8px;right:8px;width:5px;height:5px;border-radius:50%;background:#fff;box-shadow:0 0 4px rgba(255,255,255,0.5)"></div>' +
+        '<span class="htp-label" style="bottom:-20px">IT WATCHES</span></div>';
+      break;
   }
   return html;
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  if (r > w / 2) r = w / 2;
+  if (r > h / 2) r = h / 2;
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+}
+
+var HTP_GEM_CYCLE = 6.0;
+
+function animateHtpGem(canvas, ctx) {
+  var startTime = performance.now() / 1000;
+
+  function frame() {
+    var t = performance.now() / 1000;
+    var elapsed = (t - startTime) % HTP_GEM_CYCLE;
+    var progress = elapsed / HTP_GEM_CYCLE;
+
+    var W = canvas.width;
+    var H = canvas.height;
+    var cx = W / 2;
+    var cy = 42;
+    var gemSize = 14;
+    var maxRing = 42;
+    var minRing = gemSize;
+
+    var ringRadius, ringColor, ringGlow, keyActive, feedbackText, feedbackColor;
+
+    if (progress < 0.60) {
+      var p = progress / 0.60;
+      ringRadius = maxRing - (maxRing - minRing) * p;
+      ringColor = 'rgba(255,200,0,0.9)';
+      ringGlow = 25;
+      keyActive = true;
+      feedbackText = '';
+      feedbackColor = '';
+    } else if (progress < 0.70) {
+      ringRadius = minRing;
+      ringColor = 'rgba(0,255,80,1)';
+      ringGlow = 60;
+      keyActive = false;
+      feedbackText = 'RELEASE!';
+      feedbackColor = 'rgba(0,255,80,0.9)';
+    } else {
+      var p = (progress - 0.70) / 0.30;
+      ringRadius = minRing + (maxRing - minRing) * p;
+      ringColor = 'rgba(255,50,30,0.5)';
+      ringGlow = 10;
+      keyActive = false;
+      feedbackText = '';
+      feedbackColor = '';
+    }
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Background
+    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+    ctx.fillRect(0, 0, W, H);
+
+    // Dashed target guide
+    ctx.save();
+    ctx.setLineDash([4, 3]);
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - minRing);
+    ctx.lineTo(cx + minRing, cy);
+    ctx.lineTo(cx, cy + minRing);
+    ctx.lineTo(cx - minRing, cy);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+
+    // Ring
+    ctx.save();
+    ctx.shadowColor = ringColor;
+    ctx.shadowBlur = ringGlow;
+    ctx.strokeStyle = ringColor;
+    ctx.lineWidth = progress >= 0.65 && progress < 0.75 ? 3 : 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - ringRadius);
+    ctx.lineTo(cx + ringRadius, cy);
+    ctx.lineTo(cx, cy + ringRadius);
+    ctx.lineTo(cx - ringRadius, cy);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.restore();
+
+    // Gem
+    ctx.save();
+    ctx.shadowColor = '#ffd700';
+    ctx.shadowBlur = 30;
+    ctx.fillStyle = '#ffd700';
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - gemSize);
+    ctx.lineTo(cx + gemSize, cy);
+    ctx.lineTo(cx, cy + gemSize);
+    ctx.lineTo(cx - gemSize, cy);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+
+    // Gem inner highlight
+    ctx.fillStyle = 'rgba(255,255,200,0.3)';
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - gemSize * 0.5);
+    ctx.lineTo(cx + gemSize * 0.5, cy);
+    ctx.lineTo(cx, cy + gemSize * 0.5);
+    ctx.lineTo(cx - gemSize * 0.5, cy);
+    ctx.closePath();
+    ctx.fill();
+
+    // SPACE key
+    var keyW = 80;
+    var keyH = 26;
+    var keyX = cx - keyW / 2;
+    var keyY = H - keyH - 10;
+
+    // Key shadow (drawn first, behind key)
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.beginPath(); roundRect(ctx, keyX + 1, keyY + 1, keyW, keyH, 5); ctx.closePath();
+    ctx.fill();
+
+    if (keyActive) {
+      ctx.save();
+      ctx.shadowColor = 'rgba(255,255,255,0.25)';
+      ctx.shadowBlur = 15;
+      ctx.fillStyle = 'rgba(255,255,255,0.15)';
+      ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); roundRect(ctx, keyX, keyY, keyW, keyH, 5); ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    } else {
+      ctx.fillStyle = 'rgba(255,215,0,0.06)';
+      ctx.strokeStyle = 'rgba(255,215,0,0.35)';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); roundRect(ctx, keyX, keyY, keyW, keyH, 5); ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    // SPACE text
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = 'bold 11px Courier New';
+    if (keyActive) {
+      ctx.fillStyle = '#fff';
+      ctx.shadowColor = 'rgba(255,255,255,0.5)';
+      ctx.shadowBlur = 8;
+    } else {
+      ctx.fillStyle = '#ffd700';
+      ctx.shadowBlur = 0;
+    }
+    ctx.fillText('SPACE', cx, keyY + keyH / 2);
+
+    // Feedback text
+    if (feedbackText) {
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      ctx.fillStyle = feedbackColor;
+      ctx.font = 'bold 12px Courier New';
+      ctx.save();
+      ctx.shadowColor = feedbackColor;
+      ctx.shadowBlur = 15;
+      ctx.fillText(feedbackText, cx, keyY - 4);
+      ctx.restore();
+    }
+
+    window._htpGemAnimId = requestAnimationFrame(frame);
+  }
+
+  frame();
 }
 
 function renderHTP() {
@@ -1612,6 +2115,19 @@ function renderHTP() {
   document.getElementById('htpTitle').textContent = card.title;
   document.getElementById('htpText').textContent = card.text;
   document.getElementById('htpGraphic').innerHTML = htpGraphic(card.graphic);
+
+  if (window._htpGemAnimId) {
+    cancelAnimationFrame(window._htpGemAnimId);
+    window._htpGemAnimId = null;
+  }
+  if (card.graphic === 'gems') {
+    var canvas = document.getElementById('htpGemCanvas');
+    if (canvas) {
+      var ctx = canvas.getContext('2d');
+      animateHtpGem(canvas, ctx);
+    }
+  }
+
   var dots = document.getElementById('htpDots');
   dots.innerHTML = '';
   for (var i = 0; i < htpCards.length; i++) {
@@ -1646,7 +2162,7 @@ function showPopup(mapping, tier, duration) {
   }, duration);
 }
 
-function showControlPopup(mapping, tier) { showPopup(mapping, tier, 2000); }
+function showControlPopup(mapping, tier) { playSikeSound(); showPopup(mapping, tier, 2000); }
 function showInitialControls(mapping, tier) { showPopup(mapping, tier, 3000); }
 
 function updateHUD() {
@@ -1658,6 +2174,7 @@ function updateHUD() {
 function showDeathScreen() {
   state.dead = true;
   state.running = false;
+  state.gemMinigame.active = false;
   clearTimeout(state.controlTimeout);
   state.controlTimeout = null;
   var cdEl = document.getElementById('controlsDisplay');
@@ -1699,6 +2216,7 @@ function resetGame() {
   state.time = 0;
   state.dead = false;
   state.running = true;
+  state.gemMinigame.active = false;
   state.keys = {};
   state.controlTimeout = null;
   state.gemSpawnTimer = 0;
@@ -1709,8 +2227,13 @@ function resetGame() {
   state.shakeIntensity = 0;
   state.exploding = false;
   state.explosionTimer = 0;
+  state.playerHistory = [];
+  state.historyTimer = 0;
+  state.evasionHistory = [];
+  state.lastBlackSpawn = 0;
   state.controlMapping = generateControls(0);
   ctx.filter = 'none';
+  if (document.activeElement) document.activeElement.blur();
 
   applyDifficulty();
   for (var i = 0; i < 2; i++) spawnGem();
@@ -1720,6 +2243,65 @@ function resetGame() {
 
   state.lastTime = performance.now();
   requestAnimationFrame(gameLoop);
+}
+
+function handleGemMinigame(dt) {
+  var mg = state.gemMinigame;
+  mg.timer += dt;
+
+  if (mg.timer >= mg.maxTimer) { mg.active = false; return; }
+
+  if (mg.successTimer > 0) {
+    mg.successTimer -= dt;
+    if (mg.successTimer <= 0) {
+      state.score++;
+      state.keys = {};
+      var tier = getControlTier(state.score);
+      state.controlMapping = generateControls(tier);
+      showControlPopup(state.controlMapping, tier);
+      applyDifficulty();
+      state.gemSpawnTimer = 0;
+      for (var j = state.gems.length; j < 2; j++) spawnGem();
+      mg.active = false;
+    }
+    return;
+  }
+
+  if (mg.failTimer > 0) {
+    mg.failTimer -= dt;
+    if (mg.failTimer <= 0) mg.active = false;
+    return;
+  }
+
+  var spaceHeld = !!state.keys[' '];
+
+  // Released space → check if ring was in the sweet spot
+  if (!spaceHeld && mg.holding) {
+    mg.holding = false;
+    var dist = Math.abs(mg.ringRadius - mg.targetRadius);
+    if (dist <= mg.tolerance) {
+      mg.successTimer = 0.3;
+    } else {
+      mg.failTimer = 0.8;
+      mg.failFeedback = mg.ringRadius > mg.targetRadius ? 'TOO EARLY' : 'TOO LATE';
+    }
+    return;
+  }
+
+  // Not holding, space not pressed → idle
+  if (!spaceHeld) return;
+
+  // Just pressed space → start
+  if (!mg.holding) {
+    mg.holding = true;
+    return;
+  }
+
+  // Holding → shrink ring continuously
+  mg.ringRadius -= mg.shrinkRate * dt;
+  if (mg.ringRadius < mg.minRadius) {
+    mg.ringRadius = mg.maxRadius;
+  }
 }
 
 function update(dt) {
@@ -1740,6 +2322,7 @@ function update(dt) {
     if (state.explosionTimer <= 0) {
       state.exploding = false;
       document.getElementById('deathScreen').classList.add('visible');
+      setTimeout(function() { document.getElementById('restartBtn').focus(); }, 50);
     }
     if (state.shakeTimer > 0) {
       state.shakeTimer -= dt;
@@ -1748,6 +2331,7 @@ function update(dt) {
     return;
   }
 
+  if (state.gemMinigame.active) { handleGemMinigame(dt); return; }
   if (!state.running || state.dead) return;
 
   var cdEl = document.getElementById('controlsDisplay');
@@ -1793,19 +2377,103 @@ function update(dt) {
   p.x = Math.max(p.size, Math.min(W - p.size, p.x));
   p.y = Math.max(p.size, Math.min(H - p.size, p.y));
 
+  state.historyTimer += dt;
+  if (state.historyTimer >= 0.08) {
+    state.playerHistory.push({ x: p.x, y: p.y, t: state.time });
+    state.playerHistory = state.playerHistory.filter(function(h) { return h.t > state.time - 60; });
+    state.historyTimer = 0;
+  }
+
+  if (dx !== 0 || dy !== 0) {
+    for (var ei = 0; ei < state.enemies.length; ei++) {
+      if (Math.hypot(p.x - state.enemies[ei].x, p.y - state.enemies[ei].y) < 150) {
+        state.evasionHistory.push({ dx: dx, dy: dy });
+        if (state.evasionHistory.length > 20) state.evasionHistory.shift();
+        break;
+      }
+    }
+  }
+
   for (var i = 0; i < state.enemies.length; i++) {
     var e = state.enemies[i];
-    var edx = p.x - e.x;
-    var edy = p.y - e.y;
-    var d = Math.hypot(edx, edy);
-    if (d > 1) {
-      e.x += (edx / d) * e.speed * dt;
-      e.y += (edy / d) * e.speed * dt;
+    if (e.black) {
+      var boostSpeed = e.speed;
+      if (e.boosted) {
+        e.boostDuration -= dt;
+        if (e.boostDuration <= 0) { e.boosted = false; e.chargeTimer = 0; e.chargeParticles = []; }
+        boostSpeed = e.speed * 1.3;
+      } else {
+        e.chargeTimer += dt;
+        if (e.chargeTimer >= 10) { e.boosted = true; e.boostDuration = 3; }
+      }
+
+      var recent = state.playerHistory.filter(function(h) { return h.t > state.time - 0.3; });
+      if (recent.length >= 3) {
+        var last = recent[recent.length - 1];
+        var first = recent[0];
+        var dtH = last.t - first.t || 0.01;
+        var velX = (last.x - first.x) / dtH;
+        var velY = (last.y - first.y) / dtH;
+        var tx = p.x + velX * 0.6;
+        var ty = p.y + velY * 0.6;
+
+        var cx = W / 2, cy = H / 2;
+        var toCx = cx - p.x, toCy = cy - p.y;
+        var toCd = Math.hypot(toCx, toCy);
+        if (toCd > 1) { tx += (toCx / toCd) * 40; ty += (toCy / toCd) * 40; }
+
+        if (state.evasionHistory.length >= 5) {
+          var aex = 0, aey = 0;
+          for (var hi = 0; hi < state.evasionHistory.length; hi++) { aex += state.evasionHistory[hi].dx; aey += state.evasionHistory[hi].dy; }
+          aex /= state.evasionHistory.length; aey /= state.evasionHistory.length;
+          var ael = Math.hypot(aex, aey);
+          if (ael > 0.1) { tx += (-aey / ael) * 30; ty += (aex / ael) * 30; }
+        }
+
+        var tdx = tx - e.x, tdy = ty - e.y, td = Math.hypot(tdx, tdy);
+        if (td > 1) { e.x += (tdx / td) * boostSpeed * dt; e.y += (tdy / td) * boostSpeed * dt; }
+        e.lastX = e.x; e.lastY = e.y;
+      } else {
+        var edx = p.x - e.x, edy = p.y - e.y, d = Math.hypot(edx, edy);
+        if (d > 1) { e.x += (edx / d) * boostSpeed * dt; e.y += (edy / d) * boostSpeed * dt; }
+        e.lastX = e.x; e.lastY = e.y;
+      }
+
+      if (!e.boosted && e.chargeTimer > 2 && Math.random() < 0.3) {
+        e.chargeParticles.push({ x: e.x + (Math.random() - 0.5) * 30, y: e.y + (Math.random() - 0.5) * 30, life: 1, decay: 0.5 + Math.random() * 0.5, vx: (Math.random() - 0.5) * 20, vy: (Math.random() - 0.5) * 20 });
+      }
+      for (var pi = e.chargeParticles.length - 1; pi >= 0; pi--) {
+        var pp = e.chargeParticles[pi];
+        pp.x += pp.vx * dt; pp.y += pp.vy * dt;
+        pp.life -= pp.decay * dt;
+        if (pp.life <= 0) e.chargeParticles.splice(pi, 1);
+      }
+    } else {
+      var edx = p.x - e.x;
+      var edy = p.y - e.y;
+      var d = Math.hypot(edx, edy);
+      var sepX = 0, sepY = 0;
+      for (var j = 0; j < state.enemies.length; j++) {
+        if (i === j) continue;
+        var o = state.enemies[j];
+        var sdx = e.x - o.x;
+        var sdy = e.y - o.y;
+        var sd = Math.hypot(sdx, sdy);
+        if (sd < 60 && sd > 0.1) {
+          var force = 1 - sd / 60;
+          sepX += (sdx / sd) * force * 60;
+          sepY += (sdy / sd) * force * 60;
+        }
+      }
+      if (d > 1) {
+        e.x += (edx / d) * e.speed * dt + sepX * dt;
+        e.y += (edy / d) * e.speed * dt + sepY * dt;
+      }
     }
     e.x = Math.max(e.size, Math.min(W - e.size, e.x));
     e.y = Math.max(e.size, Math.min(H - e.size, e.y));
     var trailDist = Math.hypot(e.x - e.lastX, e.y - e.lastY);
-    if (trailDist > 6) {
+    if (trailDist > 6 && !e.black) {
       state.gooPuddles.push({
         x1: e.lastX, y1: e.lastY,
         x2: e.x, y2: e.y,
@@ -1818,6 +2486,12 @@ function update(dt) {
     }
   }
 
+  var curMin = Math.floor(state.time / 60);
+  if (curMin > state.lastBlackSpawn) {
+    spawnBlackEnemy();
+    state.lastBlackSpawn = curMin;
+  }
+
   for (var i = state.gooPuddles.length - 1; i >= 0; i--) {
     var goo = state.gooPuddles[i];
     goo.life -= goo.decay * dt;
@@ -1828,15 +2502,18 @@ function update(dt) {
     var g = state.gems[i];
     if (dist(p, g) < p.size + g.size) {
       state.gems.splice(i, 1);
-      state.score++;
       playGemSound();
-      state.keys = {};
-      var tier = getControlTier(state.score);
-      state.controlMapping = generateControls(tier);
-      showControlPopup(state.controlMapping, tier);
-      applyDifficulty();
-      state.gemSpawnTimer = 0;
-      for (var j = state.gems.length; j < 2; j++) spawnGem();
+      var mg = state.gemMinigame;
+      mg.active = true;
+      mg.ringRadius = mg.maxRadius;
+      mg.holding = false;
+      mg.atTarget = false;
+      mg.snapTimer = 0;
+      mg.successTimer = 0;
+      mg.failTimer = 0;
+      mg.timer = 0;
+      mg.centerX = W / 2;
+      mg.centerY = H / 2;
     }
   }
 
@@ -1931,6 +2608,55 @@ function drawEnemies(time) {
   for (var i = 0; i < state.enemies.length; i++) {
     var e = state.enemies[i];
     var hs = e.size, x = e.x - hs, y = e.y - hs, w = hs * 2;
+
+    if (e.black) {
+      var chargeRatio = Math.min(1, e.chargeTimer / 10);
+      var borderBright = e.boosted ? 1 : chargeRatio;
+
+      // Charge particles
+      for (var pi = 0; pi < e.chargeParticles.length; pi++) {
+        var pp = e.chargeParticles[pi];
+        ctx.fillStyle = 'rgba(255,255,255,' + (pp.life * 0.5) + ')';
+        ctx.beginPath(); ctx.arc(pp.x, pp.y, 1 + pp.life * 2, 0, Math.PI * 2); ctx.fill();
+      }
+
+      // Boost trail
+      if (e.boosted) {
+        ctx.save();
+        for (var ti = 1; ti <= 3; ti++) {
+          var bx = e.x - (e.lastX - e.x) * ti * 0.15;
+          var by = e.y - (e.lastY - e.y) * ti * 0.15;
+          ctx.globalAlpha = 1 - ti * 0.3;
+          ctx.fillStyle = '#000000';
+          ctx.shadowColor = '#ffffff'; ctx.shadowBlur = 10;
+          ctx.fillRect(bx - hs - 1, by - hs - 1, w + 2, w + 2);
+        }
+        ctx.restore();
+      }
+
+      // Main body
+      ctx.fillStyle = '#000000'; ctx.fillRect(x - 1, y - 1, w + 2, w + 2);
+      ctx.save();
+      ctx.shadowColor = e.boosted ? '#ffffff' : '#000000';
+      ctx.shadowBlur = 15 + 15 * borderBright;
+      ctx.strokeStyle = 'rgba(255,255,255,' + (0.05 + 0.4 * borderBright) + ')';
+      ctx.lineWidth = 1 + borderBright;
+      ctx.strokeRect(x - 1 - borderBright, y - 1 - borderBright, w + 2 + borderBright * 2, w + 2 + borderBright * 2);
+      ctx.restore();
+
+      // Eyes
+      var eyeBright = e.boosted ? 1 : 0.3 + 0.7 * chargeRatio;
+      ctx.fillStyle = 'rgba(255,255,255,' + eyeBright + ')';
+      ctx.beginPath(); ctx.arc(e.x - 5, e.y - 3, 2.5 + 0.5 * eyeBright, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(e.x + 5, e.y - 3, 2.5 + 0.5 * eyeBright, 0, Math.PI * 2); ctx.fill();
+      if (!e.boosted) {
+        ctx.fillStyle = '#000000';
+        ctx.beginPath(); ctx.arc(e.x - 5, e.y - 3, 1.3, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(e.x + 5, e.y - 3, 1.3, 0, Math.PI * 2); ctx.fill();
+      }
+      continue;
+    }
+
     ctx.fillStyle = '#0a0a0a'; ctx.fillRect(x, y, w, w);
     var pulse = 0.7 + 0.3 * Math.sin(time * 4);
     ctx.save();
@@ -2083,6 +2809,114 @@ function render(time) {
   ctx.restore();
   if (state.danger > 0 && !state.dead && !state.exploding) drawDangerVignette(state.danger, time);
   ctx.filter = 'none';
+  if (state.gemMinigame.active) drawGemMinigame();
+}
+
+function drawGemMinigame() {
+  var mg = state.gemMinigame;
+  var cx = mg.centerX;
+  var cy = mg.centerY;
+  var gemSize = mg.targetRadius * 3;
+  var time = performance.now() / 1000;
+  var ring = mg.ringRadius;
+
+  // Dark overlay
+  ctx.fillStyle = 'rgba(0,0,0,0.65)';
+  ctx.fillRect(0, 0, W, H);
+
+  // Success flash
+  if (mg.successTimer > 0) {
+    var flash = mg.successTimer / 0.3;
+    ctx.fillStyle = 'rgba(255,255,200,' + (flash * 0.5) + ')';
+    ctx.fillRect(0, 0, W, H);
+    ctx.save();
+    ctx.shadowColor = '#ffd700'; ctx.shadowBlur = 80;
+    ctx.fillStyle = '#ffd700';
+    ctx.beginPath(); ctx.moveTo(cx, cy - gemSize); ctx.lineTo(cx + gemSize, cy); ctx.lineTo(cx, cy + gemSize); ctx.lineTo(cx - gemSize, cy); ctx.closePath(); ctx.fill();
+    ctx.restore();
+    return;
+  }
+
+  // Fail flash (no fullscreen red, just text with glow)
+  if (mg.failTimer > 0) {
+    var flash = mg.failTimer / 0.8;
+    ctx.save();
+    ctx.shadowColor = '#ff0000';
+    ctx.shadowBlur = 40 * flash;
+    ctx.fillStyle = 'rgba(255,255,255,' + (flash) + ')';
+    ctx.font = 'bold 32px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText(mg.failFeedback, cx, cy);
+    ctx.restore();
+    return;
+  }
+
+  var isAtTarget = Math.abs(ring - mg.targetRadius) <= mg.tolerance;
+
+  // Target guide ring (dashed outline showing where the gem is)
+  ctx.save();
+  ctx.setLineDash([6, 4]);
+  ctx.strokeStyle = isAtTarget ? 'rgba(0,255,80,0.6)' : 'rgba(255,255,255,0.25)';
+  ctx.lineWidth = isAtTarget ? 2 : 1;
+  var guide = mg.targetRadius;
+  ctx.beginPath(); ctx.moveTo(cx, cy - guide); ctx.lineTo(cx + guide, cy); ctx.lineTo(cx, cy + guide); ctx.lineTo(cx - guide, cy); ctx.closePath(); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.restore();
+
+  // Gem
+  ctx.save();
+  var gemPulse = isAtTarget ? 1 + 0.03 * Math.sin(time * 20) : 1;
+  var gemGlow = isAtTarget ? 50 : 30;
+  ctx.shadowColor = '#ffd700'; ctx.shadowBlur = gemGlow;
+  ctx.fillStyle = '#ffd700';
+  ctx.beginPath(); ctx.moveTo(cx, cy - gemSize * gemPulse); ctx.lineTo(cx + gemSize * gemPulse, cy); ctx.lineTo(cx, cy + gemSize * gemPulse); ctx.lineTo(cx - gemSize * gemPulse, cy); ctx.closePath(); ctx.fill();
+  ctx.restore();
+  ctx.fillStyle = 'rgba(255,255,200,0.4)';
+  ctx.beginPath(); ctx.moveTo(cx, cy - gemSize * 0.5); ctx.lineTo(cx + gemSize * 0.5, cy); ctx.lineTo(cx, cy + gemSize * 0.5); ctx.lineTo(cx - gemSize * 0.5, cy); ctx.closePath(); ctx.fill();
+
+  // Ring color
+  var r, g, b;
+  if (isAtTarget) { r = 0; g = 255; b = 80; }
+  else if (ring > mg.targetRadius * 2) { r = 255; g = 50; b = 30; }
+  else { r = 255; g = 200; b = 0; }
+
+  // Ring glow
+  ctx.save();
+  var ringPulse = isAtTarget ? 1 + 0.08 * Math.sin(time * 18) : 1;
+  var ringGlow = isAtTarget ? 60 : 25;
+  ctx.shadowColor = 'rgb(' + r + ',' + g + ',' + b + ')';
+  ctx.shadowBlur = ringGlow;
+  ctx.strokeStyle = 'rgba(' + r + ',' + g + ',' + b + ',' + (isAtTarget ? 0.6 + 0.4 * Math.sin(time * 18) : 0.9) + ')';
+  ctx.lineWidth = isAtTarget ? 5 : 3;
+  ctx.beginPath(); ctx.moveTo(cx, cy - ring * ringPulse); ctx.lineTo(cx + ring * ringPulse, cy); ctx.lineTo(cx, cy + ring * ringPulse); ctx.lineTo(cx - ring * ringPulse, cy); ctx.closePath(); ctx.stroke();
+  ctx.restore();
+
+  // Text
+  ctx.font = 'bold 20px Courier New';
+  ctx.textAlign = 'center';
+  if (isAtTarget) {
+    ctx.fillStyle = 'rgba(0,255,80,' + (0.7 + 0.3 * Math.sin(time * 18)) + ')';
+    ctx.fillText('RELEASE!', cx, cy + gemSize + 75);
+  } else if (!mg.holding) {
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.font = '16px Courier New';
+    ctx.fillText('HOLD SPACE', cx, cy + gemSize + 75);
+  } else {
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.font = '16px Courier New';
+    ctx.fillText('WAIT...', cx, cy + gemSize + 75);
+  }
+
+  // Timer bar
+  var barW = 200;
+  var barH = 4;
+  var barX = cx - barW / 2;
+  var barY = cy + gemSize + 50;
+  var remaining = 1 - mg.timer / mg.maxTimer;
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.fillRect(barX, barY, barW, barH);
+  ctx.fillStyle = 'rgba(255,200,50,' + (0.5 + 0.5 * remaining) + ')';
+  ctx.fillRect(barX, barY, barW * remaining, barH);
 }
 
 var menuParticles = [];
@@ -2159,6 +2993,12 @@ document.addEventListener('keydown', function(e) {
       e.preventDefault();
       return;
     }
+    var deathScreen = document.getElementById('deathScreen');
+    if (deathScreen.classList.contains('visible')) {
+      document.getElementById('menuBtn').click();
+      e.preventDefault();
+      return;
+    }
     var mainMenu = document.getElementById('mainMenu');
     if (mainMenu.classList.contains('visible')) {
       var soundPanel = document.getElementById('soundPanel');
@@ -2174,20 +3014,52 @@ document.addEventListener('keydown', function(e) {
     return;
   }
   if (e.key === 'Enter') {
-    var mainMenu = document.getElementById('mainMenu');
-    if (mainMenu.classList.contains('visible') && !state.running) {
-      if (document.getElementById('howToPlayPanel').style.display !== 'flex' &&
-          document.getElementById('optionsPanel').style.display !== 'flex' &&
-          document.getElementById('soundPanel').style.display !== 'flex') {
-        document.getElementById('playBtn').click();
+    var deathScreen = document.getElementById('deathScreen');
+    if (deathScreen.classList.contains('visible')) {
+      if (document.activeElement && document.activeElement !== document.body) {
+        document.activeElement.click();
         e.preventDefault();
         return;
       }
     }
-  }
-  if (e.key === 'Tab' && !state.running) {
+    var modal = document.getElementById('customModal');
+    if (modal.classList.contains('visible')) {
+      if (document.activeElement && document.activeElement !== document.body) {
+        document.activeElement.click();
+        e.preventDefault();
+        return;
+      }
+    }
+    if (state.running) { e.preventDefault(); return; }
     var mainMenu = document.getElementById('mainMenu');
-    if (mainMenu.classList.contains('visible')) { e.preventDefault(); return; }
+    if (mainMenu.classList.contains('visible')) {
+      if (document.getElementById('howToPlayPanel').style.display !== 'flex' &&
+          document.getElementById('optionsPanel').style.display !== 'flex' &&
+          document.getElementById('soundPanel').style.display !== 'flex') {
+        if (document.activeElement && document.activeElement !== document.body &&
+            document.getElementById('menuButtons').contains(document.activeElement)) {
+          document.activeElement.click();
+        } else {
+          document.getElementById('playBtn').click();
+        }
+        e.preventDefault();
+        return;
+      }
+      if (document.activeElement && document.activeElement !== document.body) {
+        document.activeElement.click();
+        e.preventDefault();
+        return;
+      }
+    }
+    e.preventDefault();
+  }
+  if (e.key === 'Tab') {
+    if (document.getElementById('deathScreen').classList.contains('visible') ||
+        document.getElementById('customModal').classList.contains('visible')) { e.preventDefault(); return; }
+    if (!state.running) {
+      var mainMenu = document.getElementById('mainMenu');
+      if (mainMenu.classList.contains('visible')) { e.preventDefault(); return; }
+    }
   }
   if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && !state.running) {
     var htpPanel = document.getElementById('howToPlayPanel');
@@ -2198,15 +3070,11 @@ document.addEventListener('keydown', function(e) {
       return;
     }
   }
-  if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && !state.running) {
-    var mainMenu = document.getElementById('mainMenu');
-    if (mainMenu.classList.contains('visible')) {
+  if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+    var deathScreen = document.getElementById('deathScreen');
+    if (deathScreen.classList.contains('visible')) {
       e.preventDefault();
-      var container;
-      if (document.getElementById('howToPlayPanel').style.display === 'flex') container = document.querySelectorAll('#htpNav button, #htpBack');
-      else if (document.getElementById('soundPanel').style.display === 'flex') container = document.querySelectorAll('#soundPanel button');
-      else if (document.getElementById('optionsPanel').style.display === 'flex') container = document.querySelectorAll('#optionsPanel button');
-      else container = document.querySelectorAll('#menuButtons button');
+      var container = document.querySelectorAll('#deathScreen button');
       var visible = Array.prototype.filter.call(container, function(b) { return b.offsetParent !== null; });
       if (visible.length === 0) return;
       var focused = document.activeElement;
@@ -2216,6 +3084,43 @@ document.addEventListener('keydown', function(e) {
       visible[idx].focus();
       return;
     }
+    var modal = document.getElementById('customModal');
+    if (modal.classList.contains('visible')) {
+      e.preventDefault();
+      var container = document.querySelectorAll('#customModalBtns button');
+      var visible = Array.prototype.filter.call(container, function(b) { return b.offsetParent !== null; });
+      if (visible.length === 0) return;
+      var focused = document.activeElement;
+      var idx = visible.indexOf(focused);
+      if (e.key === 'ArrowDown') idx = (idx + 1) % visible.length;
+      else idx = (idx - 1 + visible.length) % visible.length;
+      visible[idx].focus();
+      return;
+    }
+    if (!state.running) {
+      var mainMenu = document.getElementById('mainMenu');
+      if (mainMenu.classList.contains('visible')) {
+        e.preventDefault();
+        var container;
+        if (document.getElementById('howToPlayPanel').style.display === 'flex') container = document.querySelectorAll('#htpNav button, #htpBack');
+        else if (document.getElementById('soundPanel').style.display === 'flex') container = document.querySelectorAll('#soundPanel button, #soundPanel input[type=range]');
+        else if (document.getElementById('optionsPanel').style.display === 'flex') container = document.querySelectorAll('#optionsPanel button');
+        else container = document.querySelectorAll('#menuButtons button');
+        var visible = Array.prototype.filter.call(container, function(b) { return b.offsetParent !== null; });
+        if (visible.length === 0) return;
+        var focused = document.activeElement;
+        var idx = visible.indexOf(focused);
+        if (e.key === 'ArrowDown') idx = (idx + 1) % visible.length;
+        else idx = (idx - 1 + visible.length) % visible.length;
+        visible[idx].focus();
+        return;
+      }
+    }
+  }
+  if (document.getElementById('deathScreen').classList.contains('visible') ||
+      document.getElementById('customModal').classList.contains('visible')) {
+    if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].indexOf(e.key) >= 0) e.preventDefault();
+    return;
   }
   state.keys[e.key.toUpperCase()] = true;
   if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].indexOf(e.key) >= 0) e.preventDefault();
@@ -2265,6 +3170,7 @@ document.getElementById('htpBack').addEventListener('click', function() {
   document.getElementById('howToPlayPanel').style.display = 'none';
   document.getElementById('menuButtons').style.display = 'flex';
   document.getElementById('menuRecord').style.display = 'flex';
+  if (window._htpGemAnimId) { cancelAnimationFrame(window._htpGemAnimId); window._htpGemAnimId = null; }
   setTimeout(function() { document.getElementById('howToPlayBtn').focus(); }, 50);
 });
 
@@ -2323,6 +3229,7 @@ function showModal(msg, onConfirm) {
   var cancelBtn = document.getElementById('modalCancelBtn');
   msgEl.textContent = msg;
   modal.classList.add('visible');
+  setTimeout(function() { cancelBtn.focus(); }, 50);
   function close() { modal.classList.remove('visible'); confirmBtn.onclick = null; cancelBtn.onclick = null; }
   confirmBtn.onclick = function() { close(); if (onConfirm) onConfirm(); };
   cancelBtn.onclick = close;
@@ -2419,7 +3326,105 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 document.getElementById('splashScreen').addEventListener('click', splashStart);
-document.addEventListener('keydown', function(e) { if (!document.getElementById('splashScreen').classList.contains('hidden')) splashStart(); });
+document.addEventListener('keydown', function splashEnter(e) { if (e.key === 'Enter' && !document.getElementById('splashScreen').classList.contains('hidden')) { splashStart(); e.preventDefault(); } });
+
+// --- Video intro ---
+var introOverlay = document.getElementById('introVideoOverlay');
+var introVideo = document.getElementById('introVideo');
+var videoAutoplayBlocked = false;
+
+function hideVideoAndShowSplash() {
+  if (introOverlay.classList.contains('hidden')) return;
+  introVideo.pause();
+  introOverlay.classList.add('hidden');
+  document.getElementById('splashScreen').classList.remove('hidden');
+  startMenuParticles();
+  initSplashDust();
+  drawSplashDust();
+}
+
+introVideo.addEventListener('ended', function() {
+  hideVideoAndShowSplash();
+});
+
+document.addEventListener('keydown', function videoEnterHandler(e) {
+  if (!introOverlay.classList.contains('hidden')) {
+    if (e.key === 'Enter') {
+      if (introVideo.paused) {
+        if (introVideo.error) {
+          hideVideoAndShowSplash();
+        } else if (videoAutoplayBlocked) {
+          introVideo.play().then(function() {
+            videoAutoplayBlocked = false;
+          }).catch(function() {});
+        } else {
+          hideVideoAndShowSplash();
+        }
+      } else {
+        hideVideoAndShowSplash();
+      }
+      e.preventDefault();
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+    }
+  }
+});
+
+introVideo.play().catch(function() {
+  videoAutoplayBlocked = true;
+});
+// --- End video intro ---
+
+// --- Splash dust particles ---
+var splashDustCanvas = document.getElementById('splashDustCanvas');
+var splashDustCtx = splashDustCanvas ? splashDustCanvas.getContext('2d') : null;
+var splashDust = [];
+var splashDustFrame = null;
+
+function resizeSplashDust() {
+  if (!splashDustCanvas) return;
+  splashDustCanvas.width = window.innerWidth;
+  splashDustCanvas.height = window.innerHeight;
+}
+
+function initSplashDust() {
+  resizeSplashDust();
+  splashDust = [];
+  for (var i = 0; i < 40; i++) {
+    splashDust.push({
+      x: Math.random() * splashDustCanvas.width,
+      y: Math.random() * splashDustCanvas.height,
+      vx: (Math.random() - 0.5) * 4,
+      vy: -0.3 - Math.random() * 0.8,
+      size: 0.5 + Math.random() * 1.5,
+      alpha: 0.05 + Math.random() * 0.15,
+    });
+  }
+}
+
+function drawSplashDust() {
+  if (!splashDustCtx || !splashDustCanvas) return;
+  splashDustCtx.clearRect(0, 0, splashDustCanvas.width, splashDustCanvas.height);
+  for (var i = 0; i < splashDust.length; i++) {
+    var d = splashDust[i];
+    d.x += d.vx * 0.016;
+    d.y += d.vy * 0.016;
+    if (d.x < -10) d.x = splashDustCanvas.width + 10;
+    if (d.x > splashDustCanvas.width + 10) d.x = -10;
+    if (d.y < -10) d.y = splashDustCanvas.height + 10;
+    if (d.y > splashDustCanvas.height + 10) d.y = -10;
+    splashDustCtx.fillStyle = 'rgba(255,255,255,' + d.alpha + ')';
+    splashDustCtx.beginPath(); splashDustCtx.arc(d.x, d.y, d.size, 0, Math.PI * 2); splashDustCtx.fill();
+  }
+  splashDustFrame = requestAnimationFrame(drawSplashDust);
+}
+
+function stopSplashDust() {
+  if (splashDustFrame) { cancelAnimationFrame(splashDustFrame); splashDustFrame = null; }
+}
+
+window.addEventListener('resize', resizeSplashDust);
+// --- End splash dust ---
 
 function playCoinSound() {
   if (!menuCtx) { initMenuAudio(); }
@@ -2441,23 +3446,29 @@ function playCoinSound() {
 
 function splashStart() {
   var splash = document.getElementById('splashScreen');
-  if (splash.classList.contains('hidden')) return;
+  if (splash.classList.contains('hidden') || splash.classList.contains('lighting-up')) return;
   splash.style.pointerEvents = 'none';
-  playCoinSound();
-  var txt = document.getElementById('splashStart');
-  txt.style.animation = 'none';
-  var pattern = [1,0,1,0,0.5,0,0.8,0,0.3,0,0,0,0,0,0,0];
-  pattern.forEach(function(op, i) {
-    setTimeout(function() { txt.style.opacity = op; }, i * 40);
-  });
-  setTimeout(function() { splash.classList.add('hidden'); }, 640);
+  splash.classList.add('lighting-up');
+
+  var sw = document.getElementById('splashStart');
+  sw.classList.add('flipped');
+
+  gameStartSound.currentTime = 0;
+  gameStartSound.volume = volumes.master * 0.5;
+  gameStartSound.play().catch(function() {});
+
+  stopSplashDust();
+
   setTimeout(function() {
-    document.getElementById('gameContainer').classList.add('visible');
+    splash.classList.add('hidden');
+  }, 1800);
+
+  setTimeout(function() {
     document.getElementById('mainMenu').classList.add('visible');
     document.getElementById('playBtn').focus();
     startMenuParticles();
     startMenuSong();
-  }, 1140);
+  }, 2300);
 }
 
 var hoverTimer;
