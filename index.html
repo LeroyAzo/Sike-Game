@@ -2347,15 +2347,15 @@ const PLAYER_SPEED = 250;
 
 // ---- Learn.exe Data ----
 const LEARN_FILES = [
-  { id: 0, name: 'OBSERVER.REC', gems: 30, msg: 'The Learner was created to study movement patterns.\n\nIts progress exceeds expectations.' },
-  { id: 1, name: 'IMITACION.REC', gems: 60, msg: 'It began replicating observed behaviors.\n\nIt was not programmed to do this.' },
-  { id: 2, name: 'ESPERA.REC', gems: 90, msg: 'We detected something strange.\n\nSometimes it stops chasing the subject.\n\nIt seems to be watching.' },
-  { id: 3, name: 'PREDICCION.REC', gems: 120, msg: 'It no longer follows the subject.\n\nIt started anticipating their decisions.' },
-  { id: 4, name: 'APARICIONES.REC', gems: 150, msg: 'Multiple simultaneous readings were recorded.\n\nThere is only one Learner.\n\nThat should be impossible.' },
-  { id: 5, name: 'CORRUPCION.REC', gems: 180, msg: 'The records began modifying themselves.\n\nWe could not find who was responsible.' },
-  { id: 6, name: 'MEMORIA.REC', gems: 210, msg: 'It no longer studies individual sessions.\n\nIt retains information between sessions.' },
-  { id: 7, name: 'ESCAPE.REC', gems: 240, msg: 'We lost control.\n\nThe Learner stopped responding.\n\nWe do not believe it is still inside the simulation.' },
-  { id: 8, name: 'FINAL.REC', gems: 270, msg: 'The purpose of the Learner was never to study the subject.\n\nThe subject was the one training it.\n\nAll along you thought you were improving to survive.\n\nBut in reality you were teaching the Learner how to think.' },
+  { id: 0, name: 'OBSERVER.REC', gems: 100, msg: 'The Learner was created to study movement patterns.\n\nIts progress exceeds expectations.' },
+  { id: 1, name: 'IMITACION.REC', gems: 200, msg: 'It began replicating observed behaviors.\n\nIt was not programmed to do this.' },
+  { id: 2, name: 'ESPERA.REC', gems: 300, msg: 'We detected something strange.\n\nSometimes it stops chasing the subject.\n\nIt seems to be watching.' },
+  { id: 3, name: 'PREDICCION.REC', gems: 400, msg: 'It no longer follows the subject.\n\nIt started anticipating their decisions.' },
+  { id: 4, name: 'APARICIONES.REC', gems: 500, msg: 'Multiple simultaneous readings were recorded.\n\nThere is only one Learner.\n\nThat should be impossible.' },
+  { id: 5, name: 'CORRUPCION.REC', gems: 600, msg: 'The records began modifying themselves.\n\nWe could not find who was responsible.' },
+  { id: 6, name: 'MEMORIA.REC', gems: 700, msg: 'It no longer studies individual sessions.\n\nIt retains information between sessions.' },
+  { id: 7, name: 'ESCAPE.REC', gems: 800, msg: 'We lost control.\n\nThe Learner stopped responding.\n\nWe do not believe it is still inside the simulation.' },
+  { id: 8, name: 'FINAL.REC', gems: 900, msg: 'The purpose of the Learner was never to study the subject.\n\nThe subject was the one training it.\n\nAll along you thought you were improving to survive.\n\nBut in reality you were teaching the Learner how to think.' },
 ];
 
 // ---- Learn.exe State ----
@@ -2656,8 +2656,21 @@ function getDifficultyConfig(score) {
   return { speed: speed, count: count };
 }
 
+function getLearnDifficultyConfig(score) {
+  var speed = 100, count = 1;
+  if (score >= 5) speed = 120;
+  if (score >= 10) speed = 140;
+  if (score >= 15) { count = 2; speed = 155; }
+  if (score >= 20) speed = 170;
+  if (score >= 25) { count = 3; speed = 180; }
+  if (score >= 30) speed = 190;
+  if (score >= 35) { count = 4; speed = 200; }
+  if (score >= 40) { count = 5; speed = 210; }
+  return { speed: speed, count: count };
+}
+
 function applyDifficulty() {
-  var cfg = getDifficultyConfig(state.score);
+  var cfg = isLearnMode ? getLearnDifficultyConfig(state.score) : getDifficultyConfig(state.score);
   var regularEnemies = state.enemies.filter(function(e) { return !e.black; });
   while (regularEnemies.length < cfg.count) {
     var side = Math.floor(Math.random() * 4);
@@ -2684,7 +2697,7 @@ function spawnBlackEnemy() {
     case 2: x = p + Math.random() * (W - 2 * p); y = H - p; break;
     case 3: x = p; y = p + Math.random() * (H - 2 * p); break;
   }
-  var cfg = getDifficultyConfig(state.score);
+  var cfg = isLearnMode ? getLearnDifficultyConfig(state.score) : getDifficultyConfig(state.score);
   var be = { x: x, y: y, lastX: x, lastY: y, size: 22, speed: cfg.speed, black: true,
     chargeTimer: 0, boosted: false, boostDuration: 0, chargeParticles: [] };
   state.enemies.push(be);
