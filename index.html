@@ -2658,7 +2658,8 @@ function getDifficultyConfig(score) {
 
 function applyDifficulty() {
   var cfg = getDifficultyConfig(state.score);
-  while (state.enemies.length < cfg.count) {
+  var regularEnemies = state.enemies.filter(function(e) { return !e.black; });
+  while (regularEnemies.length < cfg.count) {
     var side = Math.floor(Math.random() * 4);
     var x, y;
     var p = 40;
@@ -2669,6 +2670,7 @@ function applyDifficulty() {
       case 3: x = p; y = p + Math.random() * (H - 2 * p); break;
     }
     state.enemies.push({ x: x, y: y, lastX: x, lastY: y, size: 22, speed: cfg.speed });
+    regularEnemies.push({}); // dummy to keep count
   }
   state.enemies.forEach(function(e) { if (!e.black) e.speed = cfg.speed; });
 }
