@@ -676,6 +676,40 @@ body {
   transform: scale(0.95);
 }
 
+@keyframes supportPulse {
+  0%, 100% { color: rgba(200, 200, 200, 0.3); border-color: rgba(200, 200, 200, 0.12); }
+  50% { color: #ff2222; border-color: rgba(255, 34, 34, 0.4); text-shadow: 0 0 8px rgba(255, 34, 34, 0.3); }
+}
+
+#supportBtn {
+  position: fixed;
+  bottom: 12px;
+  left: 12px;
+  background: transparent;
+  border: 1px solid rgba(200, 200, 200, 0.12);
+  color: rgba(200, 200, 200, 0.3);
+  padding: 8px 18px;
+  font-size: clamp(10px, 1.4vmin, 12px);
+  font-family: 'Courier New', monospace;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 3px;
+  z-index: 40;
+  letter-spacing: 1px;
+  animation: supportPulse 3s ease-in-out infinite;
+}
+
+#supportBtn:hover {
+  color: rgba(200, 200, 200, 0.6);
+  border-color: rgba(200, 200, 200, 0.25);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+#supportBtn:focus-visible {
+  outline: 1px solid rgba(200, 200, 200, 0.3);
+  outline-offset: 2px;
+}
+
 #playBtn {
   border-color: #cc2222 !important;
   border-width: 3px !important;
@@ -1358,6 +1392,77 @@ input[type=range]::-moz-range-thumb {
 }
 
 #soundBackBtn:hover {
+  border-color: rgba(255, 50, 50, 0.4) !important;
+  color: #ff4444 !important;
+  background: rgba(255, 50, 50, 0.05) !important;
+  box-shadow: 0 0 15px rgba(255, 50, 50, 0.1) !important;
+}
+
+#adPanel {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeInScale 0.2s ease;
+}
+
+#adPanel h2 {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  color: rgba(200, 200, 200, 0.5);
+  font-size: clamp(14px, 2vmin, 18px);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+#adPanel p {
+  font-family: 'Courier New', monospace;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: clamp(12px, 1.6vmin, 15px);
+  text-align: center;
+  margin-bottom: 20px;
+  max-width: 320px;
+  line-height: 1.6;
+}
+
+#adContainer {
+  width: 100%;
+  max-width: 320px;
+  min-height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+#adPanel button {
+  background: transparent;
+  border: 2px solid rgba(200, 200, 200, 0.25);
+  color: #ddd;
+  padding: 10px 30px;
+  font-size: clamp(11px, 1.6vmin, 14px);
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-weight: bold;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+  min-width: 140px;
+  margin-top: 6px;
+}
+
+#adPanel button:hover {
+  background: rgba(255, 50, 50, 0.08);
+  box-shadow: 0 0 25px rgba(255, 50, 50, 0.15);
+  border-color: rgba(255, 50, 50, 0.4);
+  transform: scale(1.05);
+}
+
+#adBackBtn {
+  border-color: rgba(200, 200, 200, 0.15) !important;
+  color: rgba(200, 200, 200, 0.45) !important;
+}
+
+#adBackBtn:hover {
   border-color: rgba(255, 50, 50, 0.4) !important;
   color: #ff4444 !important;
   background: rgba(255, 50, 50, 0.05) !important;
@@ -2182,6 +2287,7 @@ input[type=range]::-moz-range-thumb {
     <button id="optionsBtn">OPTIONS</button>
     <button id="howToPlayBtn">HOW TO PLAY</button>
   </div>
+  <button id="supportBtn">APOYAR PROYECTO</button>
 
   <div id="optionsPanel">
     <h2>OPTIONS</h2>
@@ -2239,6 +2345,21 @@ input[type=range]::-moz-range-thumb {
       <button id="htpNext">NEXT →</button>
     </div>
     <button id="htpBack">BACK</button>
+  </div>
+
+  <div id="adPanel">
+    <h2>APOYAR PROYECTO</h2>
+    <p>Este proyecto es gratuito y sin fines de lucro. Si te gusta, considera apoyarlo viendo este breve anuncio. ¡Gracias!</p>
+    <div id="adContainer">
+      <!-- anuncio1 -->
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-3652956885798359"
+           data-ad-slot="1548369041"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+    </div>
+    <button id="adBackBtn">BACK</button>
   </div>
 </div>
 
@@ -4791,6 +4912,7 @@ document.addEventListener('keydown', function(e) {
         if (document.getElementById('howToPlayPanel').style.display === 'flex') container = document.querySelectorAll('#htpNav button, #htpBack');
         else if (document.getElementById('soundPanel').style.display === 'flex') container = document.querySelectorAll('#soundPanel button, #soundPanel input[type=range]');
         else if (document.getElementById('optionsPanel').style.display === 'flex') container = document.querySelectorAll('#optionsPanel button');
+        else if (document.getElementById('adPanel').style.display === 'flex') container = document.querySelectorAll('#adPanel button');
         else container = document.querySelectorAll('#menuButtons button');
         var visible = Array.prototype.filter.call(container, function(b) { return b.offsetParent !== null; });
         if (visible.length === 0) return;
@@ -4896,6 +5018,23 @@ document.getElementById('htpNext').addEventListener('click', function() {
 
 document.getElementById('htpPrev').addEventListener('click', function() {
   if (htpIndex > 0) { htpIndex--; renderHTP(); }
+});
+
+document.getElementById('supportBtn').addEventListener('click', function() {
+  document.getElementById('menuButtons').style.display = 'none';
+  document.getElementById('menuRecord').style.display = 'none';
+  document.getElementById('adPanel').style.display = 'flex';
+  setTimeout(function() {
+    (adsbygoogle = window.adsbygoogle || []).push({});
+    document.getElementById('adBackBtn').focus();
+  }, 100);
+});
+
+document.getElementById('adBackBtn').addEventListener('click', function() {
+  document.getElementById('adPanel').style.display = 'none';
+  document.getElementById('menuButtons').style.display = 'flex';
+  document.getElementById('menuRecord').style.display = 'flex';
+  setTimeout(function() { document.getElementById('supportBtn').focus(); }, 50);
 });
 
 document.getElementById('optionsBtn').addEventListener('click', function() {
