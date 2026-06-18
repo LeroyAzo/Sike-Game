@@ -3550,6 +3550,7 @@ function showLearnScene() {
 function hideLearnScene() {
   learnSceneActive = false;
   document.getElementById('learnScene').classList.remove('visible');
+  document.getElementById('adPanel').style.display = 'none';
   document.getElementById('mainMenu').classList.add('visible');
   stopLearnFrame();
   setTimeout(function() { document.getElementById('learnBtn').focus(); startMenuParticles(); startMenuSong(); }, 100);
@@ -5164,6 +5165,7 @@ document.getElementById('menuBtn').addEventListener('click', function() {
   document.getElementById('deathScreen').classList.remove('visible');
   document.getElementById('optionsPanel').style.display = 'none';
   document.getElementById('soundPanel').style.display = 'none';
+  document.getElementById('adPanel').style.display = 'none';
   document.getElementById('menuButtons').style.display = 'flex';
   document.getElementById('menuRecord').style.display = 'flex';
   document.getElementById('menuRecordValue').textContent = state.record;
