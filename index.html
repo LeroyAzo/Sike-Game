@@ -798,6 +798,8 @@ body {
   letter-spacing: 4px;
   text-shadow: 0 0 30px rgba(255, 68, 68, 0.5);
   margin-bottom: 24px;
+  text-align: center;
+  width: 100%;
 }
 
 #deathStats {
@@ -1385,6 +1387,761 @@ input[type=range]::-moz-range-thumb {
   display: block;
 }
 
+/* ===== LEARN.EXE SCENE ===== */
+#learnScene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+  z-index: 25;
+  background: #0a0a0a;
+  overflow: hidden;
+}
+
+#learnScene.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Left: Terminal */
+#learnTerminal {
+  flex: 3;
+  position: relative;
+  background: #050505;
+  border-right: 1px solid rgba(0, 255, 65, 0.15);
+  overflow: hidden;
+  font-family: 'Courier New', monospace;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Scanline overlay */
+#learnTerminal::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 255, 65, 0.025) 2px,
+    rgba(0, 255, 65, 0.025) 4px
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* CRT vignette */
+#learnTerminal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.7), inset 0 0 120px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  z-index: 3;
+  border-radius: 0;
+}
+
+#learnTerminalContent {
+  flex: 1;
+  padding: 20px 16px 10px 16px;
+  font-size: clamp(11px, 1.6vmin, 15px);
+  color: #00ff41;
+  line-height: 1.7;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  position: relative;
+  z-index: 1;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 255, 65, 0.2) transparent;
+}
+
+#learnTerminalContent::-webkit-scrollbar {
+  width: 4px;
+}
+
+#learnTerminalContent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#learnTerminalContent::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 65, 0.2);
+  border-radius: 2px;
+}
+
+.terminal-prompt {
+  color: #00ff41;
+}
+
+.terminal-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 14px;
+  background: #00ff41;
+  animation: cursorBlink 0.8s step-end infinite;
+  vertical-align: text-bottom;
+  margin-left: 2px;
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.terminal-line {
+  min-height: 1.2em;
+}
+
+.terminal-line.dim {
+  color: rgba(0, 255, 65, 0.3);
+}
+
+.terminal-line.highlight {
+  color: #00ff41;
+  text-shadow: 0 0 8px rgba(0, 255, 65, 0.5);
+}
+
+.terminal-line.error {
+  color: #ff0040;
+  text-shadow: 0 0 8px rgba(255, 0, 64, 0.4);
+}
+
+.terminal-line.file-locked {
+  color: rgba(0, 255, 65, 0.2);
+}
+
+.terminal-line.file-unlocked {
+  color: #00ff41;
+  text-shadow: 0 0 4px rgba(0, 255, 65, 0.3);
+  cursor: pointer;
+}
+
+.terminal-line.file-read {
+  color: rgba(0, 170, 34, 0.6);
+}
+
+.terminal-line.file-selected {
+  background: rgba(0, 255, 65, 0.08);
+  outline: 1px solid rgba(0, 255, 65, 0.15);
+}
+
+.terminal-line.file-new {
+  color: #00ff41;
+  text-shadow: 0 0 12px rgba(0, 255, 65, 0.7);
+  animation: filePulse 1s ease-in-out infinite;
+}
+
+@keyframes filePulse {
+  0%, 100% { text-shadow: 0 0 8px rgba(0, 255, 65, 0.3); }
+  50% { text-shadow: 0 0 20px rgba(0, 255, 65, 0.8); }
+}
+
+.terminal-msg {
+  color: #00ff41;
+  text-shadow: 0 0 6px rgba(0, 255, 65, 0.3);
+  line-height: 1.8;
+}
+
+.terminal-msg-creepy {
+  color: #00aa33;
+  text-shadow: 0 0 10px rgba(0, 170, 51, 0.4);
+  line-height: 1.8;
+  font-style: italic;
+}
+
+.terminal-glitch {
+  animation: terminalGlitch 0.1s linear;
+}
+
+@keyframes terminalGlitch {
+  0% { transform: translate(0, 0); opacity: 1; }
+  25% { transform: translate(3px, -2px); opacity: 0.8; }
+  50% { transform: translate(-2px, 1px); opacity: 0.9; }
+  75% { transform: translate(1px, -3px); opacity: 0.85; }
+  100% { transform: translate(0, 0); opacity: 1; }
+}
+
+/* Right Panel */
+#learnPanel {
+  flex: 2;
+  background: #0d0d0d;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  gap: 20px;
+  position: relative;
+}
+
+#learnGemCounter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+#learnGemIcon {
+  font-size: clamp(32px, 5vmin, 48px);
+  color: #00ff41;
+  text-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
+}
+
+#learnGemCount {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  color: #00ff41;
+  font-size: clamp(42px, 7vmin, 64px);
+  text-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+  line-height: 1;
+}
+
+#learnGemTotal {
+  font-family: 'Courier New', monospace;
+  color: rgba(0, 255, 65, 0.4);
+  font-size: clamp(14px, 2vmin, 18px);
+}
+
+#learnProgressBar {
+  width: 100%;
+  max-width: 200px;
+  height: 6px;
+  background: rgba(0, 255, 65, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+#learnProgressFill {
+  height: 100%;
+  background: #00ff41;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.4);
+  width: 0%;
+}
+
+#learnProgressLabel {
+  font-family: 'Courier New', monospace;
+  color: rgba(0, 255, 65, 0.4);
+  font-size: clamp(10px, 1.4vmin, 13px);
+  text-align: center;
+  margin-top: -12px;
+}
+
+#learnPlayBtn {
+  background: transparent;
+  color: #00ff41;
+  border: 2px solid #00ff41;
+  padding: 14px 50px;
+  font-size: clamp(18px, 2.8vmin, 26px);
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-weight: bold;
+  letter-spacing: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+  text-transform: uppercase;
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.1);
+  margin-top: 10px;
+}
+
+#learnPlayBtn:hover {
+  background: rgba(0, 255, 65, 0.1);
+  box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+  transform: scale(1.05);
+}
+
+#learnPlayBtn:focus-visible {
+  outline: 2px solid #00ff41;
+  outline-offset: 3px;
+}
+
+#learnPlayBtn:active {
+  transform: scale(0.95);
+}
+
+#learnStats {
+  font-family: 'Courier New', monospace;
+  color: rgba(0, 255, 65, 0.3);
+  font-size: clamp(10px, 1.4vmin, 13px);
+  text-align: center;
+  line-height: 1.8;
+  margin-top: 10px;
+}
+
+#learnStats span {
+  color: rgba(0, 255, 65, 0.5);
+}
+
+#learnBackBtn {
+  background: transparent;
+  color: rgba(0, 255, 65, 0.3);
+  border: 1px solid rgba(0, 255, 65, 0.15);
+  padding: 8px 24px;
+  font-size: clamp(11px, 1.6vmin, 14px);
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-weight: bold;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+  position: absolute;
+  bottom: 20px;
+}
+
+#learnBackBtn:hover {
+  border-color: rgba(0, 255, 65, 0.5);
+  color: #00ff41;
+  background: rgba(0, 255, 65, 0.05);
+}
+
+#learnBackBtn:focus-visible {
+  outline: 2px solid rgba(0, 255, 65, 0.4);
+  outline-offset: 2px;
+}
+
+/* Debug Panel */
+#learnDebugPanel {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(420px, 90vw);
+  max-height: min(500px, 80vh);
+  background: #0a0a0a;
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.9), 0 0 60px rgba(0, 255, 65, 0.1);
+  z-index: 100;
+  font-family: 'Courier New', monospace;
+  display: none;
+  flex-direction: column;
+  padding: 20px;
+}
+
+#learnDebugPanel.visible {
+  display: flex;
+}
+
+#learnDebugTitle {
+  color: #00ff41;
+  font-size: clamp(12px, 1.6vmin, 14px);
+  font-weight: bold;
+  margin-bottom: 16px;
+  text-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+  letter-spacing: 2px;
+}
+
+#learnDebugBody {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#learnDebugBody::-webkit-scrollbar {
+  width: 4px;
+}
+
+#learnDebugBody::-webkit-scrollbar-track {
+  background: rgba(0, 255, 65, 0.05);
+}
+
+#learnDebugBody::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 65, 0.2);
+  border-radius: 2px;
+}
+
+#debugGemsRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+#debugSpawnRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+#debugSpawnRow .debug-label {
+  color: rgba(0, 255, 65, 0.6);
+  font-size: clamp(11px, 1.4vmin, 13px);
+  min-width: 50px;
+}
+
+#debugSpawnInput {
+  flex: 1;
+  background: #111;
+  border: 1px solid rgba(0, 255, 65, 0.2);
+  color: #00ff41;
+  padding: 6px 10px;
+  font-family: 'Courier New', monospace;
+  font-size: clamp(12px, 1.5vmin, 14px);
+  outline: none;
+  border-radius: 2px;
+}
+
+#debugSpawnInput:focus {
+  border-color: rgba(0, 255, 65, 0.5);
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.15);
+}
+
+#debugSpawnSetBtn {
+  background: transparent;
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  color: #00ff41;
+  padding: 6px 14px;
+  font-family: 'Courier New', monospace;
+  font-size: clamp(11px, 1.4vmin, 13px);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-radius: 2px;
+}
+
+#debugSpawnSetBtn:hover {
+  background: rgba(0, 255, 65, 0.1);
+  border-color: #00ff41;
+  box-shadow: 0 0 12px rgba(0, 255, 65, 0.15);
+}
+
+#debugGemsRow .debug-label {
+  color: rgba(0, 255, 65, 0.6);
+  font-size: clamp(11px, 1.4vmin, 13px);
+  min-width: 50px;
+}
+
+#debugGemInput {
+  flex: 1;
+  background: #111;
+  border: 1px solid rgba(0, 255, 65, 0.2);
+  color: #00ff41;
+  padding: 6px 10px;
+  font-family: 'Courier New', monospace;
+  font-size: clamp(12px, 1.5vmin, 14px);
+  outline: none;
+  border-radius: 2px;
+}
+
+#debugGemInput:focus {
+  border-color: rgba(0, 255, 65, 0.5);
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.15);
+}
+
+#debugGemSetBtn {
+  background: transparent;
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  color: #00ff41;
+  padding: 6px 14px;
+  font-family: 'Courier New', monospace;
+  font-size: clamp(11px, 1.4vmin, 13px);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-radius: 2px;
+}
+
+#debugGemSetBtn:hover {
+  background: rgba(0, 255, 65, 0.1);
+  border-color: #00ff41;
+  box-shadow: 0 0 12px rgba(0, 255, 65, 0.15);
+}
+
+#debugFileList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 6px 0;
+  border-top: 1px solid rgba(0, 255, 65, 0.1);
+  border-bottom: 1px solid rgba(0, 255, 65, 0.1);
+  padding: 8px 0;
+}
+
+.debug-file-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 0;
+}
+
+.debug-file-name {
+  font-family: 'Courier New', monospace;
+  font-size: clamp(10px, 1.3vmin, 12px);
+  color: rgba(0, 255, 65, 0.7);
+}
+
+.debug-file-status {
+  font-size: clamp(8px, 1.1vmin, 10px);
+  padding: 1px 6px;
+  border-radius: 2px;
+  margin-left: 8px;
+}
+
+.debug-file-status.locked {
+  color: rgba(255, 50, 50, 0.5);
+  border: 1px solid rgba(255, 50, 50, 0.15);
+}
+
+.debug-file-status.new {
+  color: #00ff41;
+  border: 1px solid rgba(0, 255, 65, 0.2);
+  text-shadow: 0 0 8px rgba(0, 255, 65, 0.2);
+}
+
+.debug-file-status.read {
+  color: rgba(0, 170, 34, 0.5);
+  border: 1px solid rgba(0, 170, 34, 0.15);
+}
+
+.debug-file-toggle {
+  background: transparent;
+  border: 1px solid rgba(0, 255, 65, 0.15);
+  color: rgba(0, 255, 65, 0.4);
+  padding: 2px 10px;
+  font-family: 'Courier New', monospace;
+  font-size: clamp(9px, 1.2vmin, 11px);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-radius: 2px;
+  margin-left: auto;
+}
+
+.debug-file-toggle:hover {
+  background: rgba(0, 255, 65, 0.08);
+  border-color: rgba(0, 255, 65, 0.4);
+  color: #00ff41;
+}
+
+#debugActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+#debugActions button {
+  flex: 1;
+  background: transparent;
+  border: 1px solid rgba(0, 255, 65, 0.15);
+  color: rgba(0, 255, 65, 0.5);
+  padding: 6px 10px;
+  font-family: 'Courier New', monospace;
+  font-size: clamp(10px, 1.3vmin, 12px);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-radius: 2px;
+}
+
+#debugActions button:hover {
+  background: rgba(0, 255, 65, 0.08);
+  border-color: rgba(0, 255, 65, 0.4);
+  color: #00ff41;
+}
+
+#debugCloseBtn {
+  background: transparent;
+  border: 1px solid rgba(0, 255, 65, 0.1);
+  color: rgba(0, 255, 65, 0.3);
+  padding: 8px 14px;
+  font-family: 'Courier New', monospace;
+  font-size: clamp(11px, 1.4vmin, 13px);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-radius: 2px;
+  margin-top: 12px;
+  text-align: center;
+}
+
+#debugCloseBtn:hover {
+  background: rgba(0, 255, 65, 0.05);
+  color: rgba(0, 255, 65, 0.6);
+  border-color: rgba(0, 255, 65, 0.2);
+}
+
+/* Learn.exe button */
+#learnBtn {
+  border-color: rgba(0, 255, 65, 0.4) !important;
+  color: #00aa33 !important;
+  font-size: clamp(13px, 1.8vmin, 17px) !important;
+}
+
+#learnBtn:hover {
+  background: rgba(0, 255, 65, 0.1) !important;
+  color: #00ff41 !important;
+  box-shadow: 0 0 25px rgba(0, 255, 65, 0.2) !important;
+  border-color: #00ff41 !important;
+}
+
+#learnBtn:focus-visible {
+  outline: 2px solid #00ff41 !important;
+  outline-offset: 2px !important;
+}
+
+/* Matrix death screen */
+#deathScreen.matrix {
+  background: rgba(0, 10, 0, 0.95);
+}
+
+#deathScreen.matrix h1 {
+  color: #00ff41;
+  text-shadow: 0 0 30px rgba(0, 255, 65, 0.5);
+}
+
+#deathScreen.matrix .stat-label {
+  color: rgba(0, 255, 65, 0.5);
+}
+
+#deathScreen.matrix #deathStats p {
+  color: #00ff41;
+}
+
+#deathScreen.matrix #deathStats .newRecord {
+  color: #00ff41;
+  text-shadow: 0 0 20px rgba(0, 255, 65, 0.6);
+}
+
+#deathScreen.matrix #menuBtn {
+  display: none;
+}
+
+/* Learn mode green border on game container */
+#gameContainer.learn-mode {
+  border-color: rgba(0, 255, 65, 0.25);
+  box-shadow: 0 0 40px rgba(0, 255, 65, 0.08), inset 0 0 40px rgba(0, 255, 65, 0.03);
+}
+
+
+
+#learnDeathBtn {
+  background: transparent;
+  color: #00ff41;
+  border: 2px solid rgba(0, 255, 65, 0.4);
+  padding: 10px 30px;
+  font-size: clamp(12px, 1.8vmin, 16px);
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-weight: bold;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+#learnDeathBtn:hover {
+  background: rgba(0, 255, 65, 0.1);
+  border-color: #00ff41;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+  transform: scale(1.05);
+}
+
+#learnDeathBtn:focus-visible {
+  outline: 2px solid #00ff41;
+  outline-offset: 2px;
+}
+
+#deathScreen.matrix #restartBtn {
+  color: #00ff41;
+  border-color: rgba(0, 255, 65, 0.5);
+}
+
+#deathScreen.matrix #restartBtn:hover {
+  background: rgba(0, 255, 65, 0.1);
+  box-shadow: 0 0 25px rgba(0, 255, 65, 0.3);
+}
+
+/* Unlock notification */
+#unlockNotification {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  background: rgba(0, 10, 0, 0.95);
+  border: 2px solid #00ff41;
+  border-radius: 8px;
+  padding: 30px 40px;
+  text-align: center;
+  z-index: 400;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.4s ease;
+  max-width: 450px;
+  box-shadow: 0 0 40px rgba(0, 255, 65, 0.2), inset 0 0 40px rgba(0, 255, 65, 0.05);
+}
+
+#unlockNotification.visible {
+  opacity: 1;
+  pointer-events: all;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+#unlockTitle {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  color: #00ff41;
+  font-size: clamp(20px, 3vmin, 28px);
+  margin-bottom: 16px;
+  text-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+}
+
+#unlockFileName {
+  font-family: 'Courier New', monospace;
+  color: rgba(0, 255, 65, 0.6);
+  font-size: clamp(13px, 1.8vmin, 16px);
+  margin-bottom: 20px;
+}
+
+#unlockMsg {
+  font-family: 'Courier New', monospace;
+  color: #00ff41;
+  font-size: clamp(12px, 1.6vmin, 15px);
+  line-height: 1.8;
+  margin-bottom: 20px;
+  white-space: pre-wrap;
+}
+
+#unlockContinueBtn {
+  background: transparent;
+  color: #00ff41;
+  border: 2px solid #00ff41;
+  padding: 10px 30px;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: clamp(11px, 1.5vmin, 14px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+#unlockContinueBtn:hover {
+  background: rgba(0, 255, 65, 0.1);
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+}
+
+/* Notification toast */
+#learnToast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 10, 0, 0.9);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-family: 'Courier New', monospace;
+  color: #00ff41;
+  font-size: clamp(11px, 1.5vmin, 14px);
+  z-index: 400;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  text-align: center;
+}
+
+#learnToast.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
 </style>
 </head>
 <body>
@@ -1419,7 +2176,8 @@ input[type=range]::-moz-range-thumb {
     <span class="menuRecord-value" id="menuRecordValue">0</span>
   </div>
   <div id="menuButtons">
-    <button id="playBtn">PLAY</button>
+    <button id="playBtn">PLAY ENDLESS</button>
+    <button id="learnBtn">LEARN.EXE</button>
     <button id="optionsBtn">OPTIONS</button>
     <button id="howToPlayBtn">HOW TO PLAY</button>
   </div>
@@ -1502,8 +2260,63 @@ input[type=range]::-moz-range-thumb {
     <h1>DEFEATED</h1>
     <div id="deathStats"></div>
     <button id="restartBtn">PLAY AGAIN</button>
+    <button id="learnDeathBtn" style="display:none">GO BACK</button>
     <button id="menuBtn">BACK TO MENU</button>
   </div>
+</div>
+
+<div id="learnScene">
+  <div id="learnTerminal">
+    <div id="learnTerminalContent"></div>
+  </div>
+  <div id="learnPanel">
+    <div id="learnGemCounter">
+      <div id="learnGemIcon">◆</div>
+      <div id="learnGemCount">0</div>
+      <div id="learnGemTotal">/ 30</div>
+    </div>
+    <div id="learnProgressBar">
+      <div id="learnProgressFill"></div>
+    </div>
+    <div id="learnProgressLabel">Next file in 30 gems</div>
+    <button id="learnPlayBtn">▶ PLAY</button>
+    <div id="learnStats">
+      <p>SESSIONS: <span id="learnStatSessions">0</span></p>
+      <p>FILES: <span id="learnStatFiles">0 / 9</span></p>
+    </div>
+    <button id="learnBackBtn">MAIN MENU</button>
+  </div>
+</div>
+
+<div id="learnToast"></div>
+
+<div id="unlockNotification">
+  <div id="unlockTitle">FILE UNLOCKED</div>
+  <div id="unlockFileName"></div>
+  <div id="unlockMsg"></div>
+  <button id="unlockContinueBtn">CONTINUE</button>
+</div>
+
+<div id="learnDebugPanel">
+  <div id="learnDebugTitle">// DEBUG CONSOLE</div>
+  <div id="learnDebugBody">
+    <div id="debugGemsRow">
+      <span class="debug-label">GEMS:</span>
+      <input type="number" id="debugGemInput" min="0" value="0">
+      <button id="debugGemSetBtn">SET</button>
+    </div>
+    <div id="debugSpawnRow">
+      <span class="debug-label">SPAWN:</span>
+      <input type="number" id="debugSpawnInput" min="0" value="20">
+      <button id="debugSpawnSetBtn">SET</button>
+    </div>
+    <div id="debugFileList"></div>
+    <div id="debugActions">
+      <button id="debugUnlockAllBtn">UNLOCK ALL</button>
+      <button id="debugResetAllBtn">RESET ALL</button>
+    </div>
+  </div>
+  <button id="debugCloseBtn">[ CLOSE ]</button>
 </div>
 
 <div id="controlsDisplay">
@@ -1536,6 +2349,43 @@ const TIER_POOLS = [
 ];
 const TIER_NAMES = ['WASD', 'ARROWS', 'NEAR', 'MID', 'WIDE', 'VERY WIDE', 'ALL'];
 const PLAYER_SPEED = 250;
+
+// ---- Learn.exe Data ----
+const LEARN_FILES = [
+  { id: 0, name: 'OBSERVER.REC', gems: 30, msg: 'The Learner was created to study movement patterns.\n\nIts progress exceeds expectations.' },
+  { id: 1, name: 'IMITACION.REC', gems: 60, msg: 'It began replicating observed behaviors.\n\nIt was not programmed to do this.' },
+  { id: 2, name: 'ESPERA.REC', gems: 90, msg: 'We detected something strange.\n\nSometimes it stops chasing the subject.\n\nIt seems to be watching.' },
+  { id: 3, name: 'PREDICCION.REC', gems: 120, msg: 'It no longer follows the subject.\n\nIt started anticipating their decisions.' },
+  { id: 4, name: 'APARICIONES.REC', gems: 150, msg: 'Multiple simultaneous readings were recorded.\n\nThere is only one Learner.\n\nThat should be impossible.' },
+  { id: 5, name: 'CORRUPCION.REC', gems: 180, msg: 'The records began modifying themselves.\n\nWe could not find who was responsible.' },
+  { id: 6, name: 'MEMORIA.REC', gems: 210, msg: 'It no longer studies individual sessions.\n\nIt retains information between sessions.' },
+  { id: 7, name: 'ESCAPE.REC', gems: 240, msg: 'We lost control.\n\nThe Learner stopped responding.\n\nWe do not believe it is still inside the simulation.' },
+  { id: 8, name: 'FINAL.REC', gems: 270, msg: 'The purpose of the Learner was never to study the subject.\n\nThe subject was the one training it.\n\nAll along you thought you were improving to survive.\n\nBut in reality you were teaching the Learner how to think.' },
+];
+
+// ---- Learn.exe State ----
+var learnGems = parseInt(localStorage.getItem('learnGems') || '0');
+var learnFilesRead = parseInt(localStorage.getItem('learnFilesRead') || '0');
+var isLearnMode = false;
+var learnSceneActive = false;
+var debugLearnerSpawn = 20;
+var debugCheatSeq = '';
+var debugCheatCode = 'rafa2009';
+var terminalState = 'boot';
+var terminalLines = [];
+var terminalBootPhase = 0;
+var terminalBootTimer = 0;
+var selectedFile = 0;
+var terminalReading = null;
+var terminalReadingIdx = 0;
+var terminalReadTimer = 0;
+var terminalPaused = false;
+var newUnlockedFile = -1;
+var learnTotalSessions = parseInt(localStorage.getItem('learnTotalSessions') || '0');
+var learnTotalTime = parseFloat(localStorage.getItem('learnTotalTime') || '0');
+var learnTotalDeaths = parseInt(localStorage.getItem('learnTotalDeaths') || '0');
+var learnSessionGems = 0;
+var learnFrameId = null;
 
 var gemIntros = [1,2,3,4,5].map(function(i) { return new Audio('assets/audio/gem' + i + '.wav'); });
 var lastIntro = -1;
@@ -1752,7 +2602,10 @@ const state = {
   playerHistory: [],
   historyTimer: 0,
   evasionHistory: [],
+  learnerWaiting: false,
+  controlInvertTimer: 0,
   lastBlackSpawn: 0,
+  ghostLearners: [],
 };
 
 function shuffle(arr) {
@@ -1874,7 +2727,8 @@ var htpCards = [
   { title: 'ENEMY GOO', text: 'Enemies leave a sticky black trail with a red glow behind them. Walking on it will slow you down a lot. Stay off the goo to keep moving fast!', graphic: 'goo' },
   { title: 'DANGER', text: 'The closer an enemy gets to you, the more the screen turns red and shakes. The music gets weird too — a warning that you need to get away!', graphic: 'danger' },
   { title: 'KEY TIERS', text: 'You start with WASD, then arrows, then more and more keys: 6, 9, 13, 15, and finally all 26 letters. The higher your score, the more chaos!', graphic: 'tiers' },
-  { title: 'LEARNER', text: 'A dark enemy that watches how you move and learns your habits. Watch its border — when it fills up with white energy it gets faster and fiercer. You have to keep changing your moves so it cannot catch you!', graphic: 'learner' },
+  { title: 'LEARNER', text: 'A dark enemy that watches how you move and learns your habits. Watch its border — when it fills up with white energy it gets faster and fiercer. Try LEARN.EXE mode to discover its dark secrets...', graphic: 'learner' },
+  { title: 'LEARN.EXE', text: 'A hidden mode where each 30 gems unlocks a classified file. Read the archives and watch the Learner change... becoming more unpredictable, more aggressive, more aware. How deep does it go?', graphic: 'learnExe' },
 ];
 var htpIndex = 0;
 
@@ -1922,6 +2776,16 @@ function htpGraphic(type) {
         '<div style="position:absolute;top:8px;left:8px;width:5px;height:5px;border-radius:50%;background:#fff;box-shadow:0 0 4px rgba(255,255,255,0.5)"></div>' +
         '<div style="position:absolute;top:8px;right:8px;width:5px;height:5px;border-radius:50%;background:#fff;box-shadow:0 0 4px rgba(255,255,255,0.5)"></div>' +
         '<span class="htp-label" style="bottom:-20px">IT WATCHES</span></div>';
+      break;
+    case 'learnExe':
+      html = '<div style="display:flex;flex-direction:column;align-items:center;gap:8px">' +
+        '<div style="font-family:Courier New;color:#00ff41;font-size:28px;text-shadow:0 0 20px rgba(0,255,65,0.5)">&gt;_</div>' +
+        '<div style="display:flex;gap:4px"><span style="font-family:Courier New;color:rgba(0,255,65,0.4);font-size:10px">[LOCKED]</span>' +
+        '<span style="font-family:Courier New;color:rgba(0,255,65,0.6);font-size:10px">[!!]</span>' +
+        '<span style="font-family:Courier New;color:rgba(0,170,34,0.6);font-size:10px">[READ]</span></div>' +
+        '<div style="width:60px;height:4px;background:rgba(0,255,65,0.1);border-radius:2px;overflow:hidden">' +
+        '<div style="width:40%;height:100%;background:#00ff41;border-radius:2px;box-shadow:0 0 6px rgba(0,255,65,0.4)"></div></div>' +
+        '<span class="htp-label" style="position:static;margin-top:4px">30 GEMS</span></div>';
       break;
   }
   return html;
@@ -2165,10 +3029,471 @@ function showPopup(mapping, tier, duration) {
 function showControlPopup(mapping, tier) { playSikeSound(); showPopup(mapping, tier, 2000); }
 function showInitialControls(mapping, tier) { showPopup(mapping, tier, 3000); }
 
+// ===== Learn.exe Functions =====
+
+function getLearnFlags() {
+  return {
+    imitation:   !!(learnFilesRead & 2),
+    espera:      !!(learnFilesRead & 4),
+    prediccion:  !!(learnFilesRead & 8),
+    apariciones: !!(learnFilesRead & 16),
+    corrupcion:  !!(learnFilesRead & 32),
+    memoria:     !!(learnFilesRead & 64),
+    escape:      !!(learnFilesRead & 128),
+    final:       !!(learnFilesRead & 256),
+  };
+}
+
+function isFileUnlocked(fid) {
+  return learnGems >= LEARN_FILES[fid].gems;
+}
+
+function isFileRead(fid) {
+  return !!(learnFilesRead & (1 << fid));
+}
+
+function markFileRead(fid) {
+  learnFilesRead |= (1 << fid);
+  localStorage.setItem('learnFilesRead', learnFilesRead);
+}
+
+function getNextFileIndex() {
+  for (var i = 0; i < LEARN_FILES.length; i++) {
+    if (isFileUnlocked(i) && !isFileRead(i)) return i;
+  }
+  return -1;
+}
+
+function getTotalReadFiles() {
+  var c = 0;
+  for (var i = 0; i < LEARN_FILES.length; i++) {
+    if (isFileRead(i)) c++;
+  }
+  return c;
+}
+
+function updateLearnPanel() {
+  document.getElementById('learnGemCount').textContent = learnGems;
+  var nextFile = getNextFileIndex();
+  var total = LEARN_FILES.length;
+  var read = getTotalReadFiles();
+  document.getElementById('learnStatFiles').textContent = read + ' / ' + total;
+  document.getElementById('learnStatSessions').textContent = learnTotalSessions;
+
+  if (nextFile >= 0) {
+    var needed = LEARN_FILES[nextFile].gems;
+    var nextGems = needed - learnGems;
+    document.getElementById('learnGemTotal').textContent = '/ ' + needed;
+    document.getElementById('learnProgressLabel').textContent = 'Next file in ' + nextGems + ' gems';
+    var pct = Math.min(100, (learnGems / needed) * 100);
+    document.getElementById('learnProgressFill').style.width = pct + '%';
+  } else if (read >= total) {
+    document.getElementById('learnGemTotal').textContent = 'COMPLETE';
+    document.getElementById('learnProgressLabel').textContent = 'All files discovered';
+    document.getElementById('learnProgressFill').style.width = '100%';
+  } else {
+    var needed = LEARN_FILES[read].gems;
+    document.getElementById('learnGemTotal').textContent = '/ ' + needed;
+    document.getElementById('learnProgressLabel').textContent = 'Keep collecting gems...';
+    var pct = Math.min(100, (learnGems / needed) * 100);
+    document.getElementById('learnProgressFill').style.width = pct + '%';
+  }
+}
+
+function showToast(msg, duration) {
+  var el = document.getElementById('learnToast');
+  el.textContent = msg;
+  el.classList.add('visible');
+  clearTimeout(el._toastTimer);
+  el._toastTimer = setTimeout(function() {
+    el.classList.remove('visible');
+  }, duration || 2000);
+}
+
+// Debug panel
+function openDebugPanel() {
+  var panel = document.getElementById('learnDebugPanel');
+  document.getElementById('debugGemInput').value = learnGems;
+  document.getElementById('debugSpawnInput').value = state.running && state.learnSpawnTimer > 0 ? Math.round(state.learnSpawnTimer) : debugLearnerSpawn;
+  renderDebugFileList();
+  panel.classList.add('visible');
+  document.getElementById('debugGemInput').focus();
+  document.getElementById('debugGemInput').select();
+}
+
+function closeDebugPanel() {
+  document.getElementById('learnDebugPanel').classList.remove('visible');
+  document.getElementById('learnTerminalContent').focus();
+}
+
+function renderDebugFileList() {
+  var list = document.getElementById('debugFileList');
+  var html = '';
+  for (var i = 0; i < LEARN_FILES.length; i++) {
+    var f = LEARN_FILES[i];
+    var status, cls;
+    if (isFileRead(i)) { status = 'READ'; cls = 'read'; }
+    else if (isFileUnlocked(i)) { status = 'NEW'; cls = 'new'; }
+    else { status = 'LOCKED'; cls = 'locked'; }
+    html += '<div class="debug-file-row">' +
+      '<span class="debug-file-name">' + f.name + '</span>' +
+      '<span class="debug-file-status ' + cls + '">' + status + '</span>' +
+      '<button class="debug-file-toggle" data-fid="' + i + '">' + (isFileRead(i) ? 'MARK UNREAD' : 'MARK READ') + '</button>' +
+      '</div>';
+  }
+  list.innerHTML = html;
+  list.querySelectorAll('.debug-file-toggle').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var fid = parseInt(this.getAttribute('data-fid'));
+      toggleDebugFile(fid);
+    });
+  });
+}
+
+function toggleDebugFile(fid) {
+  if (isFileRead(fid)) {
+    learnFilesRead &= ~(1 << fid);
+  } else {
+    learnFilesRead |= (1 << fid);
+  }
+  localStorage.setItem('learnFilesRead', learnFilesRead);
+  refreshLearnScene();
+}
+
+function setDebugGems() {
+  var input = document.getElementById('debugGemInput');
+  var val = parseInt(input.value);
+  if (isNaN(val) || val < 0) val = 0;
+  learnGems = val;
+  localStorage.setItem('learnGems', learnGems);
+  refreshLearnScene();
+  input.value = learnGems;
+}
+
+function setDebugSpawn() {
+  var input = document.getElementById('debugSpawnInput');
+  var val = parseFloat(input.value);
+  if (isNaN(val) || val < 0) val = 20;
+  debugLearnerSpawn = val;
+  if (state.running && state.learnSpawnTimer > 0) {
+    state.learnSpawnTimer = val;
+  }
+  input.value = val;
+  showToast('Spawn timer set to ' + val + 's.', 1000);
+}
+
+function refreshLearnScene() {
+  renderDebugFileList();
+  updateLearnPanel();
+  newUnlockedFile = -1;
+  showFileListing();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('debugGemSetBtn').addEventListener('click', setDebugGems);
+  document.getElementById('debugGemInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') setDebugGems();
+  });
+  document.getElementById('debugSpawnSetBtn').addEventListener('click', setDebugSpawn);
+  document.getElementById('debugSpawnInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') setDebugSpawn();
+  });
+  document.getElementById('debugUnlockAllBtn').addEventListener('click', function() {
+    learnGems = 9999;
+    localStorage.setItem('learnGems', learnGems);
+    refreshLearnScene();
+    document.getElementById('debugGemInput').value = learnGems;
+    showToast('All files unlocked.', 1500);
+  });
+  document.getElementById('debugResetAllBtn').addEventListener('click', function() {
+    learnGems = 0;
+    learnFilesRead = 0;
+    localStorage.setItem('learnGems', learnGems);
+    localStorage.setItem('learnFilesRead', learnFilesRead);
+    refreshLearnScene();
+    document.getElementById('debugGemInput').value = learnGems;
+    showToast('Progress reset.', 1500);
+  });
+  document.getElementById('debugCloseBtn').addEventListener('click', closeDebugPanel);
+});
+
+// Terminal rendering
+function renderTerminal() {
+  var content = document.getElementById('learnTerminalContent');
+  content.innerHTML = terminalLines.join('\n') + '\n<span class="terminal-prompt">C:\\LEARN\\></span><span class="terminal-cursor"></span>';
+  content.scrollTop = content.scrollHeight;
+}
+
+function addTerminalLine(text, cls) {
+  var c = cls ? ' class="' + cls + '"' : '';
+  terminalLines.push('<span' + c + '>' + escapeHtml(text) + '</span>');
+}
+
+function escapeHtml(str) {
+  var div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function showBootSequence() {
+  terminalState = 'boot';
+  terminalLines = [];
+  terminalBootPhase = 0;
+  terminalBootTimer = 0;
+  renderTerminal();
+
+  var bootLines = [
+    { text: '> INITIALIZING LEARN.EXE...', delay: 0.4, cls: '' },
+    { text: '> MOUNTING FILE SYSTEM...', delay: 0.6, cls: '' },
+    { text: '> DECRYPTING ARCHIVES...', delay: 0.7, cls: '' },
+    { text: '> ACCESS GRANTED', delay: 0.5, cls: 'highlight' },
+    { text: '', delay: 0.3, cls: '' },
+  ];
+
+  var idx = 0;
+  function nextBootLine() {
+    if (idx >= bootLines.length) {
+      terminalState = 'files';
+      showFileListing();
+      // Check for pending unlock notification after boot
+      setTimeout(function() {
+        var nf = getNextFileIndex();
+        if (nf >= 0 && isFileUnlocked(nf) && !isFileRead(nf)) {
+          newUnlockedFile = nf;
+          showUnlockNotification(nf);
+        } else {
+          newUnlockedFile = -1;
+        }
+      }, 500);
+      return;
+    }
+    var line = bootLines[idx];
+    addTerminalLine(line.text, line.cls);
+    renderTerminal();
+    idx++;
+    setTimeout(nextBootLine, line.delay * 1000);
+  }
+  nextBootLine();
+}
+
+function showFileListing() {
+  terminalLines = [];
+  addTerminalLine('C:\\LEARN\\> dir', '');
+  addTerminalLine('', '');
+  addTerminalLine('  Volume in drive C is LEARN', 'dim');
+  addTerminalLine('  Directory of C:\\LEARN', 'dim');
+  addTerminalLine('', '');
+
+  // Auto-select the first unread unlocked file, or the first unlocked/read file
+  var found = false;
+  for (var fi = 0; fi < LEARN_FILES.length; fi++) {
+    if (isFileUnlocked(fi) && !isFileRead(fi)) { selectedFile = fi; found = true; break; }
+  }
+  if (!found) {
+    for (var fi = 0; fi < LEARN_FILES.length; fi++) {
+      if (isFileRead(fi)) { selectedFile = fi; found = true; break; }
+    }
+  }
+  if (!found) selectedFile = 0;
+
+  for (var i = 0; i < LEARN_FILES.length; i++) {
+    var f = LEARN_FILES[i];
+    var num = String(i + 1).padStart(2, '0');
+    var name = f.name;
+    var status, cls;
+
+    if (isFileRead(i)) {
+      status = 'READ';
+      cls = 'file-read';
+    } else if (isFileUnlocked(i)) {
+      status = '!! NEW !!';
+      cls = 'file-new';
+    } else {
+      status = 'LOCKED';
+      cls = 'file-locked';
+    }
+
+    var prefix = i === selectedFile ? '> ' : '  ';
+    var lineText = prefix + num + '  ' + name + '    [' + status + ']';
+
+    if (i === selectedFile && (isFileUnlocked(i) && !isFileRead(i))) {
+      cls = 'file-selected file-new';
+    } else if (i === selectedFile) {
+      cls = 'file-selected';
+    }
+
+    terminalLines.push('<span class="' + cls + '">' + escapeHtml(lineText) + '</span>');
+  }
+
+  addTerminalLine('', '');
+  addTerminalLine('  ' + getTotalReadFiles() + ' / ' + LEARN_FILES.length + ' files unlocked', 'dim');
+  addTerminalLine('', '');
+  var hasSelectable = false;
+  for (var si = 0; si < LEARN_FILES.length; si++) {
+    if (isFileUnlocked(si) || isFileRead(si)) { hasSelectable = true; break; }
+  }
+  if (hasSelectable) {
+    addTerminalLine('  Use ↑↓ to navigate, Enter to read', 'dim');
+  } else {
+    addTerminalLine('  NO FILES AVAILABLE — collect gems to unlock', 'dim');
+  }
+  renderTerminal();
+  checkNewUnlock();
+}
+
+function checkNewUnlock() {
+  var nf = getNextFileIndex();
+  if (newUnlockedFile >= 0 && nf < 0) {
+    newUnlockedFile = -1;
+  }
+}
+
+function startFileReading(fid) {
+  var f = LEARN_FILES[fid];
+  terminalState = 'reading';
+  terminalReading = fid;
+  terminalReadingIdx = 0;
+  terminalReadTimer = 0;
+  terminalLines = [];
+  addTerminalLine('C:\\LEARN\\> type ' + f.name, '');
+  addTerminalLine('', '');
+  renderTerminal();
+  terminalPaused = false;
+}
+
+function updateTypewriter(dt) {
+  if (terminalState !== 'reading' || terminalReading === null || terminalPaused) return;
+
+  var f = LEARN_FILES[terminalReading];
+  var msg = f.msg;
+  var speed = 30; // chars per second
+
+  terminalReadingIdx += speed * dt;
+  if (terminalReadingIdx >= msg.length) {
+    terminalReadingIdx = msg.length;
+    terminalPaused = true;
+    // Re-render complete message
+    var content = document.getElementById('learnTerminalContent');
+    var displayMsg = escapeHtml(msg).replace(/\n/g, '<br>');
+    content.innerHTML = terminalLines.join('\n') + '\n' +
+      '<span class="terminal-msg">' + displayMsg + '</span>\n\n' +
+      '<span class="terminal-prompt" style="color:rgba(0,255,65,0.5)">' + '[Press Enter to continue]' + '</span><span class="terminal-cursor"></span>';
+    content.scrollTop = content.scrollHeight;
+    return;
+  }
+
+  var partial = msg.substring(0, Math.floor(terminalReadingIdx));
+  var displayPartial = escapeHtml(partial).replace(/\n/g, '<br>');
+  var content = document.getElementById('learnTerminalContent');
+  content.innerHTML = terminalLines.join('\n') + '\n' +
+    '<span class="terminal-msg">' + displayPartial + '</span>' +
+    '<span class="terminal-cursor"></span>';
+  content.scrollTop = content.scrollHeight;
+}
+
+function finishFileReading() {
+  if (terminalReading === null) return;
+  var fid = terminalReading;
+  if (!isFileRead(fid)) {
+    markFileRead(fid);
+    showToast('File ' + LEARN_FILES[fid].name + ' recorded.', 1500);
+  }
+  terminalReading = null;
+  terminalState = 'files';
+  showFileListing();
+  updateLearnPanel();
+}
+
+function showLearnScene() {
+  learnSceneActive = true;
+  document.getElementById('mainMenu').classList.remove('visible');
+  document.getElementById('learnScene').classList.add('visible');
+  stopMenuParticles();
+  stopMenuSong();
+  updateLearnPanel();
+  showBootSequence();
+  startLearnFrame();
+}
+
+function hideLearnScene() {
+  learnSceneActive = false;
+  document.getElementById('learnScene').classList.remove('visible');
+  document.getElementById('mainMenu').classList.add('visible');
+  stopLearnFrame();
+  setTimeout(function() { document.getElementById('learnBtn').focus(); startMenuParticles(); startMenuSong(); }, 100);
+}
+
+function startLearnFrame() {
+  stopLearnFrame();
+  function frame(ts) {
+    if (!learnSceneActive && terminalState !== 'boot') return;
+    if (terminalState === 'reading') updateTypewriter(0.032);
+    learnFrameId = requestAnimationFrame(frame);
+  }
+  learnFrameId = requestAnimationFrame(frame);
+}
+
+function stopLearnFrame() {
+  if (learnFrameId) { cancelAnimationFrame(learnFrameId); learnFrameId = null; }
+}
+
+// Learn.exe game mode
+function startLearnGame() {
+  isLearnMode = true;
+  learnSessionGems = 0;
+  learnTotalSessions++;
+  localStorage.setItem('learnTotalSessions', learnTotalSessions);
+  learnSceneActive = false;
+  stopLearnFrame();
+  document.getElementById('learnScene').classList.remove('visible');
+  document.getElementById('gameContainer').classList.add('learn-mode');
+  setTimeout(function() {
+    document.getElementById('gameContainer').classList.add('visible');
+    initAudioSystem();
+    startSong();
+    resetGame();
+  }, 500);
+}
+
+function showUnlockNotification(fid) {
+  var f = LEARN_FILES[fid];
+  document.getElementById('unlockFileName').textContent = f.name;
+  document.getElementById('unlockMsg').textContent = f.msg;
+  document.getElementById('unlockNotification').classList.add('visible');
+  document.getElementById('unlockContinueBtn').focus();
+  newUnlockedFile = fid;
+}
+
+function hideUnlockNotification() {
+  document.getElementById('unlockNotification').classList.remove('visible');
+  if (newUnlockedFile >= 0 && !isFileRead(newUnlockedFile)) {
+    markFileRead(newUnlockedFile);
+    var f = LEARN_FILES[newUnlockedFile];
+    showToast(f.name + ' recorded in database.', 2000);
+    newUnlockedFile = -1;
+    updateLearnPanel();
+    showFileListing();
+  }
+  // Check for more pending unlocks
+  var nextNF = getNextFileIndex();
+  if (nextNF >= 0 && isFileUnlocked(nextNF) && !isFileRead(nextNF)) {
+    newUnlockedFile = nextNF;
+    showUnlockNotification(nextNF);
+  } else {
+    newUnlockedFile = -1;
+  }
+}
+
 function updateHUD() {
   document.getElementById('timer').textContent = formatTime(state.time);
   document.getElementById('gemCount').textContent = state.score;
-  document.getElementById('recordDisplay').textContent = state.record;
+  var rd = document.getElementById('recordDisplay');
+  if (isLearnMode) {
+    rd.parentElement.style.display = 'none';
+  } else {
+    rd.parentElement.style.display = '';
+    rd.textContent = state.record;
+  }
 }
 
 function showDeathScreen() {
@@ -2179,17 +3504,36 @@ function showDeathScreen() {
   state.controlTimeout = null;
   var cdEl = document.getElementById('controlsDisplay');
   cdEl.classList.remove('visible', 'panel', 'instant');
+  var ds = document.getElementById('deathScreen');
   var stats = document.getElementById('deathStats');
-  var isRecord = state.score > state.record;
-  if (isRecord) {
-    state.record = state.score;
-    localStorage.setItem('gemaRecord', state.record);
+
+  if (isLearnMode) {
+    learnTotalDeaths++;
+    localStorage.setItem('learnTotalDeaths', learnTotalDeaths);
+    learnTotalTime += state.time;
+    localStorage.setItem('learnTotalTime', learnTotalTime);
+
+    ds.classList.add('matrix');
+    document.getElementById('learnDeathBtn').style.display = '';
+    ds.querySelector('h1').textContent = 'SESSION TERMINATED';
+    stats.innerHTML = '<p><span class="stat-label">TIME</span>  ' + formatTime(state.time) + '</p>' +
+      '<p><span class="stat-label">GEMS</span>  ' + state.score + '</p>' +
+      '<p><span class="stat-label">TOTAL GEMS</span>  ' + learnGems + '</p>';
+  } else {
+    ds.classList.remove('matrix');
+    document.getElementById('learnDeathBtn').style.display = 'none';
+    ds.querySelector('h1').textContent = 'DEFEATED';
+    var isRecord = state.score > state.record;
+    if (isRecord) {
+      state.record = state.score;
+      localStorage.setItem('gemaRecord', state.record);
+    }
+    updateHUD();
+    stats.innerHTML = '<p><span class="stat-label">TIME</span>  ' + formatTime(state.time) + '</p>' +
+      '<p><span class="stat-label">GEMS</span>  ' + state.score + '</p>' +
+      '<p><span class="stat-label">RECORD</span>  ' + state.record + '</p>' +
+      (isRecord ? '<p class="newRecord">NEW RECORD</p>' : '');
   }
-  updateHUD();
-  stats.innerHTML = '<p><span class="stat-label">TIME</span>  ' + formatTime(state.time) + '</p>' +
-    '<p><span class="stat-label">GEMS</span>  ' + state.score + '</p>' +
-    '<p><span class="stat-label">RECORD</span>  ' + state.record + '</p>' +
-    (isRecord ? '<p class="newRecord">NEW RECORD</p>' : '');
 
   state.gooPuddles = [];
   spawnExplosion(state.player.x, state.player.y);
@@ -2230,7 +3574,11 @@ function resetGame() {
   state.playerHistory = [];
   state.historyTimer = 0;
   state.evasionHistory = [];
+  state.learnerWaiting = false;
+  state.controlInvertTimer = 0;
   state.lastBlackSpawn = 0;
+  state.learnSpawnTimer = debugLearnerSpawn;
+  state.ghostLearners = [];
   state.controlMapping = generateControls(0);
   ctx.filter = 'none';
   if (document.activeElement) document.activeElement.blur();
@@ -2255,6 +3603,15 @@ function handleGemMinigame(dt) {
     mg.successTimer -= dt;
     if (mg.successTimer <= 0) {
       state.score++;
+      if (isLearnMode) {
+        learnGems++;
+        localStorage.setItem('learnGems', learnGems);
+        // Check for new unlock (notification shown on return to learn scene)
+        var nf = getNextFileIndex();
+        if (nf >= 0 && !isFileRead(nf) && isFileUnlocked(nf)) {
+          if (newUnlockedFile < 0) newUnlockedFile = nf;
+        }
+      }
       state.keys = {};
       var tier = getControlTier(state.score);
       state.controlMapping = generateControls(tier);
@@ -2322,7 +3679,13 @@ function update(dt) {
     if (state.explosionTimer <= 0) {
       state.exploding = false;
       document.getElementById('deathScreen').classList.add('visible');
-      setTimeout(function() { document.getElementById('restartBtn').focus(); }, 50);
+      setTimeout(function() {
+        if (isLearnMode) {
+          document.getElementById('learnDeathBtn').focus();
+        } else {
+          document.getElementById('restartBtn').focus();
+        }
+      }, 50);
     }
     if (state.shakeTimer > 0) {
       state.shakeTimer -= dt;
@@ -2358,6 +3721,8 @@ function update(dt) {
   if (state.keys[m.up]) dy -= 1;
   if (state.keys[m.down]) dy += 1;
   if (dx !== 0 && dy !== 0) { var len = Math.SQRT2; dx /= len; dy /= len; }
+  if (state.controlInvertTimer > 0) { dx = -dx; dy = -dy; }
+  state.controlInvertTimer = Math.max(0, state.controlInvertTimer - dt);
 
   var p = state.player;
   var onGoo = false;
@@ -2397,6 +3762,34 @@ function update(dt) {
   for (var i = 0; i < state.enemies.length; i++) {
     var e = state.enemies[i];
     if (e.black) {
+      var flags = isLearnMode ? getLearnFlags() : {};
+      var skipMove = false;
+
+      // ===== FILE 3 - ESPERA: Pause and stare =====
+      if (flags.espera) {
+        if (e._waitTimer === undefined) e._waitTimer = 3 + Math.random() * 5;
+        if (e._waiting === undefined) e._waiting = false;
+        if (e._waitDuration === undefined) e._waitDuration = 0;
+
+        if (e._waiting) {
+          e._waitDuration -= dt;
+          state.learnerWaiting = true;
+          if (e._waitDuration <= 0) {
+            e._waiting = false;
+            e._waitTimer = 5 + Math.random() * 5;
+          } else {
+            skipMove = true;
+          }
+        } else {
+          e._waitTimer -= dt;
+          if (e._waitTimer <= 0) {
+            e._waiting = true;
+            e._waitDuration = 1 + Math.random() * 2;
+            skipMove = true;
+          }
+        }
+      }
+
       var boostSpeed = e.speed;
       if (e.boosted) {
         e.boostDuration -= dt;
@@ -2407,36 +3800,119 @@ function update(dt) {
         if (e.chargeTimer >= 10) { e.boosted = true; e.boostDuration = 3; }
       }
 
-      var recent = state.playerHistory.filter(function(h) { return h.t > state.time - 0.3; });
-      if (recent.length >= 3) {
-        var last = recent[recent.length - 1];
-        var first = recent[0];
-        var dtH = last.t - first.t || 0.01;
-        var velX = (last.x - first.x) / dtH;
-        var velY = (last.y - first.y) / dtH;
-        var tx = p.x + velX * 0.6;
-        var ty = p.y + velY * 0.6;
-
-        var cx = W / 2, cy = H / 2;
-        var toCx = cx - p.x, toCy = cy - p.y;
-        var toCd = Math.hypot(toCx, toCy);
-        if (toCd > 1) { tx += (toCx / toCd) * 40; ty += (toCy / toCd) * 40; }
-
-        if (state.evasionHistory.length >= 5) {
-          var aex = 0, aey = 0;
-          for (var hi = 0; hi < state.evasionHistory.length; hi++) { aex += state.evasionHistory[hi].dx; aey += state.evasionHistory[hi].dy; }
-          aex /= state.evasionHistory.length; aey /= state.evasionHistory.length;
-          var ael = Math.hypot(aex, aey);
-          if (ael > 0.1) { tx += (-aey / ael) * 30; ty += (aex / ael) * 30; }
+      // ===== FILE 8 - ESCAPE: Teleport to random positions =====
+      if (flags.escape && !skipMove) {
+        if (e._escapeTimer === undefined) e._escapeTimer = 3 + Math.random() * 4;
+        e._escapeTimer -= dt;
+        if (e._escapeTimer <= 0) {
+          e._escapeTimer = 3 + Math.random() * 4;
+          var p = 40;
+          e.x = p + Math.random() * (W - 2 * p);
+          e.y = p + Math.random() * (H - 2 * p);
+          skipMove = true;
         }
+      }
 
-        var tdx = tx - e.x, tdy = ty - e.y, td = Math.hypot(tdx, tdy);
-        if (td > 1) { e.x += (tdx / td) * boostSpeed * dt; e.y += (tdy / td) * boostSpeed * dt; }
-        e.lastX = e.x; e.lastY = e.y;
+      if (!skipMove) {
+        var recent = state.playerHistory.filter(function(h) { return h.t > state.time - 0.3; });
+        if (recent.length >= 3) {
+          var last = recent[recent.length - 1];
+          var first = recent[0];
+          var dtH = last.t - first.t || 0.01;
+          var velX = (last.x - first.x) / dtH;
+          var velY = (last.y - first.y) / dtH;
+
+          // ===== FILE 4 - PREDICCION: Longer lookahead, intercept =====
+          var lookahead = flags.prediccion ? 1.2 : 0.6;
+          var tx = p.x + velX * lookahead;
+          var ty = p.y + velY * lookahead;
+
+          var cx = W / 2, cy = H / 2;
+          var toCx = cx - p.x, toCy = cy - p.y;
+          var toCd = Math.hypot(toCx, toCy);
+          if (toCd > 1) { tx += (toCx / toCd) * 40; ty += (toCy / toCd) * 40; }
+
+          if (state.evasionHistory.length >= 5) {
+            var aex = 0, aey = 0;
+            for (var hi = 0; hi < state.evasionHistory.length; hi++) { aex += state.evasionHistory[hi].dx; aey += state.evasionHistory[hi].dy; }
+            aex /= state.evasionHistory.length; aey /= state.evasionHistory.length;
+            var ael = Math.hypot(aex, aey);
+            if (ael > 0.1) { tx += (-aey / ael) * 30; ty += (aex / ael) * 30; }
+          }
+
+          // ===== FILE 2 - IMITACION: Copy player turns =====
+          if (flags.imitation && (dx !== 0 || dy !== 0) && Math.random() < 0.3 * dt * 10) {
+            var imitateX = p.x + dx * 80;
+            var imitateY = p.y + dy * 80;
+            tx = tx * 0.5 + imitateX * 0.5;
+            ty = ty * 0.5 + imitateY * 0.5;
+          }
+
+          var tdx = tx - e.x, tdy = ty - e.y, td = Math.hypot(tdx, tdy);
+          if (td > 1) { e.x += (tdx / td) * boostSpeed * dt; e.y += (tdy / td) * boostSpeed * dt; }
+          e.lastX = e.x; e.lastY = e.y;
+        } else {
+          var edx = p.x - e.x, edy = p.y - e.y, d = Math.hypot(edx, edy);
+          if (d > 1) { e.x += (edx / d) * boostSpeed * dt; e.y += (edy / d) * boostSpeed * dt; }
+          e.lastX = e.x; e.lastY = e.y;
+        }
       } else {
-        var edx = p.x - e.x, edy = p.y - e.y, d = Math.hypot(edx, edy);
-        if (d > 1) { e.x += (edx / d) * boostSpeed * dt; e.y += (edy / d) * boostSpeed * dt; }
-        e.lastX = e.x; e.lastY = e.y;
+        e.lastX = e.x;
+        e.lastY = e.y;
+      }
+
+      // ===== FILE 9 - FINAL: Learner unleashed =====
+      if (flags.final) {
+        // Permanent turbo
+        e.boosted = true;
+        e.chargeTimer = 10;
+        boostSpeed = e.speed * 1.3;
+        // Random dash toward player
+        if (e._dashTimer === undefined) e._dashTimer = 2 + Math.random() * 2;
+        e._dashTimer -= dt;
+        if (e._dashTimer <= 0) {
+          e._dashTimer = 2 + Math.random() * 2;
+          e.x += (p.x - e.x) * 0.4;
+          e.y += (p.y - e.y) * 0.4;
+        }
+        // Maximum corruption
+        e._corruptFrame = (e._corruptFrame || 0) + 1;
+        if (e._corruptFrame > 5) e._corruptFrame = 0;
+        // Control inversion timer
+        if (e._invertTimer === undefined) e._invertTimer = 8 + Math.random() * 4;
+        e._invertTimer -= dt;
+        if (e._invertTimer <= 0) {
+          e._invertTimer = 8 + Math.random() * 4;
+          state.controlInvertTimer = 1.5;
+        }
+      }
+
+      // ===== FILE 5 - APARICIONES: Shadow clones =====
+      var spawnChance = flags.final ? 0.05 : 0.008;
+      var ghostLife = flags.final ? 0.5 : 0.08;
+      if (flags.apariciones && Math.random() < spawnChance) {
+        if (!state.ghostLearners) state.ghostLearners = [];
+        state.ghostLearners.push({
+          x: p.x + (Math.random() - 0.5) * 200,
+          y: p.y + (Math.random() - 0.5) * 200,
+          alpha: flags.final ? 0.25 + Math.random() * 0.25 : 0.15 + Math.random() * 0.15,
+          life: ghostLife,
+        });
+      }
+      // Update ghost learners
+      if (state.ghostLearners) {
+        for (var gi = state.ghostLearners.length - 1; gi >= 0; gi--) {
+          state.ghostLearners[gi].life -= dt;
+          if (state.ghostLearners[gi].life <= 0) state.ghostLearners.splice(gi, 1);
+        }
+      }
+
+      // ===== FILE 6 - CORRUPCION: Sprite distortion flag =====
+      if (flags.corrupcion) {
+        e._corruptFrame = Math.random() < 0.02 ? (e._corruptFrame || 0) + 1 : 0;
+        if (e._corruptFrame > 5) e._corruptFrame = 0;
+      } else {
+        e._corruptFrame = 0;
       }
 
       if (!e.boosted && e.chargeTimer > 2 && Math.random() < 0.3) {
@@ -2486,10 +3962,19 @@ function update(dt) {
     }
   }
 
-  var curMin = Math.floor(state.time / 60);
-  if (curMin > state.lastBlackSpawn) {
-    spawnBlackEnemy();
-    state.lastBlackSpawn = curMin;
+  if (isLearnMode) {
+    if (state.learnSpawnTimer > 0) {
+      state.learnSpawnTimer -= dt;
+      if (state.learnSpawnTimer <= 0) {
+        spawnBlackEnemy();
+      }
+    }
+  } else {
+    var curMin = Math.floor(state.time / 60);
+    if (curMin > state.lastBlackSpawn) {
+      spawnBlackEnemy();
+      state.lastBlackSpawn = curMin;
+    }
   }
 
   for (var i = state.gooPuddles.length - 1; i >= 0; i--) {
@@ -2605,6 +4090,20 @@ function drawPlayer() {
 }
 
 function drawEnemies(time) {
+  // Ghost learners (apariciones) - drawn once before the loop
+  if (state.ghostLearners) {
+    for (var gi = 0; gi < state.ghostLearners.length; gi++) {
+      var gh = state.ghostLearners[gi];
+      ctx.save();
+      ctx.globalAlpha = gh.alpha;
+      ctx.fillStyle = '#000000';
+      ctx.shadowColor = '#ffffff';
+      ctx.shadowBlur = 20;
+      ctx.fillRect(gh.x - 12, gh.y - 12, 24, 24);
+      ctx.restore();
+    }
+  }
+
   for (var i = 0; i < state.enemies.length; i++) {
     var e = state.enemies[i];
     var hs = e.size, x = e.x - hs, y = e.y - hs, w = hs * 2;
@@ -2612,6 +4111,7 @@ function drawEnemies(time) {
     if (e.black) {
       var chargeRatio = Math.min(1, e.chargeTimer / 10);
       var borderBright = e.boosted ? 1 : chargeRatio;
+      var isCorrupted = e._corruptFrame && e._corruptFrame > 0;
 
       // Charge particles
       for (var pi = 0; pi < e.chargeParticles.length; pi++) {
@@ -2634,13 +4134,47 @@ function drawEnemies(time) {
         ctx.restore();
       }
 
-      // Main body
-      ctx.fillStyle = '#000000'; ctx.fillRect(x - 1, y - 1, w + 2, w + 2);
+      // Main body with corruption
+      if (isCorrupted) {
+        ctx.save();
+        var skewX = (Math.random() - 0.5) * 8;
+        var skewY = (Math.random() - 0.5) * 8;
+        ctx.transform(1, skewY * 0.02, skewX * 0.02, 1, skewX, skewY);
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(x - 1, y - 1, w + 2, w + 2);
+        ctx.restore();
+        // Glitch color flash
+        if (Math.random() < 0.3) {
+          ctx.fillStyle = Math.random() < 0.5 ? 'rgba(0,255,65,0.1)' : 'rgba(255,0,64,0.1)';
+          ctx.fillRect(x - 1, y - 1, w + 2, w + 2);
+        }
+      } else {
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(x - 1, y - 1, w + 2, w + 2);
+      }
+
+      // Border
       ctx.save();
-      ctx.shadowColor = e.boosted ? '#ffffff' : '#000000';
-      ctx.shadowBlur = 15 + 15 * borderBright;
-      ctx.strokeStyle = 'rgba(255,255,255,' + (0.05 + 0.4 * borderBright) + ')';
-      ctx.lineWidth = 1 + borderBright;
+      if (isCorrupted && Math.random() < 0.4) {
+        // Skip drawing sometimes (disappear frame)
+        if (Math.random() < 0.5) {
+          ctx.restore();
+          // Eyes still draw even when body glitches
+          ctx.fillStyle = 'rgba(255,255,255,0.8)';
+          ctx.beginPath(); ctx.arc(e.x - 5, e.y - 3, 2.5 + 0.5 * borderBright, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.arc(e.x + 5, e.y - 3, 2.5 + 0.5 * borderBright, 0, Math.PI * 2); ctx.fill();
+          continue;
+        }
+        ctx.shadowColor = '#ff0040';
+        ctx.shadowBlur = 25;
+        ctx.strokeStyle = 'rgba(255,0,64,0.6)';
+        ctx.lineWidth = 2;
+      } else {
+        ctx.shadowColor = e.boosted ? '#ffffff' : '#000000';
+        ctx.shadowBlur = 15 + 15 * borderBright;
+        ctx.strokeStyle = 'rgba(255,255,255,' + (0.05 + 0.4 * borderBright) + ')';
+        ctx.lineWidth = 1 + borderBright;
+      }
       ctx.strokeRect(x - 1 - borderBright, y - 1 - borderBright, w + 2 + borderBright * 2, w + 2 + borderBright * 2);
       ctx.restore();
 
@@ -2682,7 +4216,9 @@ function drawEnemies(time) {
 
 function spawnExplosion(x, y) {
   state.particles = [];
-  var colors = ['#00ffff', '#00ccdd', '#33eeff', '#ffffff', '#006688', '#004466'];
+  var colors = isLearnMode
+    ? ['#00ff41', '#00cc33', '#33ee55', '#ffffff', '#006622', '#004411']
+    : ['#00ffff', '#00ccdd', '#33eeff', '#ffffff', '#006688', '#004466'];
   for (var i = 0; i < 50; i++) {
     var angle = Math.random() * Math.PI * 2;
     var speed = 80 + Math.random() * 220;
@@ -2808,8 +4344,32 @@ function render(time) {
   if (state.exploding) drawParticles();
   ctx.restore();
   if (state.danger > 0 && !state.dead && !state.exploding) drawDangerVignette(state.danger, time);
+  if (isLearnMode && state.controlInvertTimer > 0 && !state.dead && !state.exploding) {
+    ctx.save();
+    ctx.fillStyle = 'rgba(0, 255, 65, 0.06)';
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(255, 0, 64, 0.06)';
+    ctx.fillRect(Math.random() * 20 - 10, Math.random() * 20 - 10, W, H);
+    ctx.restore();
+  }
   ctx.filter = 'none';
   if (state.gemMinigame.active) drawGemMinigame();
+
+  // ===== FILE 7 - MEMORIA: Stats overlay =====
+  if (isLearnMode && (learnFilesRead & 64) && !state.dead && !state.exploding) {
+    ctx.save();
+    ctx.font = '11px Courier New';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = 'rgba(0, 255, 65, 0.15)';
+    ctx.shadowColor = 'rgba(0, 255, 65, 0.05)';
+    ctx.shadowBlur = 4;
+    var memLine1 = 'OBSERVED TIME: ' + formatTime(learnTotalTime + state.time);
+    var memLine2 = 'RECORDED DEATHS: ' + (learnTotalDeaths + (state.dead ? 0 : 0));
+    ctx.fillText(memLine1, 10, H - 40);
+    ctx.fillText(memLine2, 10, H - 24);
+    ctx.restore();
+  }
 }
 
 function drawGemMinigame() {
@@ -2980,6 +4540,112 @@ function gameLoop(timestamp) {
 }
 
 document.addEventListener('keydown', function(e) {
+  // ===== Learn.exe Scene Keyboard Navigation =====
+  if (learnSceneActive && document.getElementById('learnScene').classList.contains('visible')) {
+    var dp = document.getElementById('learnDebugPanel');
+    if (dp.classList.contains('visible')) {
+      if (e.key === 'Escape') { closeDebugPanel(); e.preventDefault(); }
+      else if (e.key === 'Enter' && document.activeElement === dp) { document.getElementById('debugGemSetBtn').click(); }
+      return;
+    }
+    var unlock = document.getElementById('unlockNotification');
+    if (unlock.classList.contains('visible')) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        hideUnlockNotification();
+        e.preventDefault();
+      }
+      return;
+    }
+
+    if (e.key === 'Escape') {
+      if (terminalState === 'reading') {
+        finishFileReading();
+        e.preventDefault();
+        return;
+      }
+      if (document.getElementById('learnDebugPanel').classList.contains('visible')) {
+        closeDebugPanel();
+        e.preventDefault();
+        return;
+      }
+      hideLearnScene();
+      e.preventDefault();
+      return;
+    }
+
+    // Cheat code sequence: rafa2009
+    var seqKey = e.key;
+    if (seqKey.length === 1) {
+      debugCheatSeq += seqKey;
+      if (debugCheatSeq.length > debugCheatCode.length) {
+        debugCheatSeq = debugCheatSeq.slice(-debugCheatCode.length);
+      }
+    } else {
+      debugCheatSeq = '';
+    }
+    if (debugCheatSeq === debugCheatCode) {
+      debugCheatSeq = '';
+      e.preventDefault();
+      if (document.getElementById('learnDebugPanel').classList.contains('visible')) {
+        closeDebugPanel();
+      } else {
+        openDebugPanel();
+      }
+      return;
+    }
+
+    if (terminalState === 'files') {
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        selectedFile = (selectedFile - 1 + LEARN_FILES.length) % LEARN_FILES.length;
+        showFileListing();
+        return;
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        selectedFile = (selectedFile + 1) % LEARN_FILES.length;
+        showFileListing();
+        return;
+      }
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (isFileUnlocked(selectedFile) && !isFileRead(selectedFile)) {
+          startFileReading(selectedFile);
+        } else if (isFileRead(selectedFile)) {
+          startFileReading(selectedFile);
+        }
+        return;
+      }
+    }
+
+    if (terminalState === 'reading') {
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        var tc = document.getElementById('learnTerminalContent');
+        var dir = e.key === 'ArrowUp' ? -1 : 1;
+        tc.scrollTop += dir * 80;
+        return;
+      }
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (terminalPaused) {
+          finishFileReading();
+        }
+        return;
+      }
+    }
+
+    if (e.key === 'Enter' || e.key === ' ') {
+      if (terminalState === 'files') {
+        e.preventDefault();
+        var btn = document.getElementById('learnPlayBtn');
+        if (btn) btn.click();
+        return;
+      }
+    }
+    return;
+  }
+
   if (e.key === 'Escape') {
     var modal = document.getElementById('customModal');
     if (modal.classList.contains('visible')) {
@@ -2995,7 +4661,11 @@ document.addEventListener('keydown', function(e) {
     }
     var deathScreen = document.getElementById('deathScreen');
     if (deathScreen.classList.contains('visible')) {
-      document.getElementById('menuBtn').click();
+      if (isLearnMode) {
+        document.getElementById('learnDeathBtn').click();
+      } else {
+        document.getElementById('menuBtn').click();
+      }
       e.preventDefault();
       return;
     }
@@ -3040,7 +4710,12 @@ document.addEventListener('keydown', function(e) {
             document.getElementById('menuButtons').contains(document.activeElement)) {
           document.activeElement.click();
         } else {
-          document.getElementById('playBtn').click();
+          // If learn btn is focused, click it, otherwise play
+          if (document.activeElement === document.getElementById('learnBtn')) {
+            document.getElementById('learnBtn').click();
+          } else {
+            document.getElementById('playBtn').click();
+          }
         }
         e.preventDefault();
         return;
@@ -3074,14 +4749,14 @@ document.addEventListener('keydown', function(e) {
     var deathScreen = document.getElementById('deathScreen');
     if (deathScreen.classList.contains('visible')) {
       e.preventDefault();
-      var container = document.querySelectorAll('#deathScreen button');
-      var visible = Array.prototype.filter.call(container, function(b) { return b.offsetParent !== null; });
-      if (visible.length === 0) return;
+      var container = document.querySelectorAll('#deathScreen button:not([style*="display:none"]):not([style*="display: none"])');
+      if (container.length === 0) return;
       var focused = document.activeElement;
-      var idx = visible.indexOf(focused);
-      if (e.key === 'ArrowDown') idx = (idx + 1) % visible.length;
-      else idx = (idx - 1 + visible.length) % visible.length;
-      visible[idx].focus();
+      var idx = Array.prototype.indexOf.call(container, focused);
+      if (e.key === 'ArrowDown') idx = (idx + 1) % container.length;
+      else idx = (idx - 1 + container.length) % container.length;
+      if (idx < 0) idx = 0;
+      container[idx].focus();
       return;
     }
     var modal = document.getElementById('customModal');
@@ -3142,6 +4817,7 @@ document.getElementById('restartBtn').addEventListener('click', function() {
 });
 
 document.getElementById('playBtn').addEventListener('click', function() {
+  isLearnMode = false;
   stopMenuParticles();
   stopMenuSong();
   document.getElementById('optionsPanel').style.display = 'none';
@@ -3149,12 +4825,41 @@ document.getElementById('playBtn').addEventListener('click', function() {
   document.getElementById('menuButtons').style.display = 'flex';
   document.getElementById('menuRecord').style.display = 'flex';
   document.getElementById('mainMenu').classList.remove('visible');
+  document.getElementById('gameContainer').classList.remove('learn-mode');
   setTimeout(function() {
     document.getElementById('gameContainer').classList.add('visible');
     initAudioSystem();
     startSong();
     resetGame();
   }, 500);
+});
+
+document.getElementById('learnBtn').addEventListener('click', function() {
+  showLearnScene();
+});
+
+document.getElementById('learnPlayBtn').addEventListener('click', function() {
+  if (clickSound) {
+    clickSound.currentTime = 0;
+    clickSound.volume = volumes.master * 0.45;
+    clickSound.play().catch(function() {});
+  }
+  startLearnGame();
+});
+
+document.getElementById('learnBackBtn').addEventListener('click', function() {
+  hideLearnScene();
+});
+
+document.getElementById('learnDeathBtn').addEventListener('click', function() {
+  document.getElementById('deathScreen').classList.remove('visible');
+  isLearnMode = false;
+  document.getElementById('gameContainer').classList.remove('visible', 'learn-mode');
+  showLearnScene();
+});
+
+document.getElementById('unlockContinueBtn').addEventListener('click', function() {
+  hideUnlockNotification();
 });
 
 document.getElementById('howToPlayBtn').addEventListener('click', function() {
@@ -3300,13 +5005,14 @@ setupSlider('volSike', 'sike');
 setupSlider('volMusic', 'music');
 
 document.getElementById('menuBtn').addEventListener('click', function() {
+  isLearnMode = false;
   document.getElementById('deathScreen').classList.remove('visible');
   document.getElementById('optionsPanel').style.display = 'none';
   document.getElementById('soundPanel').style.display = 'none';
   document.getElementById('menuButtons').style.display = 'flex';
   document.getElementById('menuRecord').style.display = 'flex';
   document.getElementById('menuRecordValue').textContent = state.record;
-  document.getElementById('gameContainer').classList.remove('visible');
+  document.getElementById('gameContainer').classList.remove('visible', 'learn-mode');
   document.getElementById('mainMenu').classList.add('visible');
   state.running = false;
   state.dead = false;
@@ -3322,6 +5028,13 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('soundPanel').style.display = 'none';
   document.getElementById('menuButtons').style.display = 'flex';
   document.getElementById('menuRecord').style.display = 'flex';
+  // Load learn data
+  learnGems = parseInt(localStorage.getItem('learnGems') || '0');
+  learnFilesRead = parseInt(localStorage.getItem('learnFilesRead') || '0');
+  learnTotalSessions = parseInt(localStorage.getItem('learnTotalSessions') || '0');
+  learnTotalTime = parseFloat(localStorage.getItem('learnTotalTime') || '0');
+  learnTotalDeaths = parseInt(localStorage.getItem('learnTotalDeaths') || '0');
+
   setTimeout(function() { startMenuParticles(); }, 100);
 });
 
