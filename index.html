@@ -4946,6 +4946,11 @@ document.addEventListener('keyup', function(e) {
 });
 
 document.getElementById('restartBtn').addEventListener('click', function() {
+  if (isLearnMode) {
+    learnTotalSessions++;
+    localStorage.setItem('learnTotalSessions', learnTotalSessions);
+    learnSessionGems = 0;
+  }
   document.getElementById('deathScreen').classList.remove('visible');
   setTimeout(function() {
     document.getElementById('gameContainer').classList.add('visible');
