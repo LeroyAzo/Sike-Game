@@ -2400,6 +2400,7 @@ input[type=range]::-moz-range-thumb {
     <div id="learnGemCounter">
       <div id="learnGemIcon">◆</div>
       <div id="learnGemCount">0</div>
+      <div id="learnGemTotal">/ 30</div>
     </div>
     <div id="learnProgressBar">
       <div id="learnProgressFill"></div>
@@ -2869,7 +2870,7 @@ var htpCards = [
   { title: 'DANGER', text: 'The closer an enemy gets to you, the more the screen turns red and shakes. The music gets weird too — a warning that you need to get away!', graphic: 'danger' },
   { title: 'KEY TIERS', text: 'You start with WASD, then arrows, then more and more keys: 6, 9, 13, 15, and finally all 26 letters. The higher your score, the more chaos!', graphic: 'tiers' },
   { title: 'LEARNER', text: 'A dark enemy that watches how you move and learns your habits. Watch its border — when it fills up with white energy it gets faster and fiercer. Try LEARN.EXE mode to discover its dark secrets...', graphic: 'learner' },
-  { title: 'LEARN.EXE', text: 'A hidden mode where each 30 gems unlocks a classified file. Read the archives and watch the Learner change... becoming more unpredictable, more aggressive, more aware. How deep does it go?', graphic: 'learnExe' },
+  { title: 'LEARN.EXE', text: 'A hidden mode where collecting gems unlocks classified files. Read the archives and watch the Learner change... becoming more unpredictable, more aggressive, more aware. How deep does it go?', graphic: 'learnExe' },
 ];
 var htpIndex = 0;
 
@@ -3223,13 +3224,19 @@ function updateLearnPanel() {
 
   if (nextFile >= 0) {
     var needed = LEARN_FILES[nextFile].gems;
+    var nextGems = needed - learnGems;
+    document.getElementById('learnGemTotal').textContent = '/ ' + needed;
+    document.getElementById('learnProgressLabel').textContent = 'Next file in ' + nextGems + ' gems';
     var pct = Math.min(100, (learnGems / needed) * 100);
     document.getElementById('learnProgressFill').style.width = pct + '%';
   } else if (read >= total) {
+    document.getElementById('learnGemTotal').textContent = 'COMPLETE';
     document.getElementById('learnProgressLabel').textContent = 'All files discovered';
     document.getElementById('learnProgressFill').style.width = '100%';
   } else {
     var needed = LEARN_FILES[read].gems;
+    document.getElementById('learnGemTotal').textContent = '/ ' + needed;
+    document.getElementById('learnProgressLabel').textContent = 'Keep collecting gems...';
     var pct = Math.min(100, (learnGems / needed) * 100);
     document.getElementById('learnProgressFill').style.width = pct + '%';
   }
