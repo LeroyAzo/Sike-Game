@@ -2197,12 +2197,7 @@ input[type=range]::-moz-range-thumb {
       <span class="vol-value" id="volMasterVal">100</span>
     </div>
     <div class="volume-row">
-      <span class="vol-label">GEM INTRO</span>
-      <input type="range" id="volIntro" min="0" max="100" value="100">
-      <span class="vol-value" id="volIntroVal">100</span>
-    </div>
-    <div class="volume-row">
-      <span class="vol-label">SIKE VOLUME</span>
+      <span class="vol-label">SFX VOLUME</span>
       <input type="range" id="volSike" min="0" max="100" value="100">
       <span class="vol-value" id="volSikeVal">100</span>
     </div>
@@ -2527,7 +2522,7 @@ function playGemSound() {
   lastIntro = idx;
   var intro = gemIntros[idx];
   intro.currentTime = 0;
-  intro.volume = volumes.master * volumes.intro;
+  intro.volume = volumes.master * volumes.sike;
   intro.play().catch(function() {});
 }
 
@@ -4902,7 +4897,7 @@ document.getElementById('optionsBackBtn').addEventListener('click', function() {
 });
 
 function loadVolumes() {
-  var keys = { master: 'volMaster', intro: 'volIntro', sike: 'volSike', music: 'volMusic' };
+  var keys = { master: 'volMaster', sike: 'volSike', music: 'volMusic' };
   for (var k in keys) {
     var saved = localStorage.getItem(keys[k]);
     if (saved !== null) {
@@ -5000,7 +4995,6 @@ function setupSlider(id, volKey) {
 }
 
 setupSlider('volMaster', 'master');
-setupSlider('volIntro', 'intro');
 setupSlider('volSike', 'sike');
 setupSlider('volMusic', 'music');
 
