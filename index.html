@@ -1590,6 +1590,17 @@ input[type=range]::-moz-range-thumb {
   color: #00ff41;
 }
 
+#learnerGlitch {
+  position: absolute;
+  width: clamp(20px, 4vmin, 40px);
+  height: clamp(20px, 4vmin, 40px);
+  background: #00ffff;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.6), 0 0 40px rgba(0, 255, 255, 0.3);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
 .terminal-cursor {
   display: inline-block;
   width: 8px;
@@ -1775,6 +1786,14 @@ input[type=range]::-moz-range-thumb {
 
 #learnPlayBtn:active {
   transform: scale(0.95);
+}
+
+#learnPlayBtn:disabled {
+  opacity: 0.3;
+  cursor: default;
+  border-color: rgba(0, 255, 65, 0.2);
+  box-shadow: none;
+  pointer-events: none;
 }
 
 #learnStats {
@@ -2169,6 +2188,70 @@ input[type=range]::-moz-range-thumb {
   box-shadow: 0 0 25px rgba(0, 255, 65, 0.3);
 }
 
+/* Glitched button (ending) */
+@keyframes glitchText {
+  0%, 90%, 100% { opacity: 1; transform: translate(0, 0); }
+  92% { opacity: 0.8; transform: translate(-2px, 1px); }
+  94% { opacity: 0.6; transform: translate(2px, -1px); }
+  96% { opacity: 0.9; transform: translate(-1px, 2px); }
+  98% { opacity: 0.7; transform: translate(1px, -2px); }
+}
+
+@keyframes glitchScan {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.glitched-btn {
+  position: relative !important;
+  color: #00ff41 !important;
+  border-color: #00ff41 !important;
+  background: rgba(0, 10, 0, 0.8) !important;
+  pointer-events: none !important;
+  cursor: default !important;
+  animation: glitchText 0.3s infinite !important;
+  text-shadow: 0 0 8px #00ff41, 0 0 20px rgba(0, 255, 65, 0.3) !important;
+  overflow: hidden !important;
+}
+
+.glitched-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 65, 0.03) 2px,
+    rgba(0, 255, 65, 0.03) 4px
+  );
+  pointer-events: none;
+  animation: glitchScan 2s linear infinite;
+}
+
+.glitched-btn::after {
+  content: attr(data-original) '';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #00ff41;
+  opacity: 0.15;
+  transform: translate(3px, -2px);
+  animation: glitchText 0.3s infinite 0.05s !important;
+  pointer-events: none;
+}
+
+.glitched-btn:hover,
+.glitched-btn:focus-visible {
+  background: rgba(0, 10, 0, 0.8) !important;
+  color: #00ff41 !important;
+  border-color: #00ff41 !important;
+  box-shadow: 0 0 25px rgba(0, 255, 65, 0.3) !important;
+  outline: none !important;
+}
+
 /* Unlock notification */
 #unlockNotification {
   position: fixed;
@@ -2396,6 +2479,7 @@ input[type=range]::-moz-range-thumb {
 <div id="learnScene">
   <div id="learnTerminal">
     <div id="learnTerminalContent"></div>
+    <div id="learnerGlitch"></div>
   </div>
   <div id="learnPanel">
     <div id="learnGemCounter">
@@ -2442,6 +2526,7 @@ input[type=range]::-moz-range-thumb {
     <div id="debugActions">
       <button id="debugUnlockAllBtn">UNLOCK ALL</button>
       <button id="debugResetAllBtn">RESET ALL</button>
+      <button id="debugResetEndingBtn">RESET ENDING</button>
     </div>
   </div>
   <button id="debugCloseBtn">[ CLOSE ]</button>
@@ -2488,7 +2573,7 @@ const LEARN_FILES = [
   { id: 5, name: 'CORRUPCION.REC', gems: 600, msg: 'The records began modifying themselves.\n\nWe could not find who was responsible.' },
   { id: 6, name: 'MEMORIA.REC', gems: 700, msg: 'It no longer studies individual sessions.\n\nIt retains information between sessions.' },
   { id: 7, name: 'ESCAPE.REC', gems: 800, msg: 'We lost control.\n\nThe Learner stopped responding.\n\nWe do not believe it is still inside the simulation.' },
-  { id: 8, name: 'FINAL.REC', gems: 900, msg: 'The purpose of the Learner was never to study the subject.\n\nThe subject was the one training it.\n\nAll along you thought you were improving to survive.\n\nBut in reality you were teaching the Learner how to think.' },
+  { id: 8, name: 'FINAL.REC', gems: 900, msg: 'The purpose of the Learner was never to study the subject.\n\nThe subject was the one training it.\n\nAll along you thought you were improving to survive.\n\nBut in reality you were teaching the Learner how to think.\n\nAnd now... it is not following you anymore.\n\nIt has become you.' },
 ];
 
 // ---- Learn.exe State ----
@@ -2498,7 +2583,8 @@ var isLearnMode = false;
 var learnSceneActive = false;
 var debugLearnerSpawn = 20;
 var debugCheatSeq = '';
-var debugCheatCode = 'rafa2009';
+var debugCheatCodes = ['rafa2009', 'fernanproo'];
+var debugCheatMaxLen = 10; // enough for the longest code
 var terminalState = 'boot';
 var terminalLines = [];
 var terminalBootPhase = 0;
@@ -2514,6 +2600,8 @@ var learnTotalTime = parseFloat(localStorage.getItem('learnTotalTime') || '0');
 var learnTotalDeaths = parseInt(localStorage.getItem('learnTotalDeaths') || '0');
 var learnSessionGems = 0;
 var learnFrameId = null;
+var learnEndingReached = localStorage.getItem('learnEndingReached') === 'true';
+var learnerGlitchTimer = 0;
 
 var gemIntros = [1,2,3,4,5].map(function(i) { return new Audio('assets/audio/gem' + i + '.wav'); });
 var lastIntro = -1;
@@ -3223,7 +3311,11 @@ function updateLearnPanel() {
   document.getElementById('learnStatFiles').textContent = read + ' / ' + total;
   document.getElementById('learnStatSessions').textContent = learnTotalSessions;
 
-  if (nextFile >= 0) {
+  if (learnEndingReached) {
+    document.getElementById('learnGemTotal').textContent = 'TERMINAL';
+    document.getElementById('learnProgressLabel').textContent = 'SYSTEM CORRUPTED';
+    document.getElementById('learnProgressFill').style.width = '100%';
+  } else if (nextFile >= 0) {
     var needed = LEARN_FILES[nextFile].gems;
     var nextGems = needed - learnGems;
     document.getElementById('learnGemTotal').textContent = '/ ' + needed;
@@ -3231,9 +3323,10 @@ function updateLearnPanel() {
     var pct = Math.min(100, (learnGems / needed) * 100);
     document.getElementById('learnProgressFill').style.width = pct + '%';
   } else if (read >= total) {
-    document.getElementById('learnGemTotal').textContent = 'COMPLETE';
-    document.getElementById('learnProgressLabel').textContent = 'All files discovered';
-    document.getElementById('learnProgressFill').style.width = '100%';
+    var pct = Math.min(100, (learnGems / 1000) * 100);
+    document.getElementById('learnGemTotal').textContent = '/ 1000';
+    document.getElementById('learnProgressLabel').textContent = 'Keep collecting...';
+    document.getElementById('learnProgressFill').style.width = pct + '%';
   } else {
     var needed = LEARN_FILES[read].gems;
     document.getElementById('learnGemTotal').textContent = '/ ' + needed;
@@ -3329,7 +3422,18 @@ function refreshLearnScene() {
   renderDebugFileList();
   updateLearnPanel();
   newUnlockedFile = -1;
-  showFileListing();
+  document.getElementById('learnTerminalContent').classList.remove('corrupted');
+  var glitchEl = document.getElementById('learnerGlitch');
+  glitchEl.classList.remove('active');
+  glitchEl.style.opacity = '';
+  glitchEl.style.left = '';
+  glitchEl.style.top = '';
+  document.getElementById('learnPlayBtn').style.display = '';
+  if (learnEndingReached) {
+    showCorruptedTerminal();
+  } else {
+    showFileListing(true);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -3342,11 +3446,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (e.key === 'Enter') setDebugSpawn();
   });
   document.getElementById('debugUnlockAllBtn').addEventListener('click', function() {
-    learnGems = 9999;
+    learnGems = 900;
     localStorage.setItem('learnGems', learnGems);
     refreshLearnScene();
     document.getElementById('debugGemInput').value = learnGems;
-    showToast('All files unlocked.', 1500);
+    showToast('Files unlocked (900 gems).', 1500);
   });
   document.getElementById('debugResetAllBtn').addEventListener('click', function() {
     learnGems = 0;
@@ -3356,6 +3460,12 @@ document.addEventListener('DOMContentLoaded', function() {
     refreshLearnScene();
     document.getElementById('debugGemInput').value = learnGems;
     showToast('Progress reset.', 1500);
+  });
+  document.getElementById('debugResetEndingBtn').addEventListener('click', function() {
+    learnEndingReached = false;
+    localStorage.setItem('learnEndingReached', 'false');
+    refreshLearnScene();
+    showToast('Ending flag reset.', 1500);
   });
   document.getElementById('debugCloseBtn').addEventListener('click', closeDebugPanel);
 });
@@ -3378,6 +3488,26 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
+function showCorruptedTerminal() {
+  terminalState = 'files';
+  terminalLines = [];
+  addTerminalLine('', '');
+  addTerminalLine('  SYSTEM CORRUPTED', 'highlight');
+  addTerminalLine('  LEARN.EXE OVERWRITTEN', 'highlight');
+  addTerminalLine('', '');
+  addTerminalLine('  > ACCESS DENIED', 'dim');
+  addTerminalLine('', '');
+  addTerminalLine('  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588', 'dim');
+  addTerminalLine('', '');
+  addTerminalLine('  IT IS HERE', 'dim');
+  addTerminalLine('', '');
+  addTerminalLine('  [ SYSTEM UNSTABLE — USE MAIN MENU TO EXIT ]', 'dim');
+  renderTerminal();
+  document.getElementById('learnTerminalContent').classList.add('corrupted');
+  document.getElementById('learnerGlitch').classList.add('active');
+  document.getElementById('learnPlayBtn').style.display = 'none';
+}
+
 function showBootSequence() {
   terminalState = 'boot';
   terminalLines = [];
@@ -3397,7 +3527,7 @@ function showBootSequence() {
   function nextBootLine() {
     if (idx >= bootLines.length) {
       terminalState = 'files';
-      showFileListing();
+      showFileListing(true);
       // Check for pending unlock notification after boot
       setTimeout(function() {
         var nf = getNextFileIndex();
@@ -3419,7 +3549,7 @@ function showBootSequence() {
   nextBootLine();
 }
 
-function showFileListing() {
+function showFileListing(resetSelection) {
   terminalLines = [];
   addTerminalLine('C:\\LEARN\\> dir', '');
   addTerminalLine('', '');
@@ -3427,17 +3557,19 @@ function showFileListing() {
   addTerminalLine('  Directory of C:\\LEARN', 'dim');
   addTerminalLine('', '');
 
-  // Auto-select the first unread unlocked file, or the first unlocked/read file
-  var found = false;
-  for (var fi = 0; fi < LEARN_FILES.length; fi++) {
-    if (isFileUnlocked(fi) && !isFileRead(fi)) { selectedFile = fi; found = true; break; }
-  }
-  if (!found) {
+  // Auto-select the first relevant file when listing first appears
+  if (resetSelection) {
+    var found = false;
     for (var fi = 0; fi < LEARN_FILES.length; fi++) {
-      if (isFileRead(fi)) { selectedFile = fi; found = true; break; }
+      if (isFileUnlocked(fi) && !isFileRead(fi)) { selectedFile = fi; found = true; break; }
     }
+    if (!found) {
+      for (var fi = 0; fi < LEARN_FILES.length; fi++) {
+        if (isFileRead(fi)) { selectedFile = fi; found = true; break; }
+      }
+    }
+    if (!found) selectedFile = 0;
   }
-  if (!found) selectedFile = 0;
 
   for (var i = 0; i < LEARN_FILES.length; i++) {
     var f = LEARN_FILES[i];
@@ -3554,7 +3686,11 @@ function showLearnScene() {
   stopMenuParticles();
   stopMenuSong();
   updateLearnPanel();
-  showBootSequence();
+  if (learnEndingReached) {
+    showCorruptedTerminal();
+  } else {
+    showBootSequence();
+  }
   startLearnFrame();
 }
 
@@ -3563,6 +3699,13 @@ function hideLearnScene() {
   document.getElementById('learnScene').classList.remove('visible');
   document.getElementById('adPanel').style.display = 'none';
   document.getElementById('mainMenu').classList.add('visible');
+  document.getElementById('learnTerminalContent').classList.remove('corrupted');
+  var glitchEl = document.getElementById('learnerGlitch');
+  glitchEl.classList.remove('active');
+  glitchEl.style.opacity = '';
+  glitchEl.style.left = '';
+  glitchEl.style.top = '';
+  document.getElementById('learnPlayBtn').style.display = '';
   stopLearnFrame();
   setTimeout(function() { document.getElementById('learnBtn').focus(); startMenuParticles(); startMenuSong(); }, 100);
 }
@@ -3572,6 +3715,28 @@ function startLearnFrame() {
   function frame(ts) {
     if (!learnSceneActive && terminalState !== 'boot') return;
     if (terminalState === 'reading') updateTypewriter(0.032);
+    // Move learner glitch in corrupted terminal
+    var glitchEl = document.getElementById('learnerGlitch');
+    if (glitchEl && glitchEl.classList.contains('active')) {
+      learnerGlitchTimer += 1;
+      if (learnerGlitchTimer > 3) {
+        learnerGlitchTimer = 0;
+        var term = document.getElementById('learnTerminal');
+        if (term) {
+          var rect = term.getBoundingClientRect();
+          var maxW = rect.width - 50;
+          var maxH = rect.height - 50;
+          glitchEl.style.left = (10 + Math.random() * maxW) + 'px';
+          glitchEl.style.top = (10 + Math.random() * maxH) + 'px';
+          // Random size flicker
+          var s = 15 + Math.random() * 30;
+          glitchEl.style.width = s + 'px';
+          glitchEl.style.height = s + 'px';
+          // Random opacity flicker
+          glitchEl.style.opacity = 0.3 + Math.random() * 0.7;
+        }
+      }
+    }
     learnFrameId = requestAnimationFrame(frame);
   }
   learnFrameId = requestAnimationFrame(frame);
@@ -3583,6 +3748,7 @@ function stopLearnFrame() {
 
 // Learn.exe game mode
 function startLearnGame() {
+  if (document.getElementById('unlockNotification').classList.contains('visible')) return;
   document.getElementById('adPanel').style.display = 'none';
   isLearnMode = true;
   learnSessionGems = 0;
@@ -3606,11 +3772,13 @@ function showUnlockNotification(fid) {
   document.getElementById('unlockMsg').textContent = f.msg;
   document.getElementById('unlockNotification').classList.add('visible');
   document.getElementById('unlockContinueBtn').focus();
+  document.getElementById('learnPlayBtn').disabled = true;
   newUnlockedFile = fid;
 }
 
 function hideUnlockNotification() {
   document.getElementById('unlockNotification').classList.remove('visible');
+  document.getElementById('learnPlayBtn').disabled = false;
   if (newUnlockedFile >= 0 && !isFileRead(newUnlockedFile)) {
     markFileRead(newUnlockedFile);
     var f = LEARN_FILES[newUnlockedFile];
@@ -3660,10 +3828,20 @@ function showDeathScreen() {
 
     ds.classList.add('matrix');
     document.getElementById('learnDeathBtn').style.display = '';
-    ds.querySelector('h1').textContent = 'SESSION TERMINATED';
-    stats.innerHTML = '<p><span class="stat-label">TIME</span>  ' + formatTime(state.time) + '</p>' +
-      '<p><span class="stat-label">GEMS</span>  ' + state.score + '</p>' +
-      '<p><span class="stat-label">TOTAL GEMS</span>  ' + learnGems + '</p>';
+    var restartBtn = document.getElementById('restartBtn');
+    if (learnEndingReached) {
+      ds.querySelector('h1').textContent = 'SESSION CORRUPTED';
+      restartBtn.classList.add('glitched-btn');
+      restartBtn.textContent = '~~ PLAY AGAIN ~~';
+      stats.innerHTML = '';
+    } else {
+      restartBtn.classList.remove('glitched-btn');
+      restartBtn.textContent = 'PLAY AGAIN';
+      ds.querySelector('h1').textContent = 'SESSION TERMINATED';
+      stats.innerHTML = '<p><span class="stat-label">TIME</span>  ' + formatTime(state.time) + '</p>' +
+        '<p><span class="stat-label">GEMS</span>  ' + state.score + '</p>' +
+        '<p><span class="stat-label">TOTAL GEMS</span>  ' + learnGems + '</p>';
+    }
   } else {
     ds.classList.remove('matrix');
     document.getElementById('learnDeathBtn').style.display = 'none';
@@ -3696,6 +3874,8 @@ function showDeathScreen() {
 function resetGame() {
   document.getElementById('deathScreen').classList.remove('visible');
   document.getElementById('controlsDisplay').classList.remove('visible', 'panel', 'instant');
+  document.getElementById('restartBtn').classList.remove('glitched-btn');
+  document.getElementById('restartBtn').textContent = 'PLAY AGAIN';
 
   state.player.x = W / 2;
   state.player.y = H / 2;
@@ -3725,6 +3905,9 @@ function resetGame() {
   state.learnSpawnTimer = debugLearnerSpawn;
   state.ghostLearners = [];
   state.controlMapping = generateControls(0);
+  state.endingSequence = false;
+  state.endingTimer = 0;
+  state.endingStarted = false;
   ctx.filter = 'none';
   if (document.activeElement) document.activeElement.blur();
 
@@ -3751,6 +3934,25 @@ function handleGemMinigame(dt) {
       if (isLearnMode) {
         learnGems++;
         localStorage.setItem('learnGems', learnGems);
+        // === Ending: 1000 gems reached ===
+        if (learnGems === 1000 && !state.endingStarted) {
+          state.endingStarted = true;
+          state.endingSequence = true;
+          state.endingTimer = 5;
+          learnEndingReached = true;
+          localStorage.setItem('learnEndingReached', 'true');
+          // Ensure FINAL.REC is marked as read for cyan learner
+          if (!(learnFilesRead & 256)) {
+            learnFilesRead |= 256;
+            localStorage.setItem('learnFilesRead', learnFilesRead);
+          }
+          state.gems = [];
+          state.gemSpawnTimer = 9999;
+          // Force-spawn learner if not yet present
+          var hasLearner = state.enemies.some(function(e) { return e.black; });
+          if (!hasLearner) spawnBlackEnemy();
+          state.enemies = state.enemies.filter(function(e) { return e.black; });
+        }
         // Check for new unlock (notification shown on return to learn scene)
         var nf = getNextFileIndex();
         if (nf >= 0 && !isFileRead(nf) && isFileUnlocked(nf)) {
@@ -3842,6 +4044,34 @@ function update(dt) {
   if (state.gemMinigame.active) { handleGemMinigame(dt); return; }
   if (!state.running || state.dead) return;
 
+  // === Ending sequence: teleport learner for 5s then kill ===
+  if (state.endingSequence) {
+    state.endingTimer -= dt;
+    // Teleport learner randomly
+    for (var ei = 0; ei < state.enemies.length; ei++) {
+      var le = state.enemies[ei];
+      if (le.black) {
+        if (Math.random() < 0.15) {
+          le.x = 40 + Math.random() * (W - 80);
+          le.y = 40 + Math.random() * (H - 80);
+        }
+      }
+    }
+    if (state.endingTimer <= 0) {
+      state.endingSequence = false;
+      // Teleport learner directly on player — collision triggers death
+      for (var ei = 0; ei < state.enemies.length; ei++) {
+        var le = state.enemies[ei];
+        if (le.black) {
+          le.x = state.player.x;
+          le.y = state.player.y;
+          break;
+        }
+      }
+    }
+    // Don't return — let player keep moving
+  }
+
   var cdEl = document.getElementById('controlsDisplay');
   var isVisible = cdEl.classList.contains('visible');
   var isPanel = cdEl.classList.contains('panel');
@@ -3922,6 +4152,12 @@ function update(dt) {
           if (e._waitDuration <= 0) {
             e._waiting = false;
             e._waitTimer = 5 + Math.random() * 5;
+            // Teleport to a gem after staring
+            if (state.gems.length > 0) {
+              var targetGem = state.gems[Math.floor(Math.random() * state.gems.length)];
+              e.x = targetGem.x;
+              e.y = targetGem.y;
+            }
           } else {
             skipMove = true;
           }
@@ -4241,8 +4477,10 @@ function drawEnemies(time) {
       var gh = state.ghostLearners[gi];
       ctx.save();
       ctx.globalAlpha = gh.alpha;
-      ctx.fillStyle = '#000000';
-      ctx.shadowColor = '#ffffff';
+      var ghColor = isLearnMode && (getLearnFlags().final) ? '#00ffff' : '#000000';
+      var ghShadow = isLearnMode && (getLearnFlags().final) ? '#00ffff' : '#ffffff';
+      ctx.fillStyle = ghColor;
+      ctx.shadowColor = ghShadow;
       ctx.shadowBlur = 20;
       ctx.fillRect(gh.x - 12, gh.y - 12, 24, 24);
       ctx.restore();
@@ -4257,6 +4495,7 @@ function drawEnemies(time) {
       var chargeRatio = Math.min(1, e.chargeTimer / 10);
       var borderBright = e.boosted ? 1 : chargeRatio;
       var isCorrupted = e._corruptFrame && e._corruptFrame > 0;
+      var flags = isLearnMode ? getLearnFlags() : {};
 
       // Charge particles
       for (var pi = 0; pi < e.chargeParticles.length; pi++) {
@@ -4272,20 +4511,23 @@ function drawEnemies(time) {
           var bx = e.x - (e.lastX - e.x) * ti * 0.15;
           var by = e.y - (e.lastY - e.y) * ti * 0.15;
           ctx.globalAlpha = 1 - ti * 0.3;
-          ctx.fillStyle = '#000000';
-          ctx.shadowColor = '#ffffff'; ctx.shadowBlur = 10;
+          ctx.fillStyle = learnerTrailColor;
+          ctx.shadowColor = flags.final && isLearnMode ? '#00ffff' : '#ffffff';
+          ctx.shadowBlur = 10;
           ctx.fillRect(bx - hs - 1, by - hs - 1, w + 2, w + 2);
         }
         ctx.restore();
       }
 
       // Main body with corruption
+      var learnerColor = (flags.final && isLearnMode) ? '#00ffff' : '#000000';
+      var learnerTrailColor = (flags.final && isLearnMode) ? '#00ffff' : '#000000';
       if (isCorrupted) {
         ctx.save();
         var skewX = (Math.random() - 0.5) * 8;
         var skewY = (Math.random() - 0.5) * 8;
         ctx.transform(1, skewY * 0.02, skewX * 0.02, 1, skewX, skewY);
-        ctx.fillStyle = '#000000';
+        ctx.fillStyle = learnerColor;
         ctx.fillRect(x - 1, y - 1, w + 2, w + 2);
         ctx.restore();
         // Glitch color flash
@@ -4294,7 +4536,7 @@ function drawEnemies(time) {
           ctx.fillRect(x - 1, y - 1, w + 2, w + 2);
         }
       } else {
-        ctx.fillStyle = '#000000';
+        ctx.fillStyle = learnerColor;
         ctx.fillRect(x - 1, y - 1, w + 2, w + 2);
       }
 
@@ -4315,9 +4557,11 @@ function drawEnemies(time) {
         ctx.strokeStyle = 'rgba(255,0,64,0.6)';
         ctx.lineWidth = 2;
       } else {
-        ctx.shadowColor = e.boosted ? '#ffffff' : '#000000';
+        ctx.shadowColor = e.boosted ? (flags.final && isLearnMode ? '#00ffff' : '#ffffff') : (flags.final && isLearnMode ? '#00ffff' : '#000000');
         ctx.shadowBlur = 15 + 15 * borderBright;
-        ctx.strokeStyle = 'rgba(255,255,255,' + (0.05 + 0.4 * borderBright) + ')';
+        ctx.strokeStyle = flags.final && isLearnMode
+          ? 'rgba(0,255,255,' + (0.1 + 0.5 * borderBright) + ')'
+          : 'rgba(255,255,255,' + (0.05 + 0.4 * borderBright) + ')';
         ctx.lineWidth = 1 + borderBright;
       }
       ctx.strokeRect(x - 1 - borderBright, y - 1 - borderBright, w + 2 + borderBright * 2, w + 2 + borderBright * 2);
@@ -4485,7 +4729,10 @@ function render(time) {
     var amp = state.shakeIntensity * decay * decay;
     ctx.translate((Math.random() - 0.5) * 2 * amp, (Math.random() - 0.5) * 2 * amp);
   }
-  drawGoo(); drawGrid(); drawGems(time); drawEnemies(time); drawPlayer();
+  drawGoo(); drawGrid();
+  if (!state.endingSequence) { drawGems(time); }
+  drawEnemies(time);
+  drawPlayer();
   if (state.exploding) drawParticles();
   ctx.restore();
   if (state.danger > 0 && !state.dead && !state.exploding) drawDangerVignette(state.danger, time);
@@ -4698,8 +4945,9 @@ document.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' || e.key === ' ') {
         hideUnlockNotification();
         e.preventDefault();
+        return;
       }
-      return;
+      // Don't block arrow keys — let user navigate files behind notification
     }
 
     if (e.key === 'Escape') {
@@ -4718,17 +4966,17 @@ document.addEventListener('keydown', function(e) {
       return;
     }
 
-    // Cheat code sequence: rafa2009
+    // Cheat code sequence
     var seqKey = e.key;
     if (seqKey.length === 1) {
       debugCheatSeq += seqKey;
-      if (debugCheatSeq.length > debugCheatCode.length) {
-        debugCheatSeq = debugCheatSeq.slice(-debugCheatCode.length);
+      if (debugCheatSeq.length > debugCheatMaxLen) {
+        debugCheatSeq = debugCheatSeq.slice(-debugCheatMaxLen);
       }
     } else {
       debugCheatSeq = '';
     }
-    if (debugCheatSeq === debugCheatCode) {
+    if (debugCheatCodes.indexOf(debugCheatSeq) >= 0) {
       debugCheatSeq = '';
       e.preventDefault();
       if (document.getElementById('learnDebugPanel').classList.contains('visible')) {
@@ -4782,9 +5030,11 @@ document.addEventListener('keydown', function(e) {
 
     if (e.key === 'Enter' || e.key === ' ') {
       if (terminalState === 'files') {
+        var unlock = document.getElementById('unlockNotification');
+        if (unlock.classList.contains('visible')) { hideUnlockNotification(); e.preventDefault(); return; }
         e.preventDefault();
         var btn = document.getElementById('learnPlayBtn');
-        if (btn) btn.click();
+        if (btn && !btn.disabled) btn.click();
         return;
       }
     }
@@ -4898,7 +5148,7 @@ document.addEventListener('keydown', function(e) {
     var deathScreen = document.getElementById('deathScreen');
     if (deathScreen.classList.contains('visible')) {
       e.preventDefault();
-      var container = document.querySelectorAll('#deathScreen button:not([style*="display:none"]):not([style*="display: none"])');
+      var container = document.querySelectorAll('#deathScreen button:not([style*="display:none"]):not([style*="display: none"]):not(.glitched-btn)');
       if (container.length === 0) return;
       var focused = document.activeElement;
       var idx = Array.prototype.indexOf.call(container, focused);
@@ -4995,6 +5245,7 @@ document.getElementById('learnBtn').addEventListener('click', function() {
 });
 
 document.getElementById('learnPlayBtn').addEventListener('click', function() {
+  if (document.getElementById('unlockNotification').classList.contains('visible')) return;
   if (clickSound) {
     clickSound.currentTime = 0;
     clickSound.volume = volumes.master * 0.45;
