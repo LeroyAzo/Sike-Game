@@ -3571,6 +3571,7 @@ function stopLearnFrame() {
 
 // Learn.exe game mode
 function startLearnGame() {
+  document.getElementById('adPanel').style.display = 'none';
   isLearnMode = true;
   learnSessionGems = 0;
   learnTotalSessions++;
@@ -4811,6 +4812,9 @@ document.addEventListener('keydown', function(e) {
       } else if (optionsPanel.style.display === 'flex') {
         document.getElementById('optionsBackBtn').click();
         e.preventDefault();
+      } else if (document.getElementById('adPanel').style.display === 'flex') {
+        document.getElementById('adBackBtn').click();
+        e.preventDefault();
       }
     }
     return;
@@ -4837,7 +4841,8 @@ document.addEventListener('keydown', function(e) {
     if (mainMenu.classList.contains('visible')) {
       if (document.getElementById('howToPlayPanel').style.display !== 'flex' &&
           document.getElementById('optionsPanel').style.display !== 'flex' &&
-          document.getElementById('soundPanel').style.display !== 'flex') {
+          document.getElementById('soundPanel').style.display !== 'flex' &&
+          document.getElementById('adPanel').style.display !== 'flex') {
         if (document.activeElement && document.activeElement !== document.body &&
             document.getElementById('menuButtons').contains(document.activeElement)) {
           document.activeElement.click();
@@ -4955,6 +4960,7 @@ document.getElementById('playBtn').addEventListener('click', function() {
   stopMenuSong();
   document.getElementById('optionsPanel').style.display = 'none';
   document.getElementById('soundPanel').style.display = 'none';
+  document.getElementById('adPanel').style.display = 'none';
   document.getElementById('menuButtons').style.display = 'flex';
   document.getElementById('menuRecord').style.display = 'flex';
   document.getElementById('mainMenu').classList.remove('visible');
