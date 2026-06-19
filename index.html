@@ -2366,6 +2366,337 @@ input[type=range]::-moz-range-thumb {
   opacity: 1;
   pointer-events: auto;
 }
+
+/* Save selector */
+#saveSelector {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  gap: 20px;
+  transition: opacity 0.25s ease;
+}
+#saveSelector.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#saveSelector h2 {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  color: #00ff41;
+  font-size: clamp(16px, 2.5vmin, 24px);
+  text-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+
+#saveSlotsContainer {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+.save-slot {
+  background: rgba(0, 10, 0, 0.6);
+  border: 2px solid rgba(0, 255, 65, 0.15);
+  border-radius: 8px;
+  padding: 20px;
+  width: 240px;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.save-slot:hover {
+  border-color: rgba(0, 255, 65, 0.4);
+  box-shadow: 0 0 25px rgba(0, 255, 65, 0.08);
+}
+
+.save-slot.empty {
+  border-style: dashed;
+  border-color: rgba(0, 255, 65, 0.2);
+}
+
+.save-slot.empty:hover {
+  border-color: rgba(0, 255, 65, 0.5);
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.1);
+}
+
+.save-slot .slot-number {
+  font-family: 'Courier New', monospace;
+  color: rgba(0, 255, 65, 0.2);
+  font-size: clamp(10px, 1.2vmin, 12px);
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  letter-spacing: 1px;
+}
+
+.save-slot .slot-name {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  color: #00ff41;
+  font-size: clamp(13px, 1.8vmin, 17px);
+  text-align: center;
+  margin-bottom: 4px;
+  word-break: break-all;
+  max-width: 100%;
+}
+
+.save-slot .slot-diff {
+  font-family: 'Courier New', monospace;
+  font-size: clamp(10px, 1.3vmin, 13px);
+  padding: 2px 10px;
+  border-radius: 4px;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+
+.save-slot .slot-diff.easy { color: #00ff41; border: 1px solid rgba(0,255,65,0.3); }
+.save-slot .slot-diff.normal { color: #ffd700; border: 1px solid rgba(255,215,0,0.3); }
+.save-slot .slot-diff.hard { color: #ff6600; border: 1px solid rgba(255,102,0,0.3); }
+.save-slot .slot-diff.extreme { color: #ff0040; border: 1px solid rgba(255,0,64,0.3); }
+
+.save-slot .slot-stat {
+  font-family: 'Courier New', monospace;
+  color: rgba(0, 255, 65, 0.5);
+  font-size: clamp(10px, 1.3vmin, 13px);
+  letter-spacing: 1px;
+}
+
+.save-slot .slot-stat span {
+  color: #00ff41;
+}
+
+.save-slot .slot-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.save-slot .slot-actions button {
+  background: transparent;
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  color: #00ff41;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: clamp(8px, 1vmin, 11px);
+  padding: 6px 14px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  letter-spacing: 1px;
+}
+
+.save-slot .slot-actions button:hover {
+  background: rgba(0, 255, 65, 0.1);
+  border-color: #00ff41;
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.15);
+}
+
+.save-slot .slot-empty-label {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  color: rgba(0, 255, 65, 0.2);
+  font-size: clamp(14px, 2vmin, 20px);
+  letter-spacing: 2px;
+}
+
+.save-slot .slot-new-btn {
+  background: transparent;
+  border: 2px solid rgba(0, 255, 65, 0.3);
+  color: #00ff41;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: clamp(10px, 1.4vmin, 14px);
+  padding: 8px 20px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  letter-spacing: 2px;
+  margin-top: 8px;
+}
+
+.save-slot .slot-new-btn:hover {
+  background: rgba(0, 255, 65, 0.1);
+  border-color: #00ff41;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.15);
+}
+
+#saveSelectorBack {
+  background: transparent;
+  border: 2px solid rgba(0, 255, 65, 0.2);
+  color: rgba(0, 255, 65, 0.5);
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: clamp(10px, 1.4vmin, 14px);
+  padding: 10px 30px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  letter-spacing: 2px;
+  margin-top: 4px;
+}
+
+#saveSelectorBack:hover {
+  border-color: rgba(0, 255, 65, 0.5);
+  color: #00ff41;
+  background: rgba(0, 255, 65, 0.05);
+}
+
+/* Save create/rename overlays */
+#saveCreateOverlay, #saveRenameOverlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+#saveCreateOverlay.visible, #saveRenameOverlay.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+#saveCreateOverlay h2, #saveRenameOverlay h2 {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  color: #00ff41;
+  font-size: clamp(18px, 2.5vmin, 24px);
+  text-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+  margin-bottom: 24px;
+}
+
+#saveNameInput, #saveRenameInput {
+  background: rgba(0, 10, 0, 0.8);
+  border: 2px solid #00ff41;
+  color: #00ff41;
+  font-family: 'Courier New', monospace;
+  font-size: clamp(14px, 1.8vmin, 18px);
+  padding: 10px 16px;
+  width: 280px;
+  text-align: center;
+  outline: none;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+#saveNameInput:focus, #saveRenameInput:focus {
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.15);
+}
+
+#saveDifficultySelect {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#saveDifficultySelect .diff-btn {
+  background: transparent;
+  border: 2px solid rgba(0, 255, 65, 0.15);
+  color: rgba(0, 255, 65, 0.4);
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: clamp(9px, 1.2vmin, 13px);
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  letter-spacing: 1px;
+}
+
+#saveDifficultySelect .diff-btn:hover {
+  border-color: rgba(0, 255, 65, 0.4);
+  color: #00ff41;
+}
+
+#saveDifficultySelect .diff-btn.selected.easy { border-color: #00ff41; color: #00ff41; background: rgba(0,255,65,0.05); }
+#saveDifficultySelect .diff-btn.selected.normal { border-color: #ffd700; color: #ffd700; background: rgba(255,215,0,0.05); }
+#saveDifficultySelect .diff-btn.selected.hard { border-color: #ff6600; color: #ff6600; background: rgba(255,102,0,0.05); }
+#saveDifficultySelect .diff-btn.selected.extreme { border-color: #ff0040; color: #ff0040; background: rgba(255,0,64,0.05); }
+
+#diffDesc {
+  font-family: 'Courier New', monospace;
+  color: rgba(0, 255, 65, 0.4);
+  font-size: clamp(11px, 1.3vmin, 14px);
+  margin-bottom: 20px;
+  text-align: center;
+  min-height: 20px;
+}
+
+#saveCreateConfirm, #saveRenameConfirm {
+  background: transparent;
+  border: 2px solid #00ff41;
+  color: #00ff41;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: clamp(11px, 1.4vmin, 14px);
+  padding: 10px 30px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+#saveCreateConfirm:hover, #saveRenameConfirm:hover {
+  background: rgba(0, 255, 65, 0.1);
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.15);
+}
+
+#saveCreateCancel, #saveRenameCancel {
+  background: transparent;
+  border: 1px solid rgba(0, 255, 65, 0.15);
+  color: rgba(0, 255, 65, 0.4);
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: clamp(9px, 1.2vmin, 12px);
+  padding: 8px 20px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  letter-spacing: 1px;
+}
+
+#saveCreateCancel:hover, #saveRenameCancel:hover {
+  border-color: rgba(0, 255, 65, 0.5);
+  color: #00ff41;
+}
+
+/* Save slot destruction animation */
+@keyframes slotDestroy {
+  0% { transform: scale(1); opacity: 1; filter: none; }
+  20% { transform: scale(1.05) translate(2px, -1px); filter: hue-rotate(90deg); }
+  40% { transform: scale(0.95) translate(-3px, 2px); filter: hue-rotate(180deg); }
+  60% { transform: scale(1.02) translate(1px, -3px); filter: hue-rotate(270deg); opacity: 0.6; }
+  80% { transform: scale(0.8) translate(5px, 5px); filter: blur(4px); opacity: 0.2; }
+  100% { transform: scale(0) rotate(10deg); filter: blur(8px); opacity: 0; }
+}
+
+.save-slot.destroying {
+  animation: slotDestroy 0.8s ease forwards;
+}
+
+/* Corrupted save text */
+.save-slot .slot-corrupted {
+  font-family: 'Courier New', monospace;
+  color: #ff0040;
+  font-size: clamp(11px, 1.4vmin, 14px);
+  text-shadow: 0 0 10px rgba(255, 0, 64, 0.4);
+  letter-spacing: 1px;
+}
 </style>
 </head>
 <body>
@@ -2436,16 +2767,6 @@ input[type=range]::-moz-range-thumb {
 
   <div id="resetAnimOverlay">
     <div id="resetAnimNumber"></div>
-  </div>
-
-  <div id="customModal">
-    <div id="customModalBox">
-      <p id="customModalMsg"></p>
-      <div id="customModalBtns">
-        <button id="modalCancelBtn">CANCEL</button>
-        <button id="modalConfirmBtn">CONFIRM</button>
-      </div>
-    </div>
   </div>
 
   <div id="howToPlayPanel">
@@ -2522,7 +2843,47 @@ input[type=range]::-moz-range-thumb {
     </div>
     <button id="learnBackBtn">MAIN MENU</button>
   </div>
+
+  <!-- Save selector -->
+  <div id="saveSelector">
+    <h2>SELECT SAVE FILE</h2>
+    <div id="saveSlotsContainer"></div>
+    <button id="saveSelectorBack">MAIN MENU</button>
+  </div>
+
+  <!-- Save create overlay -->
+  <div id="saveCreateOverlay">
+    <h2>NEW SAVE</h2>
+    <input id="saveNameInput" type="text" maxlength="20" placeholder="Name your save...">
+    <div id="saveDifficultySelect">
+      <button class="diff-btn selected easy" data-diff="easy">EASY</button>
+      <button class="diff-btn" data-diff="normal">NORMAL</button>
+      <button class="diff-btn" data-diff="hard">HARD</button>
+      <button class="diff-btn" data-diff="extreme">EXTREME</button>
+    </div>
+    <div id="diffDesc"></div>
+    <button id="saveCreateConfirm">CREATE</button>
+    <button id="saveCreateCancel">CANCEL</button>
+  </div>
+
+  <!-- Save rename overlay -->
+  <div id="saveRenameOverlay">
+    <h2>RENAME</h2>
+    <input id="saveRenameInput" type="text" maxlength="20">
+    <button id="saveRenameConfirm">RENAME</button>
+    <button id="saveRenameCancel">CANCEL</button>
+  </div>
 </div>
+
+  <div id="customModal">
+    <div id="customModalBox">
+      <p id="customModalMsg"></p>
+      <div id="customModalBtns">
+        <button id="modalCancelBtn">CANCEL</button>
+        <button id="modalConfirmBtn">CONFIRM</button>
+      </div>
+    </div>
+  </div>
 
 <div id="learnToast"></div>
 
@@ -2545,6 +2906,11 @@ input[type=range]::-moz-range-thumb {
       <span class="debug-label">SPAWN:</span>
       <input type="number" id="debugSpawnInput" min="0" value="20">
       <button id="debugSpawnSetBtn">SET</button>
+    </div>
+    <div id="debugSessionsRow">
+      <span class="debug-label">SESSIONS:</span>
+      <input type="number" id="debugSessionsInput" min="0" value="0">
+      <button id="debugSessionsSetBtn">SET</button>
     </div>
     <div id="debugFileList"></div>
     <div id="debugActions">
@@ -2600,9 +2966,245 @@ const LEARN_FILES = [
   { id: 8, name: 'FINAL.REC', gems: 900, msg: 'El propósito del Learner nunca fue estudiar al sujeto.\n\nEl sujeto era quien lo entrenaba.\n\nTodo este tiempo creíste que mejorabas para sobrevivir.\n\nPero en realidad le estabas enseñando al Learner cómo pensar.\n\nY ahora... ya no te sigue más.\n\nSe ha convertido en ti.' },
 ];
 
+// ---- Save Slot System ----
+var activeSlot = -1;
+var saveSlots = [null, null, null];
+var DIFFICULTIES = {
+  easy:   { maxSessions: 999999, shrinkRate: 150, label: 'EASY',   desc: 'Unlimited sessions, slower minigame' },
+  normal: { maxSessions: 80,     shrinkRate: 250, label: 'NORMAL', desc: '80 sessions, normal minigame' },
+  hard:   { maxSessions: 60,     shrinkRate: 350, label: 'HARD',   desc: '60 sessions, faster minigame' },
+  extreme:{ maxSessions: 33,     shrinkRate: 450, label: 'EXTREME',desc: '33 sessions, much faster minigame' },
+};
+
+function loadSaveSlots() {
+  saveSlots = [null, null, null];
+  for (var i = 0; i < 3; i++) {
+    var data = localStorage.getItem('learnSlot_' + i);
+    if (data) { try { saveSlots[i] = JSON.parse(data); } catch(e) { saveSlots[i] = null; } }
+  }
+}
+
+function createSlot(idx, name, difficulty) {
+  var d = DIFFICULTIES[difficulty];
+  saveSlots[idx] = { name: name, difficulty: difficulty, gems: 0, filesRead: 0, totalSessions: 0, totalTime: 0, totalDeaths: 0, endingReached: false };
+  localStorage.setItem('learnSlot_' + idx, JSON.stringify(saveSlots[idx]));
+}
+
+function deleteSlot(idx) {
+  saveSlots[idx] = null;
+  localStorage.removeItem('learnSlot_' + idx);
+}
+
+function saveActiveSlot() {
+  if (activeSlot < 0 || !saveSlots[activeSlot]) return;
+  var s = saveSlots[activeSlot];
+  s.gems = learnGems;
+  s.filesRead = learnFilesRead;
+  s.totalSessions = learnTotalSessions;
+  s.totalTime = learnTotalTime;
+  s.totalDeaths = learnTotalDeaths;
+  s.endingReached = learnEndingReached;
+  localStorage.setItem('learnSlot_' + activeSlot, JSON.stringify(s));
+}
+
+function loadActiveSlot() {
+  if (activeSlot < 0 || !saveSlots[activeSlot]) return;
+  var s = saveSlots[activeSlot];
+  learnGems = s.gems;
+  learnFilesRead = s.filesRead;
+  learnTotalSessions = s.totalSessions;
+  learnTotalTime = s.totalTime;
+  learnTotalDeaths = s.totalDeaths;
+  learnEndingReached = s.endingReached;
+  newUnlockedFile = -1;
+}
+
+function getShrinkRate() {
+  if (isLearnMode && activeSlot >= 0 && saveSlots[activeSlot]) {
+    return DIFFICULTIES[saveSlots[activeSlot].difficulty].shrinkRate;
+  }
+  return 250;
+}
+
+function getMaxSessions() {
+  if (activeSlot >= 0 && saveSlots[activeSlot]) {
+    return DIFFICULTIES[saveSlots[activeSlot].difficulty].maxSessions;
+  }
+  return 999999;
+}
+
+function renderSlot(idx) {
+  var data = saveSlots[idx];
+  var el = document.createElement('div');
+  el.className = 'save-slot' + (data ? '' : ' empty');
+  el.dataset.index = idx;
+
+  var num = document.createElement('div');
+  num.className = 'slot-number';
+  num.textContent = 'SAVE ' + (idx + 1);
+  el.appendChild(num);
+
+  if (data) {
+    var name = document.createElement('div');
+    name.className = 'slot-name';
+    name.textContent = data.name;
+    el.appendChild(name);
+
+    var diff = document.createElement('div');
+    diff.className = 'slot-diff ' + data.difficulty;
+    diff.textContent = DIFFICULTIES[data.difficulty].label;
+    el.appendChild(diff);
+
+    var d = DIFFICULTIES[data.difficulty];
+    var maxLabel = d.maxSessions >= 999999 ? '∞' : d.maxSessions;
+
+    var stat1 = document.createElement('div');
+    stat1.className = 'slot-stat';
+    stat1.innerHTML = 'Sessions: <span>' + data.totalSessions + ' / ' + maxLabel + '</span>';
+    el.appendChild(stat1);
+
+    var stat2 = document.createElement('div');
+    stat2.className = 'slot-stat';
+    stat2.innerHTML = 'Gems: <span>' + data.gems + '</span>';
+    el.appendChild(stat2);
+
+    var stat3 = document.createElement('div');
+    stat3.className = 'slot-stat';
+    stat3.innerHTML = 'Files: <span>' + getReadFileCount(data.filesRead) + ' / 9</span>';
+    el.appendChild(stat3);
+
+    var actions = document.createElement('div');
+    actions.className = 'slot-actions';
+
+    var playBtn = document.createElement('button');
+    playBtn.textContent = 'PLAY';
+    playBtn.addEventListener('click', function(e) { e.stopPropagation(); onPlaySlot(idx); });
+    actions.appendChild(playBtn);
+
+    var renameBtn = document.createElement('button');
+    renameBtn.textContent = 'RENAME';
+    renameBtn.addEventListener('click', function(e) { e.stopPropagation(); onRenameSlot(idx); });
+    actions.appendChild(renameBtn);
+
+    var delBtn = document.createElement('button');
+    delBtn.textContent = 'DELETE';
+    delBtn.addEventListener('click', function(e) { e.stopPropagation(); onDeleteSlot(idx); });
+    actions.appendChild(delBtn);
+
+    el.appendChild(actions);
+  } else {
+    var emptyLabel = document.createElement('div');
+    emptyLabel.className = 'slot-empty-label';
+    emptyLabel.textContent = 'EMPTY';
+    el.appendChild(emptyLabel);
+
+    var newBtn = document.createElement('button');
+    newBtn.className = 'slot-new-btn';
+    newBtn.textContent = 'NEW';
+    newBtn.addEventListener('click', function(e) { e.stopPropagation(); onCreateSlot(idx); });
+    el.appendChild(newBtn);
+  }
+
+  return el;
+}
+
+function renderSaveSelector() {
+  var container = document.getElementById('saveSlotsContainer');
+  container.innerHTML = '';
+  for (var i = 0; i < 3; i++) {
+    container.appendChild(renderSlot(i));
+  }
+}
+
+function showSaveSelector() {
+  terminalState = 'boot';
+  document.getElementById('learnTerminal').style.display = 'none';
+  document.getElementById('learnPanel').style.display = 'none';
+  var sel = document.getElementById('saveSelector');
+  sel.style.display = 'flex';
+  sel.classList.remove('fade-out');
+  sel.dataset.exiting = '';
+  renderSaveSelector();
+}
+
+function exitSaveSelector() {
+  var sel = document.getElementById('saveSelector');
+  if (sel.dataset.exiting === 'true') return;
+  sel.dataset.exiting = 'true';
+  sel.classList.add('fade-out');
+  setTimeout(function() {
+    sel.classList.remove('fade-out');
+    sel.dataset.exiting = '';
+    hideLearnScene();
+  }, 250);
+}
+
+function hideSaveSelector() {
+  document.getElementById('saveSelector').style.display = 'none';
+  document.getElementById('saveCreateOverlay').classList.remove('visible');
+  document.getElementById('saveRenameOverlay').classList.remove('visible');
+  document.getElementById('learnTerminal').style.display = '';
+  document.getElementById('learnPanel').style.display = '';
+}
+
+function getReadFileCount(filesRead) {
+  var count = 0;
+  for (var i = 0; i < 9; i++) { if (filesRead & (1 << i)) count++; }
+  return count;
+}
+
+// Save selector actions
+function onCreateSlot(idx) {
+  var overlay = document.getElementById('saveCreateOverlay');
+  var input = document.getElementById('saveNameInput');
+  input.value = '';
+  overlay.dataset.targetIdx = idx;
+  document.getElementById('diffDesc').textContent = DIFFICULTIES.easy.desc;
+  var btns = document.querySelectorAll('#saveDifficultySelect .diff-btn');
+  for (var i = 0; i < btns.length; i++) { btns[i].className = 'diff-btn'; }
+  btns[0].className = 'diff-btn selected easy';
+  overlay.classList.add('visible');
+  setTimeout(function() { input.focus(); }, 50);
+}
+
+function onPlaySlot(idx) {
+  activeSlot = idx;
+  loadActiveSlot();
+  hideSaveSelector();
+  document.getElementById('learnTerminal').style.display = '';
+  document.getElementById('learnPanel').style.display = '';
+  showBootSequence();
+}
+
+function onRenameSlot(idx) {
+  var overlay = document.getElementById('saveRenameOverlay');
+  var input = document.getElementById('saveRenameInput');
+  input.value = saveSlots[idx].name;
+  overlay.dataset.targetIdx = idx;
+  overlay.classList.add('visible');
+  setTimeout(function() { input.focus(); input.select(); }, 50);
+}
+
+function onDeleteSlot(idx) {
+  var slotName = saveSlots[idx].name;
+  var msg = 'Delete "' + slotName + '"?\nThis cannot be undone.';
+  showModal(msg, function() {
+    deleteSlot(idx);
+    renderSaveSelector();
+  });
+}
+
+function startDestructionAnim(slotIdx) {
+  var container = document.getElementById('saveSlotsContainer');
+  var cards = container.querySelectorAll('.save-slot');
+  if (cards[slotIdx]) {
+    cards[slotIdx].classList.add('destroying');
+  }
+}
+
 // ---- Learn.exe State ----
-var learnGems = parseInt(localStorage.getItem('learnGems') || '0');
-var learnFilesRead = parseInt(localStorage.getItem('learnFilesRead') || '0');
+var learnGems = 0;
+var learnFilesRead = 0;
 var isLearnMode = false;
 var learnSceneActive = false;
 var debugLearnerSpawn = 20;
@@ -2619,12 +3221,12 @@ var terminalReadingIdx = 0;
 var terminalReadTimer = 0;
 var terminalPaused = false;
 var newUnlockedFile = -1;
-var learnTotalSessions = parseInt(localStorage.getItem('learnTotalSessions') || '0');
-var learnTotalTime = parseFloat(localStorage.getItem('learnTotalTime') || '0');
-var learnTotalDeaths = parseInt(localStorage.getItem('learnTotalDeaths') || '0');
+var learnTotalSessions = 0;
+var learnTotalTime = 0;
+var learnTotalDeaths = 0;
 var learnSessionGems = 0;
 var learnFrameId = null;
-var learnEndingReached = localStorage.getItem('learnEndingReached') === 'true';
+var learnEndingReached = false;
 var learnerGlitchTimer = 0;
 
 var gemIntros = [1,2,3,4,5].map(function(i) { return new Audio('assets/audio/gem' + i + '.wav'); });
@@ -3311,6 +3913,7 @@ function isFileRead(fid) {
 function markFileRead(fid) {
   learnFilesRead |= (1 << fid);
   localStorage.setItem('learnFilesRead', learnFilesRead);
+  if (activeSlot >= 0) saveActiveSlot();
 }
 
 function getNextFileIndex() {
@@ -3376,6 +3979,7 @@ function openDebugPanel() {
   var panel = document.getElementById('learnDebugPanel');
   document.getElementById('debugGemInput').value = learnGems;
   document.getElementById('debugSpawnInput').value = state.running && state.learnSpawnTimer > 0 ? Math.round(state.learnSpawnTimer) : debugLearnerSpawn;
+  document.getElementById('debugSessionsInput').value = learnTotalSessions;
   renderDebugFileList();
   panel.classList.add('visible');
   document.getElementById('debugGemInput').focus();
@@ -3418,6 +4022,7 @@ function toggleDebugFile(fid) {
     learnFilesRead |= (1 << fid);
   }
   localStorage.setItem('learnFilesRead', learnFilesRead);
+  if (activeSlot >= 0) saveActiveSlot();
   refreshLearnScene();
 }
 
@@ -3427,6 +4032,7 @@ function setDebugGems() {
   if (isNaN(val) || val < 0) val = 0;
   learnGems = val;
   localStorage.setItem('learnGems', learnGems);
+  if (activeSlot >= 0) saveActiveSlot();
   refreshLearnScene();
   input.value = learnGems;
 }
@@ -3441,6 +4047,16 @@ function setDebugSpawn() {
   }
   input.value = val;
   showToast('Spawn timer set to ' + val + 's.', 1000);
+}
+
+function setDebugSessions() {
+  var input = document.getElementById('debugSessionsInput');
+  var val = parseInt(input.value);
+  if (isNaN(val) || val < 0) val = 0;
+  learnTotalSessions = val;
+  if (activeSlot >= 0) saveActiveSlot();
+  input.value = val;
+  showToast('Sessions set to ' + val + '.', 1000);
 }
 
 function refreshLearnScene() {
@@ -3470,9 +4086,14 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('debugSpawnInput').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') setDebugSpawn();
   });
+  document.getElementById('debugSessionsSetBtn').addEventListener('click', setDebugSessions);
+  document.getElementById('debugSessionsInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') setDebugSessions();
+  });
   document.getElementById('debugUnlockAllBtn').addEventListener('click', function() {
     learnGems = 900;
     localStorage.setItem('learnGems', learnGems);
+    if (activeSlot >= 0) saveActiveSlot();
     refreshLearnScene();
     document.getElementById('debugGemInput').value = learnGems;
     showToast('Files unlocked (900 gems).', 1500);
@@ -3482,6 +4103,7 @@ document.addEventListener('DOMContentLoaded', function() {
     learnFilesRead = 0;
     localStorage.setItem('learnGems', learnGems);
     localStorage.setItem('learnFilesRead', learnFilesRead);
+    if (activeSlot >= 0) saveActiveSlot();
     refreshLearnScene();
     document.getElementById('debugGemInput').value = learnGems;
     showToast('Progress reset.', 1500);
@@ -3705,23 +4327,43 @@ function finishFileReading() {
 }
 
 function showLearnScene() {
+  loadSaveSlots();
   learnSceneActive = true;
   document.getElementById('mainMenu').classList.remove('visible');
   document.getElementById('learnScene').classList.add('visible');
   stopMenuParticles();
   stopMenuSong();
-  updateLearnPanel();
-  if (learnEndingReached) {
-    showCorruptedTerminal();
+  if (activeSlot >= 0 && saveSlots[activeSlot]) {
+    loadActiveSlot();
+    document.getElementById('saveSelector').style.display = 'none';
+    document.getElementById('learnTerminal').style.display = '';
+    document.getElementById('learnPanel').style.display = '';
+    updateLearnPanel();
+    if (learnEndingReached) {
+      showCorruptedTerminal();
+    } else {
+      showBootSequence();
+    }
   } else {
-    showBootSequence();
+    activeSlot = -1;
+    hideSaveSelector();
+    showSaveSelector();
   }
   startLearnFrame();
 }
 
 function hideLearnScene() {
+  saveActiveSlot();
+  activeSlot = -1;
   learnSceneActive = false;
+  document.getElementById('learnTerminal').style.display = 'none';
+  document.getElementById('learnPanel').style.display = 'none';
   document.getElementById('learnScene').classList.remove('visible');
+  var gc = document.getElementById('gameContainer');
+  gc.style.transition = 'none';
+  gc.classList.remove('visible', 'learn-mode');
+  void gc.offsetHeight;
+  gc.style.transition = '';
   document.getElementById('adPanel').style.display = 'none';
   document.getElementById('mainMenu').classList.add('visible');
   document.getElementById('learnTerminalContent').classList.remove('corrupted');
@@ -3731,6 +4373,9 @@ function hideLearnScene() {
   glitchEl.style.left = '';
   glitchEl.style.top = '';
   document.getElementById('learnPlayBtn').style.display = '';
+  document.getElementById('saveSelector').style.display = 'none';
+  document.getElementById('saveCreateOverlay').classList.remove('visible');
+  document.getElementById('saveRenameOverlay').classList.remove('visible');
   stopLearnFrame();
   setTimeout(function() { document.getElementById('learnBtn').focus(); startMenuParticles(); startMenuSong(); }, 100);
 }
@@ -3774,11 +4419,15 @@ function stopLearnFrame() {
 // Learn.exe game mode
 function startLearnGame() {
   if (document.getElementById('unlockNotification').classList.contains('visible')) return;
+  if (activeSlot >= 0 && saveSlots[activeSlot]) {
+    if (learnTotalSessions >= getMaxSessions()) return;
+  }
   document.getElementById('adPanel').style.display = 'none';
   isLearnMode = true;
   learnSessionGems = 0;
   learnTotalSessions++;
   localStorage.setItem('learnTotalSessions', learnTotalSessions);
+  if (activeSlot >= 0) saveActiveSlot();
   learnSceneActive = false;
   stopLearnFrame();
   document.getElementById('learnScene').classList.remove('visible');
@@ -3850,11 +4499,23 @@ function showDeathScreen() {
     localStorage.setItem('learnTotalDeaths', learnTotalDeaths);
     learnTotalTime += state.time;
     localStorage.setItem('learnTotalTime', learnTotalTime);
+    if (activeSlot >= 0) saveActiveSlot();
 
     ds.classList.add('matrix');
     document.getElementById('learnDeathBtn').style.display = '';
+    document.getElementById('learnDeathBtn').textContent = 'GO BACK';
     var restartBtn = document.getElementById('restartBtn');
-    if (learnEndingReached) {
+    var sessionsExhausted = activeSlot >= 0 && saveSlots[activeSlot] && learnTotalSessions >= getMaxSessions();
+
+    if (sessionsExhausted) {
+      ds.querySelector('h1').textContent = 'SYSTEM CORRUPTED';
+      restartBtn.classList.add('glitched-btn');
+      restartBtn.textContent = '~~ PLAY AGAIN ~~';
+      restartBtn.style.display = 'none';
+      document.getElementById('learnDeathBtn').textContent = 'MAIN MENU';
+      stats.innerHTML = '<p style="color:#ff0040;font-family:Courier New;font-size:clamp(12px,1.6vmin,15px)">MAXIMUM SESSIONS REACHED</p>' +
+        '<p style="color:rgba(255,0,64,0.5);font-family:Courier New;font-size:clamp(10px,1.3vmin,13px);margin-top:8px">THIS SAVE WILL BE DESTROYED</p>';
+    } else if (learnEndingReached) {
       ds.querySelector('h1').textContent = 'SESSION CORRUPTED';
       restartBtn.classList.add('glitched-btn');
       restartBtn.textContent = '~~ PLAY AGAIN ~~';
@@ -3901,6 +4562,8 @@ function resetGame() {
   document.getElementById('controlsDisplay').classList.remove('visible', 'panel', 'instant');
   document.getElementById('restartBtn').classList.remove('glitched-btn');
   document.getElementById('restartBtn').textContent = 'PLAY AGAIN';
+  document.getElementById('restartBtn').style.display = '';
+  document.getElementById('learnDeathBtn').textContent = 'GO BACK';
 
   state.player.x = W / 2;
   state.player.y = H / 2;
@@ -3930,6 +4593,7 @@ function resetGame() {
   state.learnSpawnTimer = debugLearnerSpawn;
   state.ghostLearners = [];
   state.controlMapping = generateControls(0);
+  state.gemMinigame.shrinkRate = getShrinkRate();
   state.endingSequence = false;
   state.endingTimer = 0;
   state.endingStarted = false;
@@ -3959,6 +4623,7 @@ function handleGemMinigame(dt) {
       if (isLearnMode) {
         learnGems++;
         localStorage.setItem('learnGems', learnGems);
+        if (activeSlot >= 0) saveActiveSlot();
         // === Ending: 1000 gems reached ===
         if (learnGems === 1000 && !state.endingStarted) {
           state.endingStarted = true;
@@ -3971,6 +4636,7 @@ function handleGemMinigame(dt) {
             learnFilesRead |= 256;
             localStorage.setItem('learnFilesRead', learnFilesRead);
           }
+          if (activeSlot >= 0) saveActiveSlot();
           state.gems = [];
           state.gemSpawnTimer = 9999;
           // Force-spawn learner if not yet present
@@ -4997,6 +5663,17 @@ document.addEventListener('keydown', function(e) {
       // Don't block arrow keys — let user navigate files behind notification
     }
 
+    var modal = document.getElementById('customModal');
+    if (modal.classList.contains('visible')) {
+      if (e.key === 'Escape') { document.getElementById('modalCancelBtn').click(); e.preventDefault(); return; }
+      if (e.key === 'Enter') {
+        var focused = document.activeElement;
+        if (focused === document.getElementById('modalConfirmBtn') || focused === document.getElementById('modalCancelBtn')) {
+          focused.click(); e.preventDefault(); return;
+        }
+      }
+    }
+
     if (e.key === 'Escape') {
       if (terminalState === 'reading') {
         finishFileReading();
@@ -5005,6 +5682,15 @@ document.addEventListener('keydown', function(e) {
       }
       if (document.getElementById('learnDebugPanel').classList.contains('visible')) {
         closeDebugPanel();
+        e.preventDefault();
+        return;
+      }
+      if (document.getElementById('saveSelector').style.display === 'flex') {
+        if (document.getElementById('saveCreateOverlay').classList.contains('visible') || document.getElementById('saveRenameOverlay').classList.contains('visible')) {
+          hideSaveSelector();
+        } else {
+          exitSaveSelector();
+        }
         e.preventDefault();
         return;
       }
@@ -5257,6 +5943,7 @@ document.getElementById('restartBtn').addEventListener('click', function() {
   if (isLearnMode) {
     learnTotalSessions++;
     localStorage.setItem('learnTotalSessions', learnTotalSessions);
+    if (activeSlot >= 0) saveActiveSlot();
     learnSessionGems = 0;
   }
   document.getElementById('deathScreen').classList.remove('visible');
@@ -5270,6 +5957,7 @@ document.getElementById('restartBtn').addEventListener('click', function() {
 
 document.getElementById('playBtn').addEventListener('click', function() {
   isLearnMode = false;
+  activeSlot = -1;
   stopMenuParticles();
   stopMenuSong();
   document.getElementById('optionsPanel').style.display = 'none';
@@ -5309,7 +5997,21 @@ document.getElementById('learnDeathBtn').addEventListener('click', function() {
   document.getElementById('deathScreen').classList.remove('visible');
   isLearnMode = false;
   document.getElementById('gameContainer').classList.remove('visible', 'learn-mode');
-  showLearnScene();
+  var exhausted = activeSlot >= 0 && saveSlots[activeSlot] && learnTotalSessions >= getMaxSessions();
+  if (exhausted) {
+    var destroyedIdx = activeSlot;
+    activeSlot = -1;
+    deleteSlot(destroyedIdx);
+    document.getElementById('learnScene').classList.remove('visible');
+    learnSceneActive = false;
+    stopLearnFrame();
+    document.getElementById('mainMenu').classList.add('visible');
+    document.getElementById('menuRecordValue').textContent = state.record;
+    setTimeout(function() { document.getElementById('playBtn').focus(); startMenuParticles(); startMenuSong(); }, 100);
+    showToast('Save destroyed.', 2000);
+  } else {
+    showLearnScene();
+  }
 });
 
 document.getElementById('unlockContinueBtn').addEventListener('click', function() {
@@ -5499,12 +6201,69 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('soundPanel').style.display = 'none';
   document.getElementById('menuButtons').style.display = 'flex';
   document.getElementById('menuRecord').style.display = 'flex';
-  // Load learn data
-  learnGems = parseInt(localStorage.getItem('learnGems') || '0');
-  learnFilesRead = parseInt(localStorage.getItem('learnFilesRead') || '0');
-  learnTotalSessions = parseInt(localStorage.getItem('learnTotalSessions') || '0');
-  learnTotalTime = parseFloat(localStorage.getItem('learnTotalTime') || '0');
-  learnTotalDeaths = parseInt(localStorage.getItem('learnTotalDeaths') || '0');
+  // Migrate old save data to slot 0 if no slots exist
+  loadSaveSlots();
+  if (!saveSlots[0] && !saveSlots[1] && !saveSlots[2]) {
+    var oldGems = parseInt(localStorage.getItem('learnGems') || '0');
+    var oldFiles = parseInt(localStorage.getItem('learnFilesRead') || '0');
+    var oldSess = parseInt(localStorage.getItem('learnTotalSessions') || '0');
+    var oldTime = parseFloat(localStorage.getItem('learnTotalTime') || '0');
+    var oldDeaths = parseInt(localStorage.getItem('learnTotalDeaths') || '0');
+    var oldEnding = localStorage.getItem('learnEndingReached') === 'true';
+    if (oldGems > 0 || oldFiles > 0 || oldSess > 0) {
+      saveSlots[0] = { name: 'Migrated Save', difficulty: 'normal', gems: oldGems, filesRead: oldFiles, totalSessions: oldSess, totalTime: oldTime, totalDeaths: oldDeaths, endingReached: oldEnding };
+      localStorage.setItem('learnSlot_0', JSON.stringify(saveSlots[0]));
+    }
+  }
+
+  // Save selector buttons
+  document.getElementById('saveSelectorBack').addEventListener('click', function() {
+    exitSaveSelector();
+  });
+  document.getElementById('saveCreateConfirm').addEventListener('click', function() {
+    var idx = parseInt(document.getElementById('saveCreateOverlay').dataset.targetIdx);
+    var name = document.getElementById('saveNameInput').value.trim();
+    if (!name) { showToast('Enter a name.', 1000); return; }
+    var selectedDiff = document.querySelector('#saveDifficultySelect .diff-btn.selected');
+    var diff = selectedDiff ? selectedDiff.dataset.diff : 'normal';
+    createSlot(idx, name, diff);
+    document.getElementById('saveCreateOverlay').classList.remove('visible');
+    renderSaveSelector();
+    showToast('Save created.', 1000);
+  });
+  document.getElementById('saveCreateCancel').addEventListener('click', function() {
+    document.getElementById('saveCreateOverlay').classList.remove('visible');
+  });
+  document.getElementById('saveRenameConfirm').addEventListener('click', function() {
+    var idx = parseInt(document.getElementById('saveRenameOverlay').dataset.targetIdx);
+    var name = document.getElementById('saveRenameInput').value.trim();
+    if (!name) { showToast('Enter a name.', 1000); return; }
+    saveSlots[idx].name = name;
+    localStorage.setItem('learnSlot_' + idx, JSON.stringify(saveSlots[idx]));
+    document.getElementById('saveRenameOverlay').classList.remove('visible');
+    renderSaveSelector();
+    showToast('Save renamed.', 1000);
+  });
+  document.getElementById('saveRenameCancel').addEventListener('click', function() {
+    document.getElementById('saveRenameOverlay').classList.remove('visible');
+  });
+  // Difficulty buttons in create overlay
+  var diffBtns = document.querySelectorAll('#saveDifficultySelect .diff-btn');
+  for (var di = 0; di < diffBtns.length; di++) {
+    diffBtns[di].addEventListener('click', function() {
+      var btns = document.querySelectorAll('#saveDifficultySelect .diff-btn');
+      for (var j = 0; j < btns.length; j++) { btns[j].className = 'diff-btn'; }
+      this.className = 'diff-btn selected ' + this.dataset.diff;
+      document.getElementById('diffDesc').textContent = DIFFICULTIES[this.dataset.diff].desc;
+    });
+  }
+  // Save name input on Enter
+  document.getElementById('saveNameInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') document.getElementById('saveCreateConfirm').click();
+  });
+  document.getElementById('saveRenameInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') document.getElementById('saveRenameConfirm').click();
+  });
 
   setTimeout(function() { startMenuParticles(); }, 100);
 });
