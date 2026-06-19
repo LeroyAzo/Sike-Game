@@ -2589,15 +2589,15 @@ const PLAYER_SPEED = 250;
 
 // ---- Learn.exe Data ----
 const LEARN_FILES = [
-  { id: 0, name: 'OBSERVER.REC', gems: 100, msg: 'The Learner was created to study movement patterns.\n\nIts progress exceeds expectations.' },
-  { id: 1, name: 'IMITACION.REC', gems: 200, msg: 'It began replicating observed behaviors.\n\nIt was not programmed to do this.' },
-  { id: 2, name: 'ESPERA.REC', gems: 300, msg: 'We detected something strange.\n\nSometimes it stops chasing the subject.\n\nIt seems to be watching.' },
-  { id: 3, name: 'PREDICCION.REC', gems: 400, msg: 'It no longer follows the subject.\n\nIt started anticipating their decisions.' },
-  { id: 4, name: 'APARICIONES.REC', gems: 500, msg: 'Multiple simultaneous readings were recorded.\n\nThere is only one Learner.\n\nThat should be impossible.' },
-  { id: 5, name: 'CORRUPCION.REC', gems: 600, msg: 'The records began modifying themselves.\n\nWe could not find who was responsible.' },
-  { id: 6, name: 'MEMORIA.REC', gems: 700, msg: 'It no longer studies individual sessions.\n\nIt retains information between sessions.' },
-  { id: 7, name: 'ESCAPE.REC', gems: 800, msg: 'We lost control.\n\nThe Learner stopped responding.\n\nWe do not believe it is still inside the simulation.' },
-  { id: 8, name: 'FINAL.REC', gems: 900, msg: 'The purpose of the Learner was never to study the subject.\n\nThe subject was the one training it.\n\nAll along you thought you were improving to survive.\n\nBut in reality you were teaching the Learner how to think.\n\nAnd now... it is not following you anymore.\n\nIt has become you.' },
+  { id: 0, name: 'OBSERVADOR.REC', gems: 100, msg: 'El Learner fue creado para estudiar patrones de movimiento.\n\nSu progreso supera las expectativas.' },
+  { id: 1, name: 'IMITACION.REC', gems: 200, msg: 'Comenzó a replicar comportamientos observados.\n\nNo fue programado para hacer esto.' },
+  { id: 2, name: 'ESPERA.REC', gems: 300, msg: 'Detectamos algo extraño.\n\nA veces deja de perseguir al sujeto.\n\nParece estar observando.' },
+  { id: 3, name: 'PREDICCION.REC', gems: 400, msg: 'Ya no sigue al sujeto.\n\nComenzó a anticipar sus decisiones.' },
+  { id: 4, name: 'APARICIONES.REC', gems: 500, msg: 'Se registraron múltiples lecturas simultáneas.\n\nSolo hay un Learner.\n\nEso debería ser imposible.' },
+  { id: 5, name: 'CORRUPCION.REC', gems: 600, msg: 'Los registros comenzaron a modificarse solos.\n\nNo pudimos encontrar al responsable.' },
+  { id: 6, name: 'MEMORIA.REC', gems: 700, msg: 'Ya no estudia sesiones individuales.\n\nRetiene información entre sesiones.' },
+  { id: 7, name: 'ESCAPE.REC', gems: 800, msg: 'Perdimos el control.\n\nEl Learner dejó de responder.\n\nNo creemos que siga dentro de la simulación.' },
+  { id: 8, name: 'FINAL.REC', gems: 900, msg: 'El propósito del Learner nunca fue estudiar al sujeto.\n\nEl sujeto era quien lo entrenaba.\n\nTodo este tiempo creíste que mejorabas para sobrevivir.\n\nPero en realidad le estabas enseñando al Learner cómo pensar.\n\nY ahora... ya no te sigue más.\n\nSe ha convertido en ti.' },
 ];
 
 // ---- Learn.exe State ----
@@ -4137,10 +4137,22 @@ function update(dt) {
     }
   }
   var moveSpeed = PLAYER_SPEED * (onGoo ? 0.35 : 1);
+  var prevX = p.x, prevY = p.y;
   p.x += dx * moveSpeed * dt;
   p.y += dy * moveSpeed * dt;
   p.x = Math.max(p.size, Math.min(W - p.size, p.x));
   p.y = Math.max(p.size, Math.min(H - p.size, p.y));
+  // Blocking ghosts — cannot pass through when Learner is close
+  if (state.ghostLearners) {
+    for (var _gi = 0; _gi < state.ghostLearners.length; _gi++) {
+      var _gh = state.ghostLearners[_gi];
+      if (_gh.blocking && Math.hypot(p.x - _gh.x, p.y - _gh.y) < p.size + 12) {
+        p.x = prevX;
+        p.y = prevY;
+        break;
+      }
+    }
+  }
 
   state.historyTimer += dt;
   if (state.historyTimer >= 0.08) {
@@ -4247,7 +4259,7 @@ function update(dt) {
           }
 
           // ===== FILE 2 - IMITACION: Copy player turns =====
-          if (flags.imitation && (dx !== 0 || dy !== 0) && Math.random() < 0.3 * dt * 10) {
+          if (flags.imitation && !e.boosted && (dx !== 0 || dy !== 0) && Math.random() < 0.3 * dt * 10) {
             var imitateX = p.x + dx * 80;
             var imitateY = p.y + dy * 80;
             tx = tx * 0.5 + imitateX * 0.5;
@@ -4294,21 +4306,31 @@ function update(dt) {
       }
 
       // ===== FILE 5 - APARICIONES: Shadow clones =====
-      var spawnChance = flags.final ? 0.05 : 0.008;
-      var ghostLife = flags.final ? 0.5 : 0.08;
+      var spawnChance = flags.apariciones ? (flags.final ? 0.05 : 0.02) : 0;
+      var ghostLife = flags.final ? 0.5 : 0.5 + Math.random() * 0.5;
       if (flags.apariciones && Math.random() < spawnChance) {
         if (!state.ghostLearners) state.ghostLearners = [];
         state.ghostLearners.push({
-          x: p.x + (Math.random() - 0.5) * 200,
-          y: p.y + (Math.random() - 0.5) * 200,
-          alpha: flags.final ? 0.25 + Math.random() * 0.25 : 0.15 + Math.random() * 0.15,
+          x: p.x + (Math.random() - 0.5) * 300,
+          y: p.y + (Math.random() - 0.5) * 300,
+          alpha: flags.final ? 0.25 + Math.random() * 0.25 : 0.2 + Math.random() * 0.2,
           life: ghostLife,
+          blocking: false,
         });
       }
       // Update ghost learners
       if (state.ghostLearners) {
+        // Check if any real Learner is close enough to make ghosts solid
+        var learnerClose = false;
+        for (var ei = 0; ei < state.enemies.length; ei++) {
+          if (state.enemies[ei].black && Math.hypot(state.enemies[ei].x - p.x, state.enemies[ei].y - p.y) < 250) {
+            learnerClose = true;
+            break;
+          }
+        }
         for (var gi = state.ghostLearners.length - 1; gi >= 0; gi--) {
           state.ghostLearners[gi].life -= dt;
+          state.ghostLearners[gi].blocking = learnerClose;
           if (state.ghostLearners[gi].life <= 0) state.ghostLearners.splice(gi, 1);
         }
       }
