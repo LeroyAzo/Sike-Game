@@ -4306,7 +4306,7 @@ function update(dt) {
       }
 
       // ===== FILE 5 - APARICIONES: Shadow clones =====
-      var spawnChance = flags.apariciones ? (flags.final ? 0.05 : 0.02) : 0;
+      var spawnChance = flags.apariciones ? (flags.final ? 0.06 : 0.04) : 0;
       var ghostLife = flags.final ? 0.5 : 0.5 + Math.random() * 0.5;
       if (flags.apariciones && Math.random() < spawnChance) {
         if (!state.ghostLearners) state.ghostLearners = [];
