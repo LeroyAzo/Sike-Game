@@ -4176,16 +4176,13 @@ function showBootSequence() {
     if (idx >= bootLines.length) {
       terminalState = 'files';
       showFileListing(true);
-      // Check for pending unlock notification after boot
-      setTimeout(function() {
-        var nf = getNextFileIndex();
-        if (nf >= 0 && isFileUnlocked(nf) && !isFileRead(nf)) {
-          newUnlockedFile = nf;
-          showUnlockNotification(nf);
-        } else {
-          newUnlockedFile = -1;
-        }
-      }, 500);
+      var nf = getNextFileIndex();
+      if (nf >= 0 && isFileUnlocked(nf) && !isFileRead(nf)) {
+        newUnlockedFile = nf;
+        setTimeout(function() { showUnlockNotification(nf); }, 500);
+      } else {
+        newUnlockedFile = -1;
+      }
       return;
     }
     var line = bootLines[idx];
@@ -4420,6 +4417,7 @@ function stopLearnFrame() {
 // Learn.exe game mode
 function startLearnGame() {
   if (document.getElementById('unlockNotification').classList.contains('visible')) return;
+  if (newUnlockedFile >= 0) return;
   if (activeSlot >= 0 && saveSlots[activeSlot]) {
     if (learnTotalSessions >= getMaxSessions()) return;
   }
@@ -5982,6 +5980,7 @@ document.getElementById('learnBtn').addEventListener('click', function() {
 
 document.getElementById('learnPlayBtn').addEventListener('click', function() {
   if (document.getElementById('unlockNotification').classList.contains('visible')) return;
+  if (newUnlockedFile >= 0) return;
   if (clickSound) {
     clickSound.currentTime = 0;
     clickSound.volume = volumes.master * 0.45;
