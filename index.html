@@ -3016,6 +3016,7 @@ function loadActiveSlot() {
   learnTotalTime = s.totalTime;
   learnTotalDeaths = s.totalDeaths;
   learnEndingReached = s.endingReached;
+  if (pendingNotifyTimeout) { clearTimeout(pendingNotifyTimeout); pendingNotifyTimeout = null; }
   newUnlockedFile = -1;
 }
 
@@ -3222,6 +3223,7 @@ var terminalReadingIdx = 0;
 var terminalReadTimer = 0;
 var terminalPaused = false;
 var newUnlockedFile = -1;
+var pendingNotifyTimeout = null;
 var learnTotalSessions = 0;
 var learnTotalTime = 0;
 var learnTotalDeaths = 0;
@@ -4179,8 +4181,7 @@ function showBootSequence() {
       var nf = getNextFileIndex();
       if (nf >= 0 && isFileUnlocked(nf) && !isFileRead(nf)) {
         newUnlockedFile = nf;
-        document.getElementById('learnPlayBtn').disabled = true;
-        setTimeout(function() { showUnlockNotification(nf); }, 500);
+        pendingNotifyTimeout = setTimeout(function() { showUnlockNotification(nf); }, 500);
       } else {
         newUnlockedFile = -1;
       }
@@ -4418,7 +4419,7 @@ function stopLearnFrame() {
 // Learn.exe game mode
 function startLearnGame() {
   if (document.getElementById('unlockNotification').classList.contains('visible')) return;
-  if (newUnlockedFile >= 0) return;
+  if (pendingNotifyTimeout) { clearTimeout(pendingNotifyTimeout); pendingNotifyTimeout = null; newUnlockedFile = -1; }
   if (activeSlot >= 0 && saveSlots[activeSlot]) {
     if (learnTotalSessions >= getMaxSessions()) return;
   }
@@ -5981,7 +5982,6 @@ document.getElementById('learnBtn').addEventListener('click', function() {
 
 document.getElementById('learnPlayBtn').addEventListener('click', function() {
   if (document.getElementById('unlockNotification').classList.contains('visible')) return;
-  if (newUnlockedFile >= 0) return;
   if (clickSound) {
     clickSound.currentTime = 0;
     clickSound.volume = volumes.master * 0.45;
