@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gema Escape</title>
+<title>Gem Escape</title>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3652956885798359" crossorigin="anonymous"></script>
 <style>
 @font-face {
@@ -3449,6 +3449,10 @@ const state = {
   controlInvertTimer: 0,
   lastBlackSpawn: 0,
   ghostLearners: [],
+  bullets: [],
+  towers: [],
+  mouseX: -1,
+  mouseY: -1,
 };
 
 function shuffle(arr) {
@@ -3530,10 +3534,26 @@ function applyDifficulty() {
       case 2: x = p + Math.random() * (W - 2 * p); y = H - p; break;
       case 3: x = p; y = p + Math.random() * (H - 2 * p); break;
     }
-    state.enemies.push({ x: x, y: y, lastX: x, lastY: y, size: 22, speed: cfg.speed });
+    state.enemies.push({ x: x, y: y, lastX: x, lastY: y, size: 22, speed: cfg.speed, shootTimer: 0.3, health: 100, maxHealth: 100 });
     regularEnemies.push({}); // dummy to keep count
   }
   state.enemies.forEach(function(e) { if (!e.black) e.speed = cfg.speed; });
+}
+
+function spawnTower() {
+  var side = Math.floor(Math.random() * 4);
+  var x, y, p = 60;
+  switch (side) {
+    case 0: x = p + Math.random() * (W - 2 * p); y = p; break;
+    case 1: x = W - p; y = p + Math.random() * (H - 2 * p); break;
+    case 2: x = p + Math.random() * (W - 2 * p); y = H - p; break;
+    case 3: x = p; y = p + Math.random() * (H - 2 * p); break;
+  }
+  state.towers.push({
+    x: x, y: y, size: 30, range: 250,
+    shootTimer: 0, shootInterval: 0.3,
+    angle: 0, health: 150, maxHealth: 150
+  });
 }
 
 function spawnBlackEnemy() {
@@ -3546,7 +3566,7 @@ function spawnBlackEnemy() {
     case 3: x = p; y = p + Math.random() * (H - 2 * p); break;
   }
   var cfg = isLearnMode ? getLearnDifficultyConfig(state.score) : getDifficultyConfig(state.score);
-  var be = { x: x, y: y, lastX: x, lastY: y, size: 22, speed: cfg.speed, black: true,
+  var be = { x: x, y: y, lastX: x, lastY: y, size: 22, speed: cfg.speed, black: true, health: 200, maxHealth: 200,
     chargeTimer: 0, boosted: false, boostDuration: 0, chargeParticles: [] };
   state.enemies.push(be);
 }
@@ -4594,6 +4614,9 @@ function resetGame() {
   state.lastBlackSpawn = 0;
   state.learnSpawnTimer = debugLearnerSpawn;
   state.ghostLearners = [];
+  state.bullets = [];
+  state.towers = [];
+  state.mouseX = -1; state.mouseY = -1;
   state.controlMapping = generateControls(0);
   state.gemMinigame.shrinkRate = getShrinkRate();
   state.endingSequence = false;
@@ -4603,6 +4626,7 @@ function resetGame() {
   if (document.activeElement) document.activeElement.blur();
 
   applyDifficulty();
+  for (var ti = 0; ti < 2 + Math.floor(state.score / 10); ti++) spawnTower();
   for (var i = 0; i < 2; i++) spawnGem();
   updateHUD();
 
@@ -4657,6 +4681,7 @@ function handleGemMinigame(dt) {
       state.controlMapping = generateControls(tier);
       showControlPopup(state.controlMapping, tier);
       applyDifficulty();
+      while (state.towers.length < 1 + Math.floor(state.score / 10)) spawnTower();
       state.gemSpawnTimer = 0;
       for (var j = state.gems.length; j < 2; j++) spawnGem();
       mg.active = false;
@@ -5021,6 +5046,8 @@ function update(dt) {
         if (pp.life <= 0) e.chargeParticles.splice(pi, 1);
       }
     } else {
+      if (e.health === undefined) { e.health = 100; e.maxHealth = 100; }
+      if (e.shootTimer === undefined) e.shootTimer = 0.3;
       var edx = p.x - e.x;
       var edy = p.y - e.y;
       var d = Math.hypot(edx, edy);
@@ -5037,9 +5064,36 @@ function update(dt) {
           sepY += (sdy / sd) * force * 60;
         }
       }
+      var idealDist = 150;
       if (d > 1) {
-        e.x += (edx / d) * e.speed * dt + sepX * dt;
-        e.y += (edy / d) * e.speed * dt + sepY * dt;
+        var moveX, moveY;
+        if (d < idealDist * 0.6) {
+          // Too close — back away
+          moveX = -(edx / d) * e.speed * dt;
+          moveY = -(edy / d) * e.speed * dt;
+        } else if (d > idealDist * 1.4) {
+          // Too far — approach
+          moveX = (edx / d) * e.speed * dt;
+          moveY = (edy / d) * e.speed * dt;
+        } else {
+          // At good range — strafe perpendicular
+          var perpX = -edy / d;
+          var perpY = edx / d;
+          var strafeDir = (i % 2 === 0) ? 1 : -1;
+          moveX = perpX * e.speed * 0.6 * dt * strafeDir;
+          moveY = perpY * e.speed * 0.6 * dt * strafeDir;
+        }
+        e.x += moveX + sepX * dt;
+        e.y += moveY + sepY * dt;
+      }
+      // Shoot at player
+      if (e.shootTimer === undefined) e.shootTimer = 0.3;
+      e.shootTimer -= dt;
+      if (e.shootTimer <= 0 && d < 400) {
+        e.shootTimer = 0.3;
+        var angle = Math.atan2(p.y - e.y, p.x - e.x);
+        var bs = 250;
+        state.bullets.push({ x: e.x, y: e.y, vx: Math.cos(angle) * bs, vy: Math.sin(angle) * bs, life: 2, size: 4, fromEnemy: true });
       }
     }
     e.x = Math.max(e.size, Math.min(W - e.size, e.x));
@@ -5073,10 +5127,39 @@ function update(dt) {
     }
   }
 
+  // Tower update
+  for (var ti = 0; ti < state.towers.length; ti++) {
+    var tw = state.towers[ti];
+    var tdx = p.x - tw.x;
+    var tdy = p.y - tw.y;
+    var td = Math.hypot(tdx, tdy);
+    tw.angle = Math.atan2(tdy, tdx);
+    tw.shootTimer -= dt;
+    if (tw.shootTimer <= 0 && td < tw.range) {
+      tw.shootTimer = tw.shootInterval;
+      var bs = 200;
+      state.bullets.push({ x: tw.x, y: tw.y, vx: Math.cos(tw.angle) * bs, vy: Math.sin(tw.angle) * bs, life: 2.5, size: 5, fromEnemy: true });
+    }
+  }
+
   for (var i = state.gooPuddles.length - 1; i >= 0; i--) {
     var goo = state.gooPuddles[i];
     goo.life -= goo.decay * dt;
     if (goo.life <= 0) state.gooPuddles.splice(i, 1);
+  }
+
+  // Bullet update
+  for (var bi = state.bullets.length - 1; bi >= 0; bi--) {
+    var b = state.bullets[bi];
+    b.x += b.vx * dt;
+    b.y += b.vy * dt;
+    b.life -= dt;
+    if (b.life <= 0) { state.bullets.splice(bi, 1); continue; }
+    if (b.fromEnemy && Math.hypot(p.x - b.x, p.y - b.y) < p.size + b.size) {
+      state.bullets.splice(bi, 1);
+      showDeathScreen();
+      return;
+    }
   }
 
   for (var i = state.gems.length - 1; i >= 0; i--) {
@@ -5419,6 +5502,76 @@ function drawVisualizer() {
   }
 }
 
+function drawTowers(time) {
+  for (var i = 0; i < state.towers.length; i++) {
+    var tw = state.towers[i];
+    var s = tw.size;
+    ctx.save();
+    ctx.translate(tw.x, tw.y);
+    ctx.rotate(tw.angle);
+    // Base
+    ctx.fillStyle = '#1a1a2e';
+    ctx.shadowColor = '#4488ff';
+    ctx.shadowBlur = 20;
+    ctx.fillRect(-s / 2, -s / 2, s, s);
+    ctx.shadowBlur = 0;
+    // Barrel
+    ctx.fillStyle = '#3366cc';
+    ctx.fillRect(0, -3, s * 0.6, 6);
+    // Glow ring
+    ctx.strokeStyle = 'rgba(68, 136, 255, 0.4)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(-s / 2, -s / 2, s, s);
+    ctx.restore();
+  }
+}
+
+function drawBullets() {
+  for (var i = 0; i < state.bullets.length; i++) {
+    var b = state.bullets[i];
+    ctx.save();
+    ctx.shadowColor = '#ff4444';
+    ctx.shadowBlur = 12;
+    ctx.fillStyle = '#ff6644';
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, b.size, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+function drawHealthBars() {
+  var mx = state.mouseX, my = state.mouseY;
+  if (mx < 0) return;
+  var entities = [];
+  for (var i = 0; i < state.enemies.length; i++) {
+    var e = state.enemies[i];
+    var d = Math.hypot(mx - e.x, my - e.y);
+    if (d < e.size + 15) {
+      entities.push({ x: e.x, y: e.y, size: e.size, health: e.health, maxHealth: e.maxHealth });
+    }
+  }
+  for (var i = 0; i < state.towers.length; i++) {
+    var tw = state.towers[i];
+    var d = Math.hypot(mx - tw.x, my - tw.y);
+    if (d < tw.size + 15) {
+      entities.push({ x: tw.x, y: tw.y, size: tw.size, health: tw.health, maxHealth: tw.maxHealth });
+    }
+  }
+  for (var i = 0; i < entities.length; i++) {
+    var ent = entities[i];
+    var barW = 40;
+    var barH = 5;
+    var bx = ent.x - barW / 2;
+    var by = ent.y - ent.size - 12;
+    var pct = ent.health / ent.maxHealth;
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(bx, by, barW, barH);
+    ctx.fillStyle = pct > 0.5 ? '#00ff41' : pct > 0.25 ? '#ffaa00' : '#ff4444';
+    ctx.fillRect(bx, by, barW * pct, barH);
+  }
+}
+
 function drawDangerVignette(danger, time) {
   var pulse = Math.pow(Math.sin(time * Math.PI * 2 * 1.8), 16);
   var alpha = danger * 0.35 * (0.5 + 0.5 * pulse);
@@ -5447,6 +5600,9 @@ function render(time) {
   drawGoo(); drawGrid();
   if (!state.endingSequence) { drawGems(time); }
   drawEnemies(time);
+  drawTowers(time);
+  drawBullets();
+  drawHealthBars();
   drawPlayer();
   if (state.exploding) drawParticles();
   ctx.restore();
@@ -6435,6 +6591,13 @@ document.addEventListener('click', function(e) {
     clickSound.play().catch(function() {});
   }
 });
+
+canvas.addEventListener('mousemove', function(e) {
+  var rect = canvas.getBoundingClientRect();
+  state.mouseX = (e.clientX - rect.left) / rect.width * W;
+  state.mouseY = (e.clientY - rect.top) / rect.height * H;
+});
+canvas.addEventListener('mouseleave', function() { state.mouseX = -1; state.mouseY = -1; });
 </script>
 </body>
 </html>
