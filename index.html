@@ -2922,7 +2922,7 @@ input[type=range]::-moz-range-thumb {
   <button id="debugCloseBtn">[ CLOSE ]</button>
 </div>
 
-<div id="controlsDisplay">
+<div id="controlsDisplay" translate="no">
   <h2 id="cdTitle">SIKE</h2>
   <div id="cdContent"></div>
 </div>
@@ -3571,11 +3571,11 @@ function keyboardHTML(mapping, tier) {
   var right = displayKey(mapping.right);
   var pct = Math.round((tier / 6) * 100);
   return '<div class="kb-tier"><span class="kb-diff-label">Difficulty</span><div class="kb-diff-bar"><div class="kb-diff-fill" style="width:' + pct + '%"></div></div></div><div class="kb-panel-title">controls</div><div class="keyboard-layout">' +
-    '<div class="keyboard-key" data-dir="up" style="grid-row:1;grid-column:2"><span class="kb-arrow"><span style="display:inline-block;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:10px solid currentColor"></span></span><span class="kb-letter">' + up + '</span></div>' +
-    '<div class="keyboard-key" data-dir="left" style="grid-row:2;grid-column:1"><span class="kb-arrow"><span style="display:inline-block;width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-right:10px solid currentColor"></span></span><span class="kb-letter">' + left + '</span></div>' +
+    '<div class="keyboard-key" data-dir="up" style="grid-row:1;grid-column:2" translate="no"><span class="kb-arrow"><span style="display:inline-block;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:10px solid currentColor"></span></span><span class="kb-letter">' + up + '</span></div>' +
+    '<div class="keyboard-key" data-dir="left" style="grid-row:2;grid-column:1" translate="no"><span class="kb-arrow"><span style="display:inline-block;width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-right:10px solid currentColor"></span></span><span class="kb-letter">' + left + '</span></div>' +
     '<div class="kb-center" style="grid-row:2;grid-column:2">🎲</div>' +
-    '<div class="keyboard-key" data-dir="right" style="grid-row:2;grid-column:3"><span class="kb-arrow"><span style="display:inline-block;width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:10px solid currentColor"></span></span><span class="kb-letter">' + right + '</span></div>' +
-    '<div class="keyboard-key" data-dir="down" style="grid-row:3;grid-column:2"><span class="kb-arrow"><span style="display:inline-block;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:10px solid currentColor"></span></span><span class="kb-letter">' + down + '</span></div>' +
+    '<div class="keyboard-key" data-dir="right" style="grid-row:2;grid-column:3" translate="no"><span class="kb-arrow"><span style="display:inline-block;width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:10px solid currentColor"></span></span><span class="kb-letter">' + right + '</span></div>' +
+    '<div class="keyboard-key" data-dir="down" style="grid-row:3;grid-column:2" translate="no"><span class="kb-arrow"><span style="display:inline-block;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:10px solid currentColor"></span></span><span class="kb-letter">' + down + '</span></div>' +
     '</div>';
 }
 
