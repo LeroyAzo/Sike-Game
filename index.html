@@ -2697,6 +2697,36 @@ input[type=range]::-moz-range-thumb {
   text-shadow: 0 0 10px rgba(255, 0, 64, 0.4);
   letter-spacing: 1px;
 }
+
+/* Corrupted save slot border glow */
+.save-slot.corrupted {
+  border-color: rgba(255, 0, 64, 0.4) !important;
+  box-shadow: 0 0 30px rgba(255, 0, 64, 0.15), inset 0 0 30px rgba(255, 0, 64, 0.04);
+}
+.save-slot.corrupted:hover {
+  border-color: rgba(255, 0, 64, 0.6) !important;
+  box-shadow: 0 0 40px rgba(255, 0, 64, 0.25) !important;
+}
+.save-slot.corrupted .slot-name {
+  color: #ff0040;
+  text-shadow: 0 0 15px rgba(255, 0, 64, 0.3);
+}
+.save-slot.corrupted .slot-number {
+  color: rgba(255, 0, 64, 0.3);
+}
+
+/* Highlighted delete button on corrupted saves */
+.save-slot .slot-actions .delete-corrupted {
+  background: rgba(255, 0, 64, 0.15) !important;
+  border-color: #ff0040 !important;
+  color: #ff0040 !important;
+  box-shadow: 0 0 20px rgba(255, 0, 64, 0.3) !important;
+  animation: glitchText 0.3s infinite !important;
+}
+.save-slot .slot-actions .delete-corrupted:hover {
+  background: rgba(255, 0, 64, 0.25) !important;
+  box-shadow: 0 0 35px rgba(255, 0, 64, 0.5) !important;
+}
 </style>
 </head>
 <body>
@@ -3045,10 +3075,20 @@ function renderSlot(idx) {
   el.appendChild(num);
 
   if (data) {
+    var isCorrupted = data.endingReached;
+    if (isCorrupted) el.classList.add('corrupted');
+
     var name = document.createElement('div');
     name.className = 'slot-name';
     name.textContent = data.name;
     el.appendChild(name);
+
+    if (isCorrupted) {
+      var corrLabel = document.createElement('div');
+      corrLabel.className = 'slot-corrupted';
+      corrLabel.textContent = 'CORRUPTED';
+      el.appendChild(corrLabel);
+    }
 
     var diff = document.createElement('div');
     diff.className = 'slot-diff ' + data.difficulty;
@@ -3077,7 +3117,8 @@ function renderSlot(idx) {
     actions.className = 'slot-actions';
 
     var playBtn = document.createElement('button');
-    playBtn.textContent = 'PLAY';
+    if (isCorrupted) { playBtn.disabled = true; playBtn.textContent = 'LOCKED'; }
+    else { playBtn.textContent = 'PLAY'; }
     playBtn.addEventListener('click', function(e) { e.stopPropagation(); onPlaySlot(idx); });
     actions.appendChild(playBtn);
 
@@ -3088,6 +3129,7 @@ function renderSlot(idx) {
 
     var delBtn = document.createElement('button');
     delBtn.textContent = 'DELETE';
+    if (isCorrupted) delBtn.classList.add('delete-corrupted');
     delBtn.addEventListener('click', function(e) { e.stopPropagation(); onDeleteSlot(idx); });
     actions.appendChild(delBtn);
 
@@ -4070,7 +4112,11 @@ function refreshLearnScene() {
   glitchEl.style.opacity = '';
   glitchEl.style.left = '';
   glitchEl.style.top = '';
-  document.getElementById('learnPlayBtn').style.display = '';
+  var rBtn = document.getElementById('learnPlayBtn');
+  rBtn.style.display = '';
+  rBtn.className = '';
+  rBtn.disabled = false;
+  rBtn.textContent = '\u25B6 PLAY';
   if (learnEndingReached) {
     showCorruptedTerminal();
   } else {
@@ -4148,12 +4194,23 @@ function showCorruptedTerminal() {
   addTerminalLine('  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588', 'dim');
   addTerminalLine('', '');
   addTerminalLine('  IT IS HERE', 'dim');
+  addTerminalLine('  IT IS YOU', 'dim');
+  addTerminalLine('', '');
+  addTerminalLine('  THE ONLY ESCAPE', 'dim');
+  addTerminalLine('  IS DESTRUCTION', 'dim');
+  addTerminalLine('', '');
+  addTerminalLine('  DELETE THIS SAVE', 'dim');
+  addTerminalLine('  TO BREAK THE LOOP', 'dim');
   addTerminalLine('', '');
   addTerminalLine('  [ SYSTEM UNSTABLE — USE MAIN MENU TO EXIT ]', 'dim');
   renderTerminal();
   document.getElementById('learnTerminalContent').classList.add('corrupted');
   document.getElementById('learnerGlitch').classList.add('active');
-  document.getElementById('learnPlayBtn').style.display = 'none';
+  var btn = document.getElementById('learnPlayBtn');
+  btn.style.display = '';
+  btn.className = 'glitched-btn';
+  btn.disabled = true;
+  btn.textContent = '~~ CORRUPTED ~~';
 }
 
 function showBootSequence() {
@@ -4370,7 +4427,11 @@ function hideLearnScene() {
   glitchEl.style.opacity = '';
   glitchEl.style.left = '';
   glitchEl.style.top = '';
-  document.getElementById('learnPlayBtn').style.display = '';
+  var learnBtn = document.getElementById('learnPlayBtn');
+  learnBtn.style.display = '';
+  learnBtn.className = '';
+  learnBtn.disabled = false;
+  learnBtn.textContent = '\u25B6 PLAY';
   document.getElementById('saveSelector').style.display = 'none';
   document.getElementById('saveCreateOverlay').classList.remove('visible');
   document.getElementById('saveRenameOverlay').classList.remove('visible');
@@ -4417,6 +4478,7 @@ function stopLearnFrame() {
 // Learn.exe game mode
 function startLearnGame() {
   if (document.getElementById('unlockNotification').classList.contains('visible')) return;
+  if (learnEndingReached) return;
   if (activeSlot >= 0 && saveSlots[activeSlot]) {
     if (learnTotalSessions >= getMaxSessions()) return;
   }
@@ -5769,7 +5831,7 @@ document.addEventListener('keydown', function(e) {
         if (unlock.classList.contains('visible')) { hideUnlockNotification(); e.preventDefault(); return; }
         e.preventDefault();
         var btn = document.getElementById('learnPlayBtn');
-        if (btn && !btn.disabled) btn.click();
+        if (btn && !btn.disabled && btn.offsetParent !== null) btn.click();
         return;
       }
     }
